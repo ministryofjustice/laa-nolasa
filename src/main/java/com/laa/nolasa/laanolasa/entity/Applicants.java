@@ -29,3 +29,4 @@ public class Applicants {
     private String niNumber;
 
 }
+// add plugin
