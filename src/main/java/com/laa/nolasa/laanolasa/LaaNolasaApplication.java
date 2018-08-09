@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class LaaNolasaApplication {
 
 	public static void main(String[] args) {
+		System.out.println("Calling the application");
 		SpringApplication.run(LaaNolasaApplication.class, args);
 	}
 }

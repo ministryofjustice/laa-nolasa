@@ -27,5 +27,7 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-aop')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compileOnly "org.projectlombok:lombok"
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
