@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521:MAATDB
+    username: mla
+    password: dietc0ke
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  jpa:
+    database-platform: org.hibernate.dialect.Oracle10gDialect
+    show-sql: true
+    properties:
+      hibernate.jdbc.lob.non_contextual_creation: true
+
+debug: false
