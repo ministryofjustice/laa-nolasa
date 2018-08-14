@@ -17,49 +17,49 @@ public class NolAutoSearchResults {
     private Long id;
 
     @Column(name = "LIBRA_ID_1")
-    private long librId1;
+    private Long librId1;
 
     @Column(name = "LIBRA_ID_2")
-    private long librId2;
+    private Long librId2;
 
     @Column(name = "LIBRA_ID_3")
-    private long librId3;
+    private Long librId3;
 
     @Column(name = "LIBRA_ID_4")
-    private long librId4;
+    private Long librId4;
 
     @Column(name = "LIBRA_ID_5")
-    private long librId5;
+    private Long librId5;
 
     @Column(name = "LIBRA_ID_6")
-    private long librId6;
+    private Long librId6;
 
     @Column(name = "LIBRA_ID_7")
-    private long librId7;
+    private Long librId7;
 
     @Column(name = "LIBRA_ID_8")
-    private long librId8;
+    private Long librId8;
 
     @Column(name = "LIBRA_ID_9")
-    private long librId9;
+    private Long librId9;
 
     @Column(name = "LIBRA_ID_10")
-    private long librId10;
+    private Long librId10;
 
     @Column(name = "LIBRA_ID_11")
-    private long librId11;
+    private Long librId11;
 
     @Column(name = "LIBRA_ID_12")
-    private long librId12;
+    private Long librId12;
 
     @Column(name = "LIBRA_ID_13")
-    private long librId13;
+    private Long librId13;
 
     @Column(name = "LIBRA_ID_14")
-    private long librId14;
+    private Long librId14;
 
     @Column(name = "LIBRA_ID_15")
-    private long librId115;
+    private Long librId115;
 
     @OneToOne
     @JoinColumn(name="MAAT_ID")

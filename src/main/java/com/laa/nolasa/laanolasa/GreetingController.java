@@ -26,7 +26,7 @@ class GreetingController {
     List<String> statuses = new ArrayList<>();
     statuses.add("NOT ON LIBRA");
     statuses.add("RESULTS REJECTED");
-    List<Nol> nols = nolRepository.findByStatusDescriptionInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNull(statuses);
+    List<Nol> nols = nolRepository.getNolForAutoSearch("NOT ON LIBRA");
 
     nolRepository.saveAll(nols);
     return "Hello, " + nols;
