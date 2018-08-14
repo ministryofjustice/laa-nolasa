@@ -27,7 +27,9 @@ class GreetingController {
     statuses.add("NOT ON LIBRA");
     statuses.add("RESULTS REJECTED");
     List<Nol> nols = nolRepository.findByStatusDescriptionInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNull(statuses);
-    return "Hello, " + nols+ "!";
+
+    nolRepository.saveAll(nols);
+    return "Hello, " + nols;
   }
 
 }
