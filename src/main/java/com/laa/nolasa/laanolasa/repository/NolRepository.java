@@ -13,9 +13,9 @@ import java.util.List;
 public interface NolRepository extends JpaRepository<Nol, Long> {
 
     default List<Nol> getNolForAutoSearch(String... statuses) {
-        return findByStatusDescriptionInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNull(Arrays.asList(statuses));
+        return findByStatusInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNullAndRepOrdersNolAutoSearchResultsIdNotNull(Arrays.asList(statuses));
     }
 
-    List<Nol> findByStatusDescriptionInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNull(List<String> statuses);
+    List<Nol> findByStatusInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNullAndRepOrdersNolAutoSearchResultsIdNotNull(List<String> statuses);
 
 }
