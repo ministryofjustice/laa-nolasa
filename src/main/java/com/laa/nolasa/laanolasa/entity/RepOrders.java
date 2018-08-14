@@ -33,6 +33,6 @@ public class RepOrders {
     @JoinColumn(name = "CMU_ID")
     private CaseManagementUnits caseManagementUnits;
 
-//    @OneToOne(mappedBy = "repOrders")
-//    private NolAutoSearchResults nolAutoSearchResults;
+    @OneToOne(mappedBy = "repOrders")
+    private NolAutoSearchResults nolAutoSearchResults;
 }

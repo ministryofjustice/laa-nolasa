@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class InfoXService {
 
     public InfoXSearchResult search(Nol nol) {
-        String result[] = new String[15];
+        Long result[] = new Long[15];
         return new InfoXSearchResult(result, InfoXSearchStatus.SUCCESS);
     }
 }

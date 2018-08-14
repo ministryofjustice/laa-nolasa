@@ -17,7 +17,7 @@ public class Nol {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="MAAT_ID")
+    @JoinColumn(name = "MAAT_ID")
     private RepOrders repOrders;
 
     @Column(name = "DATE_ADDED", nullable = false)
@@ -32,9 +32,8 @@ public class Nol {
     @Column(name = "CASEWORKER_LAST_CHECKED")
     private String caseWorkerLastChecked;
 
-    @ManyToOne
-    @JoinColumn(name="STATUS")
-    private NolStatuses status;
+    @Column(name = "STATUS")
+    private String status;
 
     @Column(name = "DATE_LAST_MODIFIED")
     private Date dateLastModified;

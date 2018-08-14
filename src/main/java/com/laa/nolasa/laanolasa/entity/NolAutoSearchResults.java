@@ -3,7 +3,7 @@ package com.laa.nolasa.laanolasa.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -59,12 +59,12 @@ public class NolAutoSearchResults {
     private Long librId14;
 
     @Column(name = "LIBRA_ID_15")
-    private Long librId115;
+    private Long librId15;
 
     @OneToOne
     @JoinColumn(name="MAAT_ID")
     private RepOrders repOrders;
 
     @Column(name = "SEARCH_DATE", nullable = false)
-    private Date searchDate;
+    private LocalDate searchDate;
 }
