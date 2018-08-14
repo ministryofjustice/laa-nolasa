@@ -10,7 +10,7 @@ import java.sql.Date;
 
 @Entity
 @Data
-@Table(name = "REP_ORDERS", schema = "TOGDATA")
+@Table(name = "APPLICANTS", schema = "TOGDATA")
 public class Applicants {
     @Id
     @Column(name = "ID", updatable = false, nullable = false)
@@ -29,4 +29,3 @@ public class Applicants {
     private String niNumber;
 
 }
-// add plugin

@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface NolRepository extends JpaRepository <Nol, Long>{
 
-    List<Nol> findByStatusInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNull(List<String> statuses);
+    List<Nol> findByStatusDescriptionInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNull(List<String> statuses);
 
 }
