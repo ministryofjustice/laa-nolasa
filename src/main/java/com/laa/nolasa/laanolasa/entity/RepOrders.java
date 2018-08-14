@@ -16,7 +16,7 @@ public class RepOrders {
     private Long id;
 
     @Column(name = "HEARING_DATE")
-    private Date hearing_date;
+    private Date hearingDate;
 
     @Column(name = "ARREST_SUMMONS_NO")
     private String arrestSummonsNo;
