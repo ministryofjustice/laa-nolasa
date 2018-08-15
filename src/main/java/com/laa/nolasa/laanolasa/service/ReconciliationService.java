@@ -1,5 +1,6 @@
 package com.laa.nolasa.laanolasa.service;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.laa.nolasa.laanolasa.common.NolStatuses;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+@XRayEnabled
 public class ReconciliationService {
 
     private final InfoXService infoXService;
