@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -27,7 +28,7 @@ public class Nol {
     private String caseWorkerAdded;
 
     @Column(name = "DATE_LAST_CHECKED")
-    private Date dateLastChecked;
+    private LocalDateTime dateLastChecked;
 
     @Column(name = "CASEWORKER_LAST_CHECKED")
     private String caseWorkerLastChecked;
@@ -36,19 +37,19 @@ public class Nol {
     private String status;
 
     @Column(name = "DATE_LAST_MODIFIED")
-    private Date dateLastModified;
+    private LocalDateTime dateLastModified;
 
     @Column(name = "USER_LAST_MODIFIED")
     private String userLastModified;
 
     @Column(name = "LETTER_SENT_DATE")
-    private Date letterSentDate;
+    private LocalDateTime letterSentDate;
 
     @Column(name = "LETTER_SENT_CASEWORKER")
     private String letterSentCaseWorker;
 
     @Column(name = "REMOVED_DATE")
-    private Date removedDate;
+    private LocalDateTime removedDate;
 
     @Column(name = "REMOVED_CASEWORKER")
     private String removedCaseWorker;

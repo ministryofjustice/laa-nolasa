@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -23,7 +24,7 @@ public class Applicants {
     private String firstName;
 
     @Column(name = "DOB")
-    private Date dob;
+    private LocalDate dob;
 
     @Column(name = "NI_NUMBER")
     private String niNumber;

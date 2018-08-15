@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -66,5 +67,5 @@ public class NolAutoSearchResults {
     private RepOrders repOrders;
 
     @Column(name = "SEARCH_DATE", nullable = false)
-    private LocalDate searchDate;
+    private LocalDateTime searchDate;
 }

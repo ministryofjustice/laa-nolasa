@@ -1,0 +1,611 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.justice.gov.uk/2013/11/magistrates" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.justice.gov.uk/2013/11/magistrates" elementFormDefault="qualified" attributeFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+			LAA Interchange schema - MOJ LAA Version 1.06 Final
+			
+			18f - GL - updated linkage datatypes to correct types and lengths
+			18g - PF - adjust occurance on the results
+			1.00 - PF - baseline
+			1.01 - PF - ackid is a string 
+			1.01 - PF - add root elements
+			1.01 - PF - case creation date
+			1.01 - PF - result session hearing date
+			1.01 - PF - legalaidfirmname on result is 100 wide
+			1.01 - PF - firm on solicitor is 100 wide
+			1.02 - PF - change legal aid status to a restricted list
+			1.03 - PF - remove hearing date from result
+			1.03 - PF - ASNSeqNo changed to SeqNo
+			1.04 - PF - offence length adjusted
+			1.04 - PF - forename not mandatory
+			1.05 - PF - ModeOfTrial not mandatory
+			1.05.01 - PF - add legacy legal aid status values
+			1.05.02 - PF - correct duplicates
+			1.05.03 - PF - add NA to the LegalaidStatus resticted list
+			1.06.D5 - PF - add optional ack to the search response
+			1.06.D5 - PF - add ref to AckResponse in LibraSearchResponse
+			1.06.D6 - PF - set nino maxlength instead of length
+			1.06.07 - GC - corrected an invalid maxlength declaration (to maxLength)
+			1.06.08 - PP - Set NINO in LibraCriteriaType to maxlength 9
+			
+		</xsd:documentation>
+	</xsd:annotation>
+	<!-- =======================================================================================================-->
+	<!-- LibraCase -->
+	<xsd:complexType name="LibraCaseType">
+		<xsd:sequence>
+			<xsd:element name="LibraCaseId" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="10"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="CJSAreaCode" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="2"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="MaatCaseId" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ASN" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="20"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="documentLanguage" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="EN"/>
+						<xsd:enumeration value="CY"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Inactive">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="Y"/>
+						<xsd:enumeration value="N"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<!--  pf   -->
+			<xsd:element name="CreationDate" type="xsd:date" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="OFFENCE" type="LibraOffenceType" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- LibraOffence type -->
+	<xsd:complexType name="LibraOffenceType">
+		<xsd:sequence>
+			<xsd:element name="offenceCode">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="8"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="SeqNo" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="3"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="OffenceShortTitle">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="120"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="OffenceClassification">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="250"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="OffenceDate" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="OffenceWording" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="2500"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ModeOfTrial" type="xsd:positiveInteger" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="LegalaidReason" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="250"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="LegalaidStatus" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="AP"/>
+						<xsd:enumeration value="GR"/>
+						<xsd:enumeration value="FM"/>
+						<xsd:enumeration value="FJ"/>
+						<xsd:enumeration value="FB"/>
+						<xsd:enumeration value="WD"/>
+						<xsd:enumeration value="G2"/>
+						<xsd:enumeration value="GQ"/>
+						<xsd:enumeration value="RE"/>
+						<xsd:enumeration value="VA"/>
+						<xsd:enumeration value="WI"/>
+						<xsd:enumeration value="NA"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="LegalaidStatusDate" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="RESULT" type="LibraResultType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Libra-Session -->
+	<xsd:complexType name="LibraSessionType">
+		<xsd:sequence>
+			<xsd:element name="SessionDateOfHearing" type="xsd:date" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="SessionCourtLocation" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="7"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="SessionValidateDate" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+			<!-- mandatory for libra2maat update -->
+			<xsd:element name="DefendantCustodyStatus" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="1"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<!-- session type -->
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Libra-Result -->
+	<xsd:complexType name="LibraResultType">
+		<xsd:sequence>
+			<xsd:element name="ResultCode" type="xsd:positiveInteger"/>
+			<xsd:element name="ResultShortTitle">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="100"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ResultText">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="2500"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ResultQualifiers" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="40"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="NextHearingDate" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="NextHearingLocation" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="7"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="LegalaidFirmName" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="100"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="LegalaidContactName" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="LaaAccountNumber" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="LegalaidWithdrawalDate" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Libra-defendant -->
+	<xsd:complexType name="LibraDefendantType">
+		<xsd:sequence>
+			<xsd:element name="Forename" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Surname" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="DOB" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="AddressLine1" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="AddressLine2" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="AddressLine3" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="AddressLine4" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="AddressLine5" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Postcode" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="8"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="NINO" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="9"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="HomePhone" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="20"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="WorkPhone" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="20"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="MobilePhone" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="20"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Email1" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="255"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Email2" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="255"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- MAAT-Solicitor -->
+	<xsd:complexType name="MaatSolicitorType">
+		<xsd:sequence>
+			<xsd:element name="Firm" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="100"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Contact" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Account" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Address1" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Address2" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Address3" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Address4" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Address5" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Postcode" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="8"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Phone" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="20"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Email" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="255"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- MAAT to LIBRA Search Criteria structure -->
+	<xsd:complexType name="LibraCriteriaType">
+		<xsd:sequence>
+			<xsd:element name="LibraCaseId" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="10"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="CJSAreaCode" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="2"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ASN" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="20"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="NINO" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="9"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Surname" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Forename" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="SearchType" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:int">
+						<xsd:minInclusive value="0"/>
+						<xsd:maxInclusive value="2"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="DateOfHearing" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="DOB" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="CourtHearingLocation" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="7"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="SearchPattern" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:int">
+						<xsd:minInclusive value="1"/>
+						<xsd:maxInclusive value="5"/>
+						<!-- see annex A of pd 3793   -->
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ERROR -->
+	<xsd:complexType name="LibraExceptionType">
+		<xsd:sequence>
+			<xsd:element name="ERRORCODE">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="6"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ERRORTIMESTAMP">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="20"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ERRORMESSAGE">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="250"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="UNLinkRequestType">
+		<xsd:sequence>
+			<xsd:element name="CJSAreaCode" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="2"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="LibraCaseId" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="10"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="MaatCaseId" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="35"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Libra Case/defendant search -->
+	<xsd:element name="LibraSearchRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="criteria" type="LibraCriteriaType" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<!-- Libra Search Response -->
+	<xsd:element name="LibraSearchResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="SearchResultItem" type="ResultItem" minOccurs="0" maxOccurs="50"/>
+				<xsd:element ref="AckResponse" minOccurs="0" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="ResultItem">
+		<xsd:sequence>
+			<xsd:element name="Defendant" type="LibraDefendantType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="CaseResult" type="LibraCaseSessionType" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="LibraCaseSessionType">
+		<xsd:sequence>
+			<xsd:element name="CaseDetail" type="LibraCaseType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="CaseSession" type="LibraSessionType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- MAAT to LIBRA Case Update -->
+	<xsd:element name="MaatToLibraCaseUpdateRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Defendant" type="LibraDefendantType" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="CaseDetail" type="LibraCaseType" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="Solicitor" type="MaatSolicitorType" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<!-- LIBRA to MAAT update request -->
+	<xsd:element name="LibraToMaatCaseUpdateRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Defendant" type="LibraDefendantType" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="CaseDetail" type="LibraCaseType" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="CaseSession" type="LibraSessionType" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<!-- Ack -->
+	<xsd:element name="AckResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AckId" type="xsd:string" minOccurs="1"/>
+				<xsd:element name="Exception" type="LibraExceptionType" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<!-- MAAT-Link -->
+	<xsd:element name="UNLinkRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="UNLink" type="UNLinkRequestType" minOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

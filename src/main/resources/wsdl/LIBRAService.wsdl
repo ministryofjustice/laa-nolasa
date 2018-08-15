@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<definitions  name="MAAT-LIBRA-Service"
+		targetNamespace="http://www.justice.gov.uk/2013/11/magistrates"
+		xmlns="http://schemas.xmlsoap.org/wsdl/"
+		xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/"  
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:tns="http://www.justice.gov.uk/2013/11/magistrates" 
+		xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" 
+		>
+	<types>
+		<schema targetNamespace="http://www.justice.gov.uk/2013/11/magistrates"	xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" >
+    	<include schemaLocation="LIBRAService.xsd" />
+				
+	</schema>
+	</types>
+	
+	<message name="LibraSearchRequest">
+		<part element="tns:LibraSearchRequest" name="request"></part>
+	</message>
+	
+	<message name="LibraSearchResponse">
+		<part element="tns:LibraSearchResponse" name="response"></part>
+	</message>
+		
+
+	
+
+	
+	
+	<portType name="LIBRAServicePortType">
+		
+		<operation name="LibraSearch">
+			<input message="tns:LibraSearchRequest" />
+			<output message="tns:LibraSearchResponse" />
+		</operation>
+		
+
+	</portType>
+	
+	
+	<binding name="LIBRAServiceBinding" type="tns:LIBRAServicePortType">
+		<wsaw:UsingAddressing required="true" />
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		
+		<operation name="LibraSearch">
+			<soap:operation soapAction="" />
+			<input name="LibraSearchRequest"><soap:body use="literal" /></input>
+			<output name="LibraSearchResponse"><soap:body use="literal" /></output>
+		</operation>
+		
+		
+		
+
+	</binding>
+	<service name="LIBRAServiceService">
+		<port binding="tns:LIBRAServiceBinding" name="LIBRAService_port">
+			<soap:address location="http://localhost:8080/infoX_LibraStub/libra/LIBRAService" />
+		</port>
+
+	</service>
+</definitions>
