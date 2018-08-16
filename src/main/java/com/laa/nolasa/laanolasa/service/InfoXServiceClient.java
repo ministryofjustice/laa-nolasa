@@ -28,14 +28,33 @@ public class InfoXServiceClient {
     private WebServiceTemplate webServiceTemplate;
 
 
+//    public InfoXSearchResult search(Nol nol) {
+//        LibraSearchResponse libraSearchResponse;
+//        try {
+//            libraSearchResponse = (LibraSearchResponse) webServiceTemplate.marshalSendAndReceive(buildLibraSearchRequest(nol));
+//        } catch (DatatypeConfigurationException e) {
+//            throw new InfoXServiceException();
+//        }
+//        return buildInfoXSearchResult(libraSearchResponse);
+//    }
+
     public InfoXSearchResult search(Nol nol) {
-        LibraSearchResponse libraSearchResponse;
-        try {
-            libraSearchResponse = (LibraSearchResponse) webServiceTemplate.marshalSendAndReceive(buildLibraSearchRequest(nol));
-        } catch (DatatypeConfigurationException e) {
-            throw new InfoXServiceException();
+        Long result[] = new Long[15];
+        if (nol.getRepOrders().getId().equals(new Long(5631971))) {
+            result[0] = new Long(100);
+            return new InfoXSearchResult(result, InfoXSearchStatus.SUCCESS);
         }
-        return buildInfoXSearchResult(libraSearchResponse);
+        if (nol.getRepOrders().getId().equals(new Long(5631968))) {
+            result[0] = new Long(200);
+            result[1] = new Long(300);
+            return new InfoXSearchResult(result, InfoXSearchStatus.SUCCESS);
+        }
+        if (nol.getRepOrders().getId().equals(new Long(5631977))) {
+            result[0] = new Long(400);
+            result[1] = new Long(500);
+            return new InfoXSearchResult(result, InfoXSearchStatus.SUCCESS);
+        }
+        return new InfoXSearchResult(result, InfoXSearchStatus.FAILURE);
     }
 
     private LibraSearchRequest buildLibraSearchRequest(Nol nol) throws DatatypeConfigurationException {
