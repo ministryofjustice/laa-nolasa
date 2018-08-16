@@ -1,3 +1,7 @@
+configurations {
+    jaxb
+}
+
 buildscript {
     ext {
         springBootVersion = '2.0.4.RELEASE'
@@ -26,7 +30,43 @@ repositories {
     }
 }
 
+// tag::wsdl[]
+task genJaxb {
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
+    ext.classesDir = "${buildDir}/classes/jaxb"
+    ext.schema = "src/main/resources/wsdl/LIBRAService.wsdl"
 
+    outputs.dir classesDir
+
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask",
+                    classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
+            mkdir(dir: classesDir)
+
+            xjc(destdir: sourcesDir, schema: schema) {
+                arg(value: "-wsdl")
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+
+            javac(destdir: classesDir, source: 1.8, target: 1.8, debug: true,
+                    debugLevel: "lines,vars,source",
+                    classpath: configurations.jaxb.asPath) {
+                src(path: sourcesDir)
+                include(name: "**/*.java")
+                include(name: "*.java")
+            }
+
+            copy(todir: classesDir) {
+                fileset(dir: sourcesDir, erroronmissingdir: false) {
+                    exclude(name: "**/*.java")
+                }
+            }
+        }
+    }
+}
+// end::wsdl[]
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-web')
@@ -36,4 +76,18 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     compile 'com.amazonaws:aws-xray-recorder-sdk-spring:1.3.1'
     compile 'org.aspectj:aspectjrt:1.9.1'
+    compile(files(genJaxb.classesDir).builtBy(genJaxb))
+    jaxb "com.sun.xml.bind:jaxb-xjc:2.1.7"
+}
+
+bootJar {
+    baseName = 'gs-consuming-web-service'
+    version =  '0.1.0'
+
+    from genJaxb.classesDir
+}
+
+
+task afterEclipseImport {
+    dependsOn genJaxb
 }
