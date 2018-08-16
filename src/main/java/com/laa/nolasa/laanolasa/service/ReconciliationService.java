@@ -1,6 +1,7 @@
 package com.laa.nolasa.laanolasa.service;
 
 //import com.amazonaws.xray.spring.aop.XRayEnabled;
+
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.laa.nolasa.laanolasa.common.NolStatuses;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.laa.nolasa.laanolasa.util.LibraUtil.isLibraIDsNotEqual;
 
 @Service
 @Slf4j
@@ -51,12 +54,19 @@ public class ReconciliationService {
 
     private void updateNol(Nol entity, InfoXSearchResult infoXSearchResult) {
         NolAutoSearchResults autoSearchResult = entity.getRepOrders().getNolAutoSearchResults();
-        updateLibraDetails(autoSearchResult, infoXSearchResult.getLibraIDs());
-        autoSearchResult.setSearchDate(LocalDateTime.now());
 
-        entity.setStatus(NolStatuses.RESULTS_FOUND.valueOf());
-        nolRepository.save(entity);
-        log.info("Nol table updated for entity with MAAT ID {} ", entity.getRepOrders().getId());
+        if (isLibraIDsNotEqual(autoSearchResult, infoXSearchResult.getLibraIDs())) {
+
+            updateLibraDetails(autoSearchResult, infoXSearchResult.getLibraIDs());
+            autoSearchResult.setSearchDate(LocalDateTime.now());
+
+            entity.setStatus(NolStatuses.RESULTS_FOUND.valueOf());
+            nolRepository.save(entity);
+            log.info("Nol table updated for entity with MAAT ID {} ", entity.getRepOrders().getId());
+
+        } else {
+            log.info("No changes were detected in libra IDs corresponding to the MAAT ID {} ", entity.getRepOrders().getId());
+        }
     }
 
     private void updateLibraDetails(NolAutoSearchResults autoSearchResult, Long[] libraIDs) {
