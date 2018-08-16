@@ -11,4 +11,8 @@ spring:
     properties:
       hibernate.jdbc.lob.non_contextual_creation: true
 
+
 debug: false
+
+client:
+  default-uri: localhost:8080/nol

@@ -1,6 +1,6 @@
 package com.laa.nolasa.laanolasa.service;
 
-import com.amazonaws.xray.spring.aop.XRayEnabled;
+//import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.laa.nolasa.laanolasa.common.NolStatuses;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
@@ -11,18 +11,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Slf4j
-@XRayEnabled
+//@XRayEnabled
 public class ReconciliationService {
 
-    private final InfoXService infoXService;
+    private InfoXServiceClient infoXService;
     private NolRepository nolRepository;
 
-    public ReconciliationService(NolRepository nolRepository, InfoXService infoXService) {
+    public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService) {
         this.nolRepository = nolRepository;
         this.infoXService = infoXService;
     }
@@ -51,7 +51,7 @@ public class ReconciliationService {
     private void updateNol(Nol entity, InfoXSearchResult infoXSearchResult) {
         NolAutoSearchResults autoSearchResult = entity.getRepOrders().getNolAutoSearchResults();
         updateLibraDetails(autoSearchResult, infoXSearchResult.getLibraIDs());
-        autoSearchResult.setSearchDate(LocalDate.now());
+        autoSearchResult.setSearchDate(LocalDateTime.now());
 
         entity.setStatus(NolStatuses.RESULTS_FOUND.valueOf());
         nolRepository.save(entity);

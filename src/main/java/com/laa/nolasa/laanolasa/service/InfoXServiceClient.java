@@ -5,7 +5,9 @@ import com.laa.nolasa.laanolasa.common.exception.InfoXServiceException;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ws.client.core.WebServiceTemplate;
 import uk.gov.justice._2013._11.magistrates.*;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -18,24 +20,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 
 @Service
-public class InfoXService {
+public class InfoXServiceClient {
 
     private static final int MAX_LIBRA_RECORDS = 15;
 
-    private LIBRAServicePortType libraServicePortType;
-
-    private ObjectFactory objectFactory;
-
-    public InfoXService(LIBRAServicePortType libraServicePortType, ObjectFactory objectFactory) {
-        this.libraServicePortType = libraServicePortType;
-        this.objectFactory = objectFactory;
-    }
+    @Autowired
+    private WebServiceTemplate webServiceTemplate;
 
 
     public InfoXSearchResult search(Nol nol) {
         LibraSearchResponse libraSearchResponse;
         try {
-            libraSearchResponse = libraServicePortType.libraSearch(buildLibraSearchRequest(nol));
+            libraSearchResponse = (LibraSearchResponse) webServiceTemplate.marshalSendAndReceive(buildLibraSearchRequest(nol));
         } catch (DatatypeConfigurationException e) {
             throw new InfoXServiceException();
         }
@@ -43,6 +39,7 @@ public class InfoXService {
     }
 
     private LibraSearchRequest buildLibraSearchRequest(Nol nol) throws DatatypeConfigurationException {
+        ObjectFactory objectFactory = new ObjectFactory();
         LibraSearchRequest libraSearchRequest = objectFactory.createLibraSearchRequest();
 
         libraSearchRequest.getCriteria().setSearchType(0);
