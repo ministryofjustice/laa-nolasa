@@ -1,0 +1,687 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CodePipeline for the Not on Libra Autosearch microservice
+Parameters:
+
+  ApplicationName:
+    Description: Name of the Application
+    Type: String
+    Default: laa-nolasa
+
+  GitHubRepo:
+    Type: String
+
+  GitHubBranch:
+    Type: String
+
+  GitHubToken:
+    Description: GitHub Token Parameter Store parameter name
+    Default: APP_NOLASA_DEVPIPELINE_GITHUBTOKEN
+    Type: String
+
+  GitHubUser:
+    Type: String
+
+  DevAccount:
+    Description: AWS Account Number for Development
+    Type: Number
+
+  TestAccount:
+    Description: AWS AccountNumber for test
+    Type: Number
+
+  StagingAccount:
+    Description: AWS AccountNumber for staging
+    Type: Number
+
+  ProductionAccount:
+    Description: AWS AccountNumber for production
+    Type: Number
+
+  ProductionSupportAccount:
+    Description: AWS AccountNumber for production support
+    Type: Number
+
+  UATAccount:
+    Description: AWS AccountNumber for UAT
+    Type: Number
+
+  ECRRepository:
+    Type: String
+    Description: The ARN of the ECR repository
+
+  ECRURI:
+    Type: String
+    Description: The URI of the ECR repository
+
+  pDockerImageTag:
+    Type: String
+    Default: ''
+
+  pIsRouteToLive:
+    Description: Indicator of whether to build whole route-to-live or just a development pipeline stub
+    Type: String
+    AllowedValues: [true, false]
+
+Conditions:
+  cIsRouteToLive:
+    !Equals [ !Ref pIsRouteToLive, "true" ]
+
+###################################################
+
+Resources:
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      RoleName: !Sub ${ApplicationName}-CodeBuildRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+  CodeBuildPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${ApplicationName}-CodeBuildPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Resource: "*"
+            Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - ecr:GetAuthorizationToken
+          - Resource:
+              -  !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket ] ]
+              -  !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket, "/*" ] ]
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+              - s3:GetObjectVersion
+              - s3:GetBucketPolicy
+              - s3:ListBucket
+          - Resource: !ImportValue pipeline-EncryptionKey
+            Effect: Allow
+            Action:
+              - kms:Encrypt
+              - kms:Decrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:DescribeKey
+          - Resource: !Ref ECRRepository
+            Effect: Allow
+            Action:
+              - ecr:GetDownloadUrlForLayer
+              - ecr:BatchGetImage
+              - ecr:BatchCheckLayerAvailability
+              - ecr:PutImage
+              - ecr:InitiateLayerUpload
+              - ecr:UploadLayerPart
+              - ecr:CompleteLayerUpload
+          - Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/BUILD_IMAGE
+            Effect: Allow
+            Action:
+              - ssm:PutParameter
+              - ssm:DeleteParameter
+              - ssm:GetParameters
+      Roles:
+        - !Ref CodeBuildServiceRole
+
+  CloudwatchLogsGroupCB:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join [ "", [ '/aws/codebuild/' , !Ref ApplicationName , "-appbuild" ] ]
+      RetentionInDays: 90
+
+  CloudwatchLogsECSKeyAssociation:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !ImportValue security-LogGroupLambdaArn
+      KeyArn: !ImportValue "security-LogGroupKeyArn"
+      LogGroupName: !Ref CloudwatchLogsGroupCB
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Join [ "", [ !Ref ApplicationName , "-appbuild" ] ]
+      Description: !Join [ '', [ 'Project to build the NOLASA Java application ', !Ref ApplicationName ] ]
+      EncryptionKey: !ImportValue pipeline-EncryptionKey
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Location: !ImportValue pipeline-ArtifactBucket
+        Type: "S3"
+      Source:
+        Location: !Join [ "", [ !ImportValue pipeline-ArtifactBucket, "/source.zip" ] ]
+        Type: "S3"
+        BuildSpec: buildspec-lz.yml
+      Environment:
+        ComputeType: "BUILD_GENERAL1_MEDIUM"
+        Image: "aws/codebuild/docker:17.09.0"
+        Type: "LINUX_CONTAINER"
+        EnvironmentVariables:
+          - Name: AWS_DEFAULT_REGION
+            Value: !Ref AWS::Region
+          - Name: REPOSITORY_URI
+            Value: !Ref ECRURI
+          - Name: ARTIFACT_BUCKET
+            Value: !ImportValue pipeline-ArtifactBucket
+          - Name: APPLICATION_NAME
+            Value: !Ref ApplicationName
+      TimeoutInMinutes: 15
+
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ApplicationName}-codepipeline-role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+  CodePipelinePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${ApplicationName}-codepipeline-policy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Resource: "*"
+            Effect: Allow
+            Action:
+              - codepipeline:*
+              - codebuild:StartBuild
+              - codebuild:BatchGetBuilds
+              - iam:PassRole
+              - cloudFormation:List*
+              - cloudformation:CreateStack
+              - cloudformation:DeleteStack
+              - cloudformation:DescribeStacks
+              - cloudformation:UpdateStack
+              - cloudformation:CreateChangeSet
+              - cloudformation:DeleteChangeSet
+              - cloudformation:DescribeChangeSet
+              - cloudformation:ExecuteChangeSet
+              - cloudformation:SetStackPolicy
+              - cloudformation:ValidateTemplate
+              - iam:ListRoles
+              - s3:ListAllMyBuckets
+              - s3:GetBucketLocation 
+          - Resource: "*"
+            Effect: Allow
+            Action:
+              - ecs:DescribeServices
+              - ecs:DescribeTaskDefinition
+              - ecs:DescribeTasks
+              - ecs:ListTasks
+              - ecs:RegisterTaskDefinition
+              - ecs:UpdateService
+          -
+            Effect: Allow
+            Action:
+              - kms:Encrypt
+              - kms:Decrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:DescribeKey
+            Resource: !ImportValue pipeline-EncryptionKey
+          -
+            Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:GetObject
+              - s3:GetObjectVersion
+              - s3:GetBucketVersioning
+              - s3:ListBucket
+            Resource:
+              - !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket ] ]
+              - !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket, "/*" ] ]              
+          -
+            Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource:
+              - !Sub arn:aws:iam::${DevAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - !Sub arn:aws:iam::${TestAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - !Sub arn:aws:iam::${StagingAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - !Sub arn:aws:iam::${ProductionAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - !Sub arn:aws:iam::${UATAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - !Sub arn:aws:iam::${ProductionSupportAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+      Roles:
+        - !Ref CodePipelineServiceRole
+
+  UserDeveloperRoleManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Developer role access to ${ApplicationName} pipeline
+      ManagedPolicyName: !Sub ${ApplicationName}-userdeveloperrole-managed-policy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - codepipeline:StartPipelineExecution
+              - codepipeline:RetryStageExecution
+            Resource:
+              - !Join [ "", [ "arn:aws:codepipeline:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":", !Ref Pipeline ] ]
+      Roles:
+        - UserDeveloperRole
+
+  Pipeline:
+    DependsOn: [ CodePipelinePolicy, CodeBuildPolicy ]
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Application
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Owner: !Ref GitHubUser
+                Repo: !Ref GitHubRepo
+                Branch: !Ref GitHubBranch
+                OAuthToken: !GetAtt rGitHubTokenNew.Value
+              OutputArtifacts:
+                - Name: Application
+              RunOrder: 1
+        - Name: Build
+          Actions:
+            - Name: BuildApp
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              InputArtifacts:
+                - Name: Application
+              OutputArtifacts:
+                - Name: BuildOutput
+              RunOrder: 1
+        - Name: DeployToDevelopment
+          Actions:
+            - Name: CreateChangeSetDevelopment
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CloudFormation
+              Configuration:
+                ChangeSetName: !Sub LAA-${ApplicationName}-development
+                ActionMode: CHANGE_SET_REPLACE
+                StackName: !Sub LAA-${ApplicationName}-development
+                Capabilities: CAPABILITY_NAMED_IAM
+                TemplatePath: BuildOutput::app-main-packaged.template
+                RoleArn: !Sub arn:aws:iam::${DevAccount}:role/cloudformationdeployer-role
+                ParameterOverrides: !Sub |
+                  {
+                    "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                    "pAppName" : "${ApplicationName}"
+                  }
+                TemplateConfiguration: BuildOutput::development.json
+                OutputFileName: development-stackoutputs.json
+              InputArtifacts:
+                - Name: BuildOutput
+              OutputArtifacts:
+                - Name: DevelopmentOutput
+              RunOrder: 1
+              RoleArn: !Sub arn:aws:iam::${DevAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+            - Name: DeployChangeSetDevelopment
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CloudFormation
+              Configuration:
+                ChangeSetName: !Sub LAA-${ApplicationName}-development
+                ActionMode: CHANGE_SET_EXECUTE
+                StackName: !Sub LAA-${ApplicationName}-development
+                RoleArn: !Sub arn:aws:iam::${DevAccount}:role/cloudformationdeployer-role
+              InputArtifacts:
+                - Name: BuildOutput
+              RunOrder: 2
+              RoleArn: !Sub arn:aws:iam::${DevAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+
+        - !If
+          - cIsRouteToLive
+          - Name: ApproveInTest
+            Actions:
+            - Name: Approve
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: 1
+              RunOrder: 1
+          - !Ref AWS::NoValue
+
+        - !If
+          - cIsRouteToLive
+          - Name: DeployToTest
+            Actions:
+              - Name: CreateChangeSetTest
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-test
+                  ActionMode: CHANGE_SET_REPLACE
+                  StackName: !Sub LAA-${ApplicationName}-test
+                  Capabilities: CAPABILITY_NAMED_IAM
+                  TemplatePath: BuildOutput::app-main-packaged.template
+                  RoleArn: !Sub arn:aws:iam::${TestAccount}:role/cloudformationdeployer-role
+                  ParameterOverrides: !Sub |
+                    {
+                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                      "pAppName" : "${ApplicationName}"
+                    }
+                  TemplateConfiguration: BuildOutput::test.json
+                  OutputFileName: test-stackoutputs.json
+                InputArtifacts:
+                  - Name: BuildOutput
+                OutputArtifacts:
+                  - Name: TestBuildOutput
+                RunOrder: 1
+                RoleArn: !Sub arn:aws:iam::${TestAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - Name: DeployChangeSetTest
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-test
+                  ActionMode: CHANGE_SET_EXECUTE
+                  StackName: !Sub LAA-${ApplicationName}-test
+                  RoleArn: !Sub arn:aws:iam::${TestAccount}:role/cloudformationdeployer-role
+                InputArtifacts:
+                  - Name: BuildOutput
+                RunOrder: 2
+                RoleArn: !Sub arn:aws:iam::${TestAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+
+          - !Ref AWS::NoValue
+
+        - !If
+          - cIsRouteToLive
+          - Name: ApproveInUAT
+            Actions:
+            - Name: Approve
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: 1
+              RunOrder: 1
+          - !Ref AWS::NoValue
+
+        - !If
+          - cIsRouteToLive
+          - Name: DeployToUAT
+            Actions:
+              - Name: CreateChangeSetUAT
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-uat
+                  ActionMode: CHANGE_SET_REPLACE
+                  StackName: !Sub LAA-${ApplicationName}-uat
+                  Capabilities: CAPABILITY_NAMED_IAM
+                  TemplatePath: BuildOutput::app-main-packaged.template
+                  RoleArn: !Sub arn:aws:iam::${UATAccount}:role/cloudformationdeployer-role
+                  ParameterOverrides: !Sub |
+                    {
+                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                      "pAppName" : "${ApplicationName}"
+                    }
+                  TemplateConfiguration: BuildOutput::uat.json
+                  OutputFileName: uat-stackoutputs.json
+                InputArtifacts:
+                  - Name: BuildOutput
+                OutputArtifacts:
+                  - Name: UATStackOutput
+                RunOrder: 1
+                RoleArn: !Sub arn:aws:iam::${UATAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - Name: DeployChangeSetUat
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-uat
+                  ActionMode: CHANGE_SET_EXECUTE
+                  StackName: !Sub LAA-${ApplicationName}-uat
+                  RoleArn: !Sub arn:aws:iam::${UATAccount}:role/cloudformationdeployer-role
+                InputArtifacts:
+                  - Name: BuildOutput
+                RunOrder: 2
+                RoleArn: !Sub arn:aws:iam::${UATAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+
+          - !Ref AWS::NoValue
+
+        - !If
+          - cIsRouteToLive
+          - Name: ApproveInStaging
+            Actions:
+            - Name: Approve
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: 1
+              RunOrder: 1
+          - !Ref AWS::NoValue
+
+        - !If
+          - cIsRouteToLive
+          - Name: DeployToStaging
+            Actions:
+              - Name: CreateChangeSetStaging
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-staging
+                  ActionMode: CHANGE_SET_REPLACE
+                  StackName: !Sub LAA-${ApplicationName}-staging
+                  Capabilities: CAPABILITY_NAMED_IAM
+                  TemplatePath: BuildOutput::app-main-packaged.template
+                  RoleArn: !Sub arn:aws:iam::${StagingAccount}:role/cloudformationdeployer-role
+                  ParameterOverrides: !Sub |
+                    {
+                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                      "pAppName" : "${ApplicationName}"
+                    }
+                  TemplateConfiguration: BuildOutput::staging.json
+                  OutputFileName: staging-stackoutputs.json
+                InputArtifacts:
+                  - Name: BuildOutput
+                OutputArtifacts:
+                  - Name: StagingStackOutput
+                RunOrder: 1
+                RoleArn: !Sub arn:aws:iam::${StagingAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - Name: DeployChangeSetStaging
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-staging
+                  ActionMode: CHANGE_SET_EXECUTE
+                  StackName: !Sub LAA-${ApplicationName}-staging
+                  RoleArn: !Sub arn:aws:iam::${StagingAccount}:role/cloudformationdeployer-role
+                InputArtifacts:
+                  - Name: BuildOutput
+                RunOrder: 2
+                RoleArn: !Sub arn:aws:iam::${StagingAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+
+          - !Ref AWS::NoValue
+
+        - !If
+          - cIsRouteToLive
+          - Name: ApproveInProduction
+            Actions:
+            - Name: Approve
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: 1
+              RunOrder: 1
+          - !Ref AWS::NoValue
+
+        - !If
+          - cIsRouteToLive
+          - Name: DeployToProduction
+            Actions:
+              - Name: CreateChangeSetProduction
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-production
+                  ActionMode: CHANGE_SET_REPLACE
+                  StackName: !Sub LAA-${ApplicationName}-production
+                  Capabilities: CAPABILITY_NAMED_IAM
+                  TemplatePath: BuildOutput::app-main-packaged.template
+                  RoleArn: !Sub arn:aws:iam::${ProductionAccount}:role/cloudformationdeployer-role
+                  ParameterOverrides: !Sub |
+                    {
+                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                      "pAppName" : "${ApplicationName}"
+                    }
+                  TemplateConfiguration: BuildOutput::production.json
+                  OutputFileName: production-stackoutputs.json
+                InputArtifacts:
+                  - Name: BuildOutput
+                OutputArtifacts:
+                  - Name: ProductionStackOutput
+                RunOrder: 1
+                RoleArn: !Sub arn:aws:iam::${ProductionAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - Name: DeployChangeSetProduction
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-production
+                  ActionMode: CHANGE_SET_EXECUTE
+                  StackName: !Sub LAA-${ApplicationName}-production
+                  RoleArn: !Sub arn:aws:iam::${ProductionAccount}:role/cloudformationdeployer-role
+                InputArtifacts:
+                  - Name: BuildOutput
+                RunOrder: 2
+                RoleArn: !Sub arn:aws:iam::${ProductionAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+
+          - !Ref AWS::NoValue
+
+        - !If
+          - cIsRouteToLive
+          - Name: ApproveInProductionSupport
+            Actions:
+            - Name: Approve
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: 1
+              RunOrder: 1
+          - !Ref AWS::NoValue
+
+        - !If
+          - cIsRouteToLive
+          - Name: DeployToProductionSupport
+            Actions:
+              - Name: CreateChangeSetProductionSupport
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-productionsupport
+                  ActionMode: CHANGE_SET_REPLACE
+                  StackName: !Sub LAA-${ApplicationName}-productionsupport
+                  Capabilities: CAPABILITY_NAMED_IAM
+                  TemplatePath: BuildOutput::app-main-packaged.template
+                  RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/cloudformationdeployer-role
+                  ParameterOverrides: !Sub |
+                    {
+                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                      "pAppName" : "${ApplicationName}"
+                    }
+                  TemplateConfiguration: BuildOutput::productionsupport.json
+                  OutputFileName: productionsupport-stackoutputs.json
+                InputArtifacts:
+                  - Name: BuildOutput
+                OutputArtifacts:
+                  - Name: ProductionSupportStackOutput
+                RunOrder: 1
+                RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+              - Name: DeployChangeSetProductionSupport
+                ActionTypeId:
+                  Category: Deploy
+                  Owner: AWS
+                  Version: 1
+                  Provider: CloudFormation
+                Configuration:
+                  ChangeSetName: !Sub LAA-${ApplicationName}-productionsupport
+                  ActionMode: CHANGE_SET_EXECUTE
+                  StackName: !Sub LAA-${ApplicationName}-productionsupport
+                  RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/cloudformationdeployer-role
+                InputArtifacts:
+                  - Name: BuildOutput
+                RunOrder: 2
+                RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+
+          - !Ref AWS::NoValue
+
+      ArtifactStore:
+        Type: S3
+        Location: !ImportValue pipeline-ArtifactBucket
+        EncryptionKey:
+          Id: !ImportValue pipeline-EncryptionKey
+          Type: KMS
+
+  # Secrets
+  rGitHubTokenNew:
+    Type: Custom::SecretFinder
+    Properties:
+      ServiceToken: !ImportValue "security-SecretFinderLambdaArn"
+      Name: !Ref GitHubToken
+
+Outputs:
+  PipelineUrl:
+    Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}

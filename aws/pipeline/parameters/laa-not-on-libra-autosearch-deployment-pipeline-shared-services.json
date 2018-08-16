@@ -1,0 +1,58 @@
+[
+  {
+    "ParameterKey"    : "ApplicationName",
+    "ParameterValue"  : "laa-nolasa"
+  },
+  {
+    "ParameterKey"    : "DevAccount",
+    "ParameterValue"  : "411213865113"
+  },
+  {
+    "ParameterKey"    : "TestAccount",
+    "ParameterValue"  : "013163512034"
+  },
+  {
+    "ParameterKey"    : "StagingAccount",
+    "ParameterValue"  : "484221692666"
+  },
+  {
+    "ParameterKey"    : "UATAccount",
+    "ParameterValue"  : "140455166311"
+  },
+  {
+    "ParameterKey"    : "ProductionSupportAccount",
+    "ParameterValue"  : "441527764669"
+  },
+  {
+    "ParameterKey"    : "ProductionAccount",
+    "ParameterValue"  : "842522700642"
+  },
+  {
+    "ParameterKey"    : "GitHubRepo",
+    "ParameterValue"  : "laa-nolasa"
+  },
+  {
+    "ParameterKey"    : "GitHubBranch",
+    "ParameterValue"  : "master"
+  },
+  {
+    "ParameterKey"    : "GitHubToken",
+    "ParameterValue"  : "APP_NOLASA_DEVPIPELINE_GITHUBTOKEN"
+  },
+  {
+    "ParameterKey"    : "GitHubUser",
+    "ParameterValue"  : "ministryofjustice"
+  },
+  {
+    "ParameterKey"    : "ECRRepository",
+    "ParameterValue"  : "arn:aws:ecr:eu-west-2:902837325998:repository/laa-nolasa"
+  },
+  {
+    "ParameterKey"    : "ECRURI",
+    "ParameterValue"  : "902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-nolasa"
+  },
+  {
+    "ParameterKey"    : "pIsRouteToLive",
+    "ParameterValue"  : "true"
+  }
+]

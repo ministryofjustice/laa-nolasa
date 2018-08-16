@@ -1,0 +1,17 @@
+{
+  "Parameters" : {
+    "pAppName" : "laa-nolasa",
+    "pECSRepositoryURI" : "902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-nolasa",
+    "pDockerImageTag" : "latest",
+    "pEcsAmiId" : "ami-3622cf51",
+    "pEc2InstanceType" : "t2.small",
+    "pSshKeyName" : "development-general",
+    "pDataSourceUrl" : "jdbc:oracle:thin:@172.16.4.144:1671:SNDCCM20",
+    "pDataSourceUname" : "MLA",
+    "pAppCronString" : "“*/10 * * * * ?”",
+    "pLibraEndPointURI" : "http://172.16.3.131:8550/infoX/gateway",
+    "pSev5SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev5SnsTopic",
+    "pSev2SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev2SnsTopic",
+    "pSev1SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev1SnsTopic"
+  }
+}

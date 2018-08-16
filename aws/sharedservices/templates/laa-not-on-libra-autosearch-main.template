@@ -1,0 +1,44 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: LAA Not on Libra Autosearch tooling stack.
+Metadata:
+  Stack:
+    Value: 0
+  VersionDate:
+    Value: 20171218
+  Identifier:
+    Value: laa-nola-main
+  Input:
+    Description: Input of all required parameters in nested stacks
+  Output:
+    Description: N/A
+Parameters:
+  pEcrRepositoryName:
+    Description: Name of ECR repository
+    Type: String
+    Default: laa-nolasa
+    AllowedPattern: '^[a-z][0-9a-z-]+$'
+
+Resources:
+  EcrTemplate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: laa-nolasa-ecr.template
+      TimeoutInMinutes: 20
+      Parameters:
+        pEcrRepositoryName: !Ref pEcrRepositoryName
+
+Outputs:
+  TemplateType:
+    Value: Standard Multi-Tier Web Application
+  TemplateVersion:
+    Value: 1.0
+
+  EcrArn:
+    Description: ECR repository ARN
+    Value:
+      !GetAtt
+      - EcrTemplate
+      - Outputs.EcrArn
+    Export:
+      Name: !Sub "laa-nolasa-ecr-EcrArn"

@@ -1,0 +1,206 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: LAA Application Log Monitoring
+Parameters:
+  pAppName:
+    Type: String
+    Default: ''
+  pSev5SnsTopicArn:
+    Description: Enter the arn of the Sev5 sns topic
+    Type: String
+    Default: ''
+  pSev2SnsTopicArn:
+    Description: Enter the arn of the Sev2 sns topic
+    Type: String
+    Default: ''
+  pSev1SnsTopicArn:
+    Description: Enter the arn of the Sev1 sns topic
+    Type: String
+    Default: ''
+  pAutoscalingGroupName:
+    Description: Enter the name of the current Autoscaling group for this project
+    Type: String
+    Default: ''
+  pLoadBalancerName:
+    Description: Enter your Application Load Balancer name.
+    Type: String
+    Default: ''
+  pClusterName:
+    Description: Enter the Cluster name
+    Type: String
+    Default: ''
+
+  # Alarm thresholds
+  pECSCPUAlarmThreshold:
+    Description: ECS CPU Alarm Threshold
+    Type: Number
+    Default: '75'
+  pECSMemoryAlarmThreshold:
+    Description: ECS Meomry Alarm Threshold
+    Type: Number
+    Default: '75'
+  pASGCPUAlarmThreshold:
+    Description: ASG CPU Alarm Threshold
+    Type: Number
+    Default: '85'
+  pASGStatusFailureAlarmThreshold:
+    Description: ASG Status Check Failures Alarm Threshold
+    Type: Number
+    Default: '1'
+
+Resources:
+
+# ECS cluster alerting
+  EscCPUoverThreshold:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmName: !Join 
+        - " | "
+        - - !Ref pAppName
+          - ECS-CPU-high-threshold-alarm
+      AlarmDescription: >-
+        If the CPU exceeds the predefined threshold, this alarm will trigger.
+        Please investigate.
+      Namespace: AWS/ECS
+      MetricName: CPUUtilization
+      Statistic: Average
+      Period: '60'
+      EvaluationPeriods: '5'
+      Threshold: !Ref pECSCPUAlarmThreshold
+      TreatMissingData: breaching
+      AlarmActions:
+        - !Ref pSev5SnsTopicArn
+      OKActions:
+        - !Ref pSev5SnsTopicArn
+      Dimensions:
+        - Name: ClusterName
+          Value: !Ref pClusterName
+      ComparisonOperator: GreaterThanThreshold
+
+  EcsMemoryOverThreshold:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmName: !Join 
+        - " | "
+        - - !Ref pAppName
+          - ECS-Memory-high-threshold-alarm
+      AlarmDescription: >-
+        If the memory util exceeds the predefined threshold, this alarm will trigger.
+        Please investigate.
+      Namespace: AWS/ECS
+      MetricName: MemoryUtilization
+      Statistic: Average
+      Period: '60'
+      EvaluationPeriods: '5'
+      Threshold: !Ref pECSMemoryAlarmThreshold
+      TreatMissingData: breaching
+      AlarmActions:
+        - !Ref pSev5SnsTopicArn
+      OKActions:
+        - !Ref pSev5SnsTopicArn
+      Dimensions:
+        - Name: ClusterName
+          Value: !Ref pClusterName
+      ComparisonOperator: GreaterThanThreshold
+
+# Autoscaling Group / EC2 Alerting 
+  CPUoverThreshold:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmName: !Join 
+        - " | "
+        - - !Ref pAppName
+          - CPU-high-threshold-alarm
+      AlarmDescription: >-
+        If the CPU exceeds the predefined threshold, this alarm will trigger.
+        Please investigate.
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      Statistic: Average
+      Period: '60'
+      EvaluationPeriods: '5'
+      Threshold: !Ref pASGCPUAlarmThreshold
+      TreatMissingData: breaching
+      AlarmActions:
+        - !Ref pSev5SnsTopicArn
+      OKActions:
+        - !Ref pSev5SnsTopicArn
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref pAutoscalingGroupName
+      ComparisonOperator: GreaterThanThreshold
+
+  StatusCheckFailure:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmName: !Join 
+        - " | "
+        - - !Ref pAppName
+          - status-check-failure-alarm
+      AlarmDescription: >-
+        If a status check failure occurs on an instance, please investigate. http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-system-instance-status-check.html
+      Namespace: AWS/EC2
+      MetricName: StatusCheckFailed
+      Statistic: Average
+      Period: '60'
+      EvaluationPeriods: '5'
+      Threshold: !Ref pASGStatusFailureAlarmThreshold
+      TreatMissingData: breaching
+      AlarmActions:
+        - !Ref pSev5SnsTopicArn
+      OKActions:
+        - !Ref pSev5SnsTopicArn
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref pAutoscalingGroupName
+      ComparisonOperator: GreaterThanThreshold
+
+# Dashboard creation and configuration
+  NOLASADashboard:
+    DependsOn: [CPUoverThreshold, StatusCheckFailure, EcsMemoryOverThreshold, EscCPUoverThreshold]
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Join 
+          - '-'
+          - - !Ref pAppName
+            - Dashboard
+      DashboardBody: !Sub |
+        {
+          "widgets" : [
+            {
+              "type" : "metric",
+              "x" : 0,
+              "y" : 12,
+              "width" : 12,
+              "height" : 6,
+              "properties" : {
+                  "title" : "ECS CPU",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${EscCPUoverThreshold}"
+                    ]
+                  },
+                  "view": "timeSeries",
+                  "region": "${AWS::Region}",
+                  "stacked": false
+              }
+            },
+            {
+              "type" : "metric",
+              "x" : 12,
+              "y" : 12,
+              "width" : 12,
+              "height" : 6,
+              "properties" : {
+                  "title" : "ECS Memory",
+                  "annotations": {
+                    "alarms": [
+                      "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${EcsMemoryOverThreshold}"
+                    ]
+                  },
+                  "view": "timeSeries",
+                  "region": "${AWS::Region}",
+                  "stacked": false
+              }
+            }
+          ]
+        }
