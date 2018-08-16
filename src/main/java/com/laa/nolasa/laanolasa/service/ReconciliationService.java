@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.laa.nolasa.laanolasa.util.LibraUtil.isLibraIDsNotEqual;
+import static com.laa.nolasa.laanolasa.util.LibraUtil.updateLibraDetails;
 
 @Service
 @Slf4j
@@ -69,24 +70,7 @@ public class ReconciliationService {
         }
     }
 
-    private void updateLibraDetails(NolAutoSearchResults autoSearchResult, Long[] libraIDs) {
 
-        autoSearchResult.setLibrId1(libraIDs[0]);
-        autoSearchResult.setLibrId2(libraIDs[1]);
-        autoSearchResult.setLibrId3(libraIDs[2]);
-        autoSearchResult.setLibrId4(libraIDs[3]);
-        autoSearchResult.setLibrId5(libraIDs[4]);
-        autoSearchResult.setLibrId6(libraIDs[5]);
-        autoSearchResult.setLibrId7(libraIDs[6]);
-        autoSearchResult.setLibrId8(libraIDs[7]);
-        autoSearchResult.setLibrId9(libraIDs[8]);
-        autoSearchResult.setLibrId10(libraIDs[9]);
-        autoSearchResult.setLibrId11(libraIDs[10]);
-        autoSearchResult.setLibrId12(libraIDs[11]);
-        autoSearchResult.setLibrId13(libraIDs[12]);
-        autoSearchResult.setLibrId14(libraIDs[13]);
-        autoSearchResult.setLibrId15(libraIDs[14]);
-    }
 
 
 }
