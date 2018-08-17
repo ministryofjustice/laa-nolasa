@@ -5,6 +5,7 @@ import com.laa.nolasa.laanolasa.common.exception.InfoXServiceException;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -20,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 
 @Service
+@Slf4j
 public class InfoXServiceClient {
 
     private static final int MAX_LIBRA_RECORDS = 15;
@@ -27,13 +29,14 @@ public class InfoXServiceClient {
     @Autowired
     private WebServiceTemplate webServiceTemplate;
 
-
+//
 //    public InfoXSearchResult search(Nol nol) {
 //        LibraSearchResponse libraSearchResponse;
 //        try {
 //            libraSearchResponse = (LibraSearchResponse) webServiceTemplate.marshalSendAndReceive(buildLibraSearchRequest(nol));
 //        } catch (DatatypeConfigurationException e) {
-//            throw new InfoXServiceException();
+//            log.error("Exception thrown while populating Libra Search Request", e);
+//            return  new InfoXSearchResult(new Long[15], InfoXSearchStatus.FAILURE);
 //        }
 //        return buildInfoXSearchResult(libraSearchResponse);
 //    }
