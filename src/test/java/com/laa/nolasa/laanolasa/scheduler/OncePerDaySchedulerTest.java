@@ -1,4 +1,4 @@
-package com.laa.nolasa.laanolasa.service;
+package com.laa.nolasa.laanolasa.scheduler;
 
 import com.laa.nolasa.laanolasa.common.NolStatuses;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
@@ -7,20 +7,26 @@ import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 import com.laa.nolasa.laanolasa.entity.RepOrders;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
+import com.laa.nolasa.laanolasa.service.InfoXServiceClient;
+import com.laa.nolasa.laanolasa.service.ReconciliationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ReconciliationServiceTest {
+public class OncePerDaySchedulerTest {
 
     @Mock
     private InfoXServiceClient infoXServiceClient;
@@ -30,14 +36,16 @@ public class ReconciliationServiceTest {
 
     private ReconciliationService reconciliationService;
 
+    private OncePerDayScheduler oncePerDayScheduler;
+
     @Before
     public void setUp() throws Exception {
         reconciliationService = new ReconciliationService(nolRepository, infoXServiceClient);
+        oncePerDayScheduler = new OncePerDayScheduler(reconciliationService);
     }
 
     @Test
-    public void shouldReconcileLibraIDs() {
-
+    public void reconcile() {
         List<Nol> nols = new ArrayList<Nol>();
 
         NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
@@ -144,12 +152,7 @@ public class ReconciliationServiceTest {
 
         when(infoXServiceClient.search(any(Nol.class))).thenReturn(infoXSearchResult1).thenReturn(infoXSearchResult2).thenReturn(infoXSearchResult3);
 
-        reconciliationService.reconcile();
 
-        verify(nolRepository).getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf());
-        verify(infoXServiceClient).search(nol1);
-        verify(infoXServiceClient).search(nol2);
-        verify(nolRepository).save(nol2);
-        verify(nolRepository, never()).save(nol1);
+        oncePerDayScheduler.reconcile();
     }
 }
