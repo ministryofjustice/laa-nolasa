@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class OncePerDayScheduler {
     private static final int TWENTY_SECONDS = 20000;
     private static final String EVERYDAY_8PM = "0 0 20 ? * * *";
+
     private final ReconciliationService reconciliationService;
 
     public OncePerDayScheduler(ReconciliationService reconciliationService) {
@@ -19,13 +20,7 @@ public class OncePerDayScheduler {
     @Scheduled(fixedDelay = TWENTY_SECONDS)
     //@Scheduled(cron = EVERYDAY_8PM)
     public void reconcile() {
-        try {
-            log.debug("calling service reconciliationService");
-            reconciliationService.reconcile();
-        } catch (Exception ex) {
-            log.error("Ran into an error {}", ex);
-            throw new IllegalStateException(ex);
-        }
+        reconciliationService.reconcile();
     }
 
 }

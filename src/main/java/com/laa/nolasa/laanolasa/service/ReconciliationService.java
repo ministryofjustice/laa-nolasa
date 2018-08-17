@@ -1,7 +1,5 @@
 package com.laa.nolasa.laanolasa.service;
 
-//import com.amazonaws.xray.spring.aop.XRayEnabled;
-
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.laa.nolasa.laanolasa.common.NolStatuses;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
@@ -24,12 +22,12 @@ import static com.laa.nolasa.laanolasa.util.LibraUtil.updateLibraDetails;
 @XRayEnabled
 public class ReconciliationService {
 
-    private InfoXServiceClient infoXService;
+    private InfoXServiceClient infoXServiceClient;
     private NolRepository nolRepository;
 
     public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService) {
         this.nolRepository = nolRepository;
-        this.infoXService = infoXService;
+        this.infoXServiceClient = infoXService;
     }
 
     @Transactional
@@ -40,7 +38,7 @@ public class ReconciliationService {
 
         notInLibraEntities.stream().forEach(entity -> {
 
-            InfoXSearchResult infoXSearchResult = infoXService.search(entity);
+            InfoXSearchResult infoXSearchResult = infoXServiceClient.search(entity);
 
             if (InfoXSearchStatus.SUCCESS == infoXSearchResult.getStatus()) {
 
