@@ -1,0 +1,54 @@
+[
+  {
+    "ParameterKey"    : "pAppName",
+    "ParameterValue"  : "laa-nolasa"
+  },
+  {
+    "ParameterKey"    : "pECSRepositoryURI",
+    "ParameterValue"  : "902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-nolasa"
+  },
+  {
+    "ParameterKey"    : "pDockerImageTag",
+    "ParameterValue"  : "f2e3ce23"
+  },
+  {
+    "ParameterKey"    : "pEcsAmiId",
+    "ParameterValue"  : "ami-3622cf51"
+  },
+  {
+    "ParameterKey"    : "pEc2InstanceType",
+    "ParameterValue"  : "t2.small"
+  },
+  {
+    "ParameterKey"    : "pSshKeyName",
+    "ParameterValue"  : "test-general"
+  },
+  {
+    "ParameterKey"    : "pDataSourceUrl",
+    "ParameterValue"  : "jdbc:oracle:thin:@172.16.4.136:1671:SITCCM10"
+  },
+  {
+    "ParameterKey"    : "pDataSourceUname",
+    "ParameterValue"  : "MLA"
+  },
+  {
+    "ParameterKey"    : "pAppCronString",
+    "ParameterValue"  : "“*/60 * * * * *”"
+  },
+  {
+    "ParameterKey"    : "pLibraEndPointURI",
+    "ParameterValue"  : "http://172.16.3.123:8550/infoX/gateway"
+  },
+  {
+    "ParameterKey"    : "pSev5SnsTopicArn",
+    "ParameterValue"  : "arn:aws:sns:eu-west-2:902837325998:Sev5SnsTopic"
+  },
+  {
+    "ParameterKey"    : "pSev2SnsTopicArn",
+    "ParameterValue"  : "arn:aws:sns:eu-west-2:902837325998:Sev2SnsTopic"
+  },
+  {
+    "ParameterKey"    : "pSev1SnsTopicArn",
+    "ParameterValue"  : "arn:aws:sns:eu-west-2:902837325998:Sev1SnsTopic"
+  }
+]

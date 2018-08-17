@@ -1,0 +1,181 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: LAA Application Application container setup and config
+Parameters:
+  pAppName:
+    Type: String
+    Default: ''
+  pAppEcsCluster:
+    Type: String
+    Default: ''
+  pECSRepositoryURI:
+    Type: String
+    Default: ''
+  pDockerImageTag:
+    Type: String
+    Default: ''
+  pDataSourceUrl:
+    Type: String
+    Default: ''
+    Description: URL for database connection
+  pDataSourcePwd:
+   Type: String
+   Default: ''
+   Description: Password for database user
+  pDataSourceUname:
+    Type: String
+    Default: ''
+    Description: Username to connect to database with
+  pAppCronString:
+    Type: String
+    Default: ''
+    Description: Crontab style entry for job schedule
+  pLibraEndPointURI:
+    Type: String
+    Default: String
+    Description: URI for Libra
+
+Resources:
+
+################################################################################
+#
+# App container setup
+#
+################################################################################
+
+  DataSourcePwd:
+    Type: Custom::SecretFinder
+    Properties:
+      ServiceToken: !ImportValue "security-SecretFinderLambdaArn"
+      Name: !Ref pDataSourcePwd
+
+  EcsService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref pAppEcsCluster
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'TaskDefinition'
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 0
+  EcsServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'ecs.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: !Sub '${pAppName}-ecs-service'
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
+                  - 'elasticloadbalancing:DeregisterTargets'
+                  - 'elasticloadbalancing:Describe*'
+                  - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
+                  - 'elasticloadbalancing:RegisterTargets'
+                  - 'ec2:Describe*'
+                  - 'ec2:AuthorizeSecurityGroupIngress'
+                Resource: '*'
+  ServiceScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    DependsOn: EcsService
+    Properties:
+      MaxCapacity: 2
+      MinCapacity: 1
+      ResourceId: !Join ['', [service/, !Ref pAppEcsCluster, /, !GetAtt EcsService.Name]]
+      RoleARN: !GetAtt AutoscalingRole.Arn
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+  ServiceScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: AStepPolicy
+      PolicyType: StepScaling
+      ScalingTargetId: !Ref 'ServiceScalingTarget'
+      StepScalingPolicyConfiguration:
+        AdjustmentType: PercentChangeInCapacity
+        Cooldown: 60
+        MetricAggregationType: Average
+        StepAdjustments:
+          - MetricIntervalLowerBound: 0
+            ScalingAdjustment: 200
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Join [ '', [ !Ref pAppName, '-app' ] ]
+      ContainerDefinitions:
+        - Name: !Ref pAppName
+          Cpu: '1024'
+          Essential: 'true'
+          Image: !Join [':', [!Ref pECSRepositoryURI, !Ref pDockerImageTag ]]
+          Memory: '1024'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref 'CloudwatchLogsGroupECS'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: !Sub '${pAppName}-app'
+          Environment:
+            - Name: DATASOURCE_URL
+              Value: !Ref pDataSourceUrl
+            - Name: DATASOURCE_USERNAME
+              Value: !Ref pDataSourceUname
+            - Name: DATASOURCE_PASSWORD
+              Value: !GetAtt DataSourcePwd.Value
+            - Name: APP_CRON_STRING
+              Value: !Ref pAppCronString
+            - Name: LIBRA_ENDPOINTURI
+              Value: !Ref pLibraEndPointURI
+
+  CloudwatchLogsGroupECS:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '${pAppName}-ECS'
+      RetentionInDays: 90
+
+  CloudwatchLogsECSKeyAssociation:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !ImportValue security-LogGroupLambdaArn
+      KeyArn: !ImportValue "security-LogGroupKeyArn"
+      LogGroupName: !Ref CloudwatchLogsGroupECS
+
+  AutoscalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'application-autoscaling.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: service-autoscaling
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'application-autoscaling:*'
+                  - 'cloudwatch:DescribeAlarms'
+                  - 'cloudwatch:PutMetricAlarm'
+                  - 'ecs:DescribeServices'
+                  - 'ecs:UpdateService'
+                Resource: '*'
+
+Outputs:
+  EcsService:
+    Value: !Ref EcsService
+  taskdef:
+    Value: !Ref 'TaskDefinition'

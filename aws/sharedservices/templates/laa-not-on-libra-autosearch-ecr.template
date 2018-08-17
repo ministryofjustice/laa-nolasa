@@ -1,0 +1,65 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: LAA Not on Libra Autosearch ECR repository
+
+Parameters:
+  pEcrRepositoryName:
+    Type: String
+    Default: ''
+
+Resources:
+################################################################################
+#
+# Docker Repo
+#
+################################################################################
+
+  AppEcrRepository: 
+    Type: "AWS::ECR::Repository"
+    Properties: 
+      RepositoryName: !Ref pEcrRepositoryName
+      RepositoryPolicyText: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Sid: AllowPushPullAccount
+            Effect: Allow
+            Principal:
+              AWS:
+                - "arn:aws:iam::902837325998:root"
+                - "arn:aws:iam::411213865113:root"
+                - "arn:aws:iam::013163512034:root"
+                - "arn:aws:iam::842522700642:root"
+                - "arn:aws:iam::248217651788:root"
+                - "arn:aws:iam::847208056990:root"
+            Action:
+              - "ecr:GetDownloadUrlForLayer"
+              - "ecr:BatchGetImage"
+              - "ecr:BatchCheckLayerAvailability"
+              - "ecr:PutImage"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:CompleteLayerUpload"
+          - 
+            Sid: AllowPushPullAccountUsers
+            Effect: Allow
+            Principal:
+              AWS: 
+                - "arn:aws:iam::902837325998:user/james.abley@digital.justice.gov.uk"
+                - "arn:aws:iam::902837325998:user/john.luck@digital.justice.gov.uk"
+                - "arn:aws:iam::902837325998:user/morten.jensen@digital.justice.gov.uk"
+                - "arn:aws:iam::902837325998:user/oisin.deconduin@digital.justice.gov.uk"
+                - "arn:aws:iam::902837325998:user/tariq.ali-adib@digital.justice.gov.uk"
+            Action: 
+              - "ecr:GetDownloadUrlForLayer"
+              - "ecr:BatchGetImage"
+              - "ecr:BatchCheckLayerAvailability"
+              - "ecr:PutImage"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:CompleteLayerUpload"
+
+Outputs:
+  EcrArn:
+    Description: The ECR repository created by the stack
+    Value: !GetAtt AppEcrRepository.Arn

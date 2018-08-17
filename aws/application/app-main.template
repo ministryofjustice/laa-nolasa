@@ -1,0 +1,129 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: LAA Java-based application stack that deploys on top of UK OFFICIAL derived infrastructure template
+Metadata:
+  Stack:
+    Value: 0
+  VersionDate:
+    Value: 20171214
+  Identifier:
+    Value: app-main
+  Input:
+    Description: Input of all required parameters in nested stacks
+  Output:
+    Description: N/A
+Parameters:
+  pAppName:
+    Description: Application name optionally with application instance identifier,
+      e.g. "CCR1" to accommodate multiple instances of the same stack under the same infrastructure
+    Type: String
+    Default: 'laa-nolasa'
+    AllowedPattern: '^[a-zA-Z][0-9a-zA-Z-]+$'
+  pECSRepositoryURI:
+    Description: ECR repository URI of docker images
+    Type: String
+    Default: '902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-nolasa'
+  pDockerImageTag:
+    Description: The docker image tag to be used by ECS cluster
+    Type: String
+    Default: ''
+  pEcsAmiId:
+    Type: String
+    Default: 'ami-a48d6bc3'
+    Description: AMI image to use
+  pEc2InstanceType:
+    Type: String
+    Default: 't2.small'
+    Description: Instance size for EC2 instances hosting ECS
+  pSshKeyName:
+    Type: String
+    Default: ''
+    Description: The EC2 instances SSH key
+  pDataSourceUrl:
+    Type: String
+    Default: ''
+    Description: URL for database connection
+  pDataSourcePwd:
+    Type: String
+    Default: 'APP_MLRA_DBPASSWORD'
+    Description: MLRA Database password Param Store entry
+  pDataSourceUname:
+    Type: String
+    Default: ''
+    Description: Username to connect to database with
+  pAppCronString:
+    Type: String
+    Default: ''
+    Description: Crontab style entry for job schedule
+  pLibraEndPointURI:
+    Type: String
+    Default: String
+    Description: URI for Libra
+  pSev1SnsTopicArn:
+    Description: ARN of Sev1 SNS topic for alerting
+    Type: String
+    Default: ''
+  pSev2SnsTopicArn:
+    Description: ARN of Sev2 SNS topic for alerting
+    Type: String
+    Default: ''
+  pSev5SnsTopicArn:
+    Description: ARN of Sev5 SNS topic for alerting
+    Type: String
+    Default: ''
+
+Resources:
+  AppInfrastructureTemplate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: infrastructure_stack.template
+      TimeoutInMinutes: 20
+      Parameters:
+        pAppName: !Ref pAppName
+        pEcsAmiId: !Ref pEcsAmiId
+        pEc2InstanceType: !Ref pEc2InstanceType
+        pSshKeyName: !Ref pSshKeyName
+
+  AppServiceTemplate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: application_stack.template
+      TimeoutInMinutes: 20
+      Parameters:
+        pAppName: !Ref pAppName
+        pAppEcsCluster:
+          !GetAtt
+          - AppInfrastructureTemplate
+          - Outputs.AppEcsCluster
+        pECSRepositoryURI: !Ref pECSRepositoryURI
+        pDockerImageTag: !Ref pDockerImageTag
+        pLibraEndPointURI: !Ref pLibraEndPointURI
+        pAppCronString: !Ref pAppCronString
+        pDataSourceUname: !Ref pDataSourceUname
+        pDataSourcePwd: !Ref pDataSourcePwd
+        pDataSourceUrl: !Ref pDataSourceUrl
+
+  MonitoringTemplate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: monitoring_stack.template
+      TimeoutInMinutes: 20
+      Parameters:
+        pAppName: !Ref pAppName
+        pSev5SnsTopicArn : !Ref pSev5SnsTopicArn
+        pSev2SnsTopicArn : !Ref pSev2SnsTopicArn
+        pSev1SnsTopicArn : !Ref pSev1SnsTopicArn
+        pAutoscalingGroupName:
+          !GetAtt
+          - AppInfrastructureTemplate
+          - Outputs.AppECSAutoScalingGroup
+        pClusterName:
+          !GetAtt
+          - AppInfrastructureTemplate
+          - Outputs.AppEcsCluster
+
+Outputs:
+  TemplateType:
+    Value: Standard Multi-Tier Web Application
+  TemplateVersion:
+    Value: 1.0
