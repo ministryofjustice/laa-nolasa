@@ -2,7 +2,7 @@
 <definitions  name="MAAT-LIBRA-Service"
 		targetNamespace="http://www.justice.gov.uk/2013/11/magistrates"
 		xmlns="http://schemas.xmlsoap.org/wsdl/"
-		xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/"  
+		xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 		xmlns:tns="http://www.justice.gov.uk/2013/11/magistrates" 
 		xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" 
@@ -21,12 +21,7 @@
 	<message name="LibraSearchResponse">
 		<part element="tns:LibraSearchResponse" name="response"></part>
 	</message>
-		
 
-	
-
-	
-	
 	<portType name="LIBRAServicePortType">
 		
 		<operation name="LibraSearch">
@@ -44,8 +39,8 @@
 		
 		<operation name="LibraSearch">
 			<soap:operation soapAction="" />
-			<input name="LibraSearchRequest"><soap:body use="literal" /></input>
-			<output name="LibraSearchResponse"><soap:body use="literal" /></output>
+			<input><soap:body use="literal" /></input>
+			<output><soap:body use="literal" /></output>
 		</operation>
 		
 		

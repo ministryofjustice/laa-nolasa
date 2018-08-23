@@ -15,4 +15,4 @@ spring:
 debug: false
 
 client:
-  default-uri: http://localhost:8080/nol
+  default-uri: http://localhost:8088/mockLIBRAServiceBinding

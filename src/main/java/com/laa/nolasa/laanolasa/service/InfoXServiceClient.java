@@ -29,48 +29,33 @@ public class InfoXServiceClient {
     @Autowired
     private WebServiceTemplate webServiceTemplate;
 
-//
-//    public InfoXSearchResult search(Nol nol) {
-//        LibraSearchResponse libraSearchResponse;
-//        try {
-//            libraSearchResponse = (LibraSearchResponse) webServiceTemplate.marshalSendAndReceive(buildLibraSearchRequest(nol));
-//        } catch (DatatypeConfigurationException e) {
-//            log.error("Exception thrown while populating Libra Search Request", e);
-//            return  new InfoXSearchResult(new Long[15], InfoXSearchStatus.FAILURE);
-//        }
-//        return buildInfoXSearchResult(libraSearchResponse);
-//    }
 
     public InfoXSearchResult search(Nol nol) {
-        Long result[] = new Long[15];
-        if (nol.getRepOrders().getId().equals(new Long(5631971))) {
-            result[0] = new Long(100);
-            return new InfoXSearchResult(result, InfoXSearchStatus.SUCCESS);
+        LibraSearchResponse libraSearchResponse;
+        try {
+            libraSearchResponse = (LibraSearchResponse) webServiceTemplate.marshalSendAndReceive(buildLibraSearchRequest(nol));
+        } catch (DatatypeConfigurationException e) {
+            log.error("Exception thrown while populating Libra Search Request", e);
+            return new InfoXSearchResult(new Long[15], InfoXSearchStatus.FAILURE);
         }
-        if (nol.getRepOrders().getId().equals(new Long(5631968))) {
-            result[0] = new Long(200);
-            result[1] = new Long(300);
-            return new InfoXSearchResult(result, InfoXSearchStatus.SUCCESS);
-        }
-        if (nol.getRepOrders().getId().equals(new Long(5631977))) {
-            result[0] = new Long(400);
-            result[1] = new Long(500);
-            return new InfoXSearchResult(result, InfoXSearchStatus.SUCCESS);
-        }
-        return new InfoXSearchResult(result, InfoXSearchStatus.FAILURE);
+        return buildInfoXSearchResult(libraSearchResponse);
     }
 
     private LibraSearchRequest buildLibraSearchRequest(Nol nol) throws DatatypeConfigurationException {
         ObjectFactory objectFactory = new ObjectFactory();
         LibraSearchRequest libraSearchRequest = objectFactory.createLibraSearchRequest();
 
-        libraSearchRequest.getCriteria().setSearchType(0);
-        libraSearchRequest.getCriteria().setSearchPattern(5);
-        libraSearchRequest.getCriteria().setSurname(nol.getRepOrders().getApplicants().getLastName());
-        libraSearchRequest.getCriteria().setCJSAreaCode(nol.getRepOrders().getMagistrateCourts().getCjsAreaCode());
+        LibraCriteriaType criteria = objectFactory.createLibraCriteriaType();
+
+        libraSearchRequest.setCriteria(criteria);
+
+        criteria.setSearchType(0);
+        criteria.setSearchPattern(5);
+        criteria.setSurname(nol.getRepOrders().getApplicants().getLastName());
+        criteria.setCJSAreaCode(nol.getRepOrders().getMagistrateCourts().getCjsAreaCode());
 
         if (null != nol.getRepOrders().getHearingDate()) {
-            libraSearchRequest.getCriteria().setDateOfHearing(getGregorianCalendar(nol.getRepOrders().getHearingDate()));
+            criteria.setDateOfHearing(getGregorianCalendar(nol.getRepOrders().getHearingDate()));
         }
 
         return libraSearchRequest;
@@ -85,9 +70,11 @@ public class InfoXServiceClient {
     private InfoXSearchResult buildInfoXSearchResult(LibraSearchResponse libraSearchResponse) {
         Long result[] = new Long[15];
 
+        log.info("Response code:{}", libraSearchResponse.getAckResponse().getException().getERRORCODE());
         switch (libraSearchResponse.getAckResponse().getException().getERRORCODE()) {
             case "1":
             case "100100":
+                log.info("Libra id's:{}", libraSearchResponse.getSearchResultItem().size());
                 for (int i = 0; (i < libraSearchResponse.getSearchResultItem().size() && i < MAX_LIBRA_RECORDS); i++) {
                     result[i] = Long.valueOf(libraSearchResponse.getSearchResultItem().get(i).getCaseResult().get(0).getCaseDetail().getLibraCaseId());
                 }
