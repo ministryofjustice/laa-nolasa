@@ -15,7 +15,7 @@ public class OncePerDayScheduler {
         this.reconciliationService = reconciliationService;
     }
 
-    @Scheduled(fixedDelay = "${app.cron.string}")
+    @Scheduled(cron = "${app.cron.string}")
     public void reconcile() {
         reconciliationService.reconcile();
     }
