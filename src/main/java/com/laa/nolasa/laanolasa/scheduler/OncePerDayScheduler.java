@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class OncePerDayScheduler {
-    private static final int TWENTY_SECONDS = 20000;
-    private static final String EVERYDAY_8PM = "0 0 20 ? * * *";
 
     private final ReconciliationService reconciliationService;
 
@@ -17,8 +15,7 @@ public class OncePerDayScheduler {
         this.reconciliationService = reconciliationService;
     }
 
-    @Scheduled(fixedDelay = TWENTY_SECONDS)
-    //@Scheduled(cron = EVERYDAY_8PM)
+    @Scheduled(cron = "${app.cron.string}")
     public void reconcile() {
         reconciliationService.reconcile();
     }
