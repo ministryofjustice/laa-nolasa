@@ -1,0 +1,56 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - apt-get update -y
+      - add-apt-repository ppa:openjdk-r/ppa
+      - apt-get update -y
+      - apt-get install -y software-properties-common openjdk-8-jdk zip
+#      - add-apt-repository ppa:openjdk-r/ppa
+#      - apt-get install -y openjdk-8-jdk
+      - update-ca-certificates -f
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr get-login --no-include-email)
+      - DOCKER_TAG="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+      - echo Created docker tag $DOCKER_TAG
+      - IMAGE_URI="${REPOSITORY_URI}:${DOCKER_TAG}"
+  build:
+    commands:
+      - export DATASOURCE_URL=jdbc:oracle:thin:@172.16.4.136:1671:SITCCM10
+      - export DATASOURCE_USERNAME=mla
+      - export DATASOURCE_PASSWORD=notarealpwd
+      - export APP_CRON_STRING="*/10 * * * * ?"
+      - export LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
+      ## The above are to allow unit tests to run. They are not accessed during the build.
+      - echo Building the jar file image...
+      - chmod +x ./gradlew && ./gradlew test
+      - echo Building the Docker image...
+      - docker build -f ./Dockerfile --tag "$IMAGE_URI" .
+  post_build:
+    commands:
+      - zip -rq buildreports.zip ./build/reports/tests/test/*
+      - aws cloudformation package --template-file ./aws/application/app-main.template --s3-bucket ${ARTIFACT_BUCKET} --output-template-file app-main-packaged.template
+      - cp ./aws/application/parameters/development-${APPLICATION_NAME}-pipeline.json development.json
+      - cp ./aws/application/parameters/test-${APPLICATION_NAME}-pipeline.json test.json
+      - cp ./aws/application/parameters/uat-${APPLICATION_NAME}-pipeline.json uat.json
+      - cp ./aws/application/parameters/staging-${APPLICATION_NAME}-pipeline.json staging.json
+      - cp ./aws/application/parameters/production-${APPLICATION_NAME}-pipeline.json production.json
+      - cp ./aws/application/parameters/production-support-${APPLICATION_NAME}-pipeline.json production-support.json
+      - echo Pushing the Docker image to... "$IMAGE_URI"
+      - docker push "$IMAGE_URI"
+      - echo '{ "tag":"'$DOCKER_TAG'" }' >> build_tag.json
+      - cat build_tag.json
+artifacts:
+  files:
+      - buildreports.zip
+      - build_tag.json
+      - app-main-packaged.template
+      - development.json
+      - test.json
+      - uat.json
+      - staging.json
+      - production.json
+      - production-support.json
+  discard-paths: yes

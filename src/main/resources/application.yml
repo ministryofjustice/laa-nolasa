@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:oracle:thin:@localhost:1521:MAATDB
-    username: mla
-    password: dietc0ke
+    url: ${DATASOURCE_URL} 
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:
@@ -10,9 +10,11 @@ spring:
     show-sql: true
     properties:
       hibernate.jdbc.lob.non_contextual_creation: true
-
+app:
+  cron:
+    string: ${APP_CRON_STRING}
 
 debug: false
 
 client:
-  default-uri: http://localhost:8088/mockLIBRAServiceBinding
+  default-uri: ${LIBRA_ENDPOINTURI}
