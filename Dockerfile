@@ -1,6 +1,6 @@
 FROM openjdk:8-jdk-alpine
 
 VOLUME /tmp
-ADD build/libs/laa-nolasa-0.0.1-SNAPSHOT.war app.war
+ADD build/libs/nolasa-0.1.0.jar app.jar
 
-ENTRYPOINT ["java","-jar","app.war"]
+ENTRYPOINT ["java","-jar","app.jar"]
