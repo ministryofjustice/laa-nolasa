@@ -19,8 +19,15 @@ git clone {this repo}
 cd laa-nolasa
 ./gradlew clean build
 ```
-The 'nolasa.war' is available at:
+The 'nolasa-0.1.0.jar' is available at:
 ```./build/libs```
+
+Build docker image:
+```docker build -t nolasa```
+
+run docker image:
+``` docker run nolasa ```
+
 
 ## Deployment
 TODO: Mian
