@@ -12,9 +12,9 @@ import java.util.List;
 public interface NolRepository extends JpaRepository<Nol, Long> {
 
     default List<Nol> getNolForAutoSearch(String... statuses) {
-        return findByStatusInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNullAndRepOrdersNolAutoSearchResultsIdNotNull(Arrays.asList(statuses));
+        return findByStatusInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNull(Arrays.asList(statuses));
     }
 
-    List<Nol> findByStatusInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNullAndRepOrdersNolAutoSearchResultsIdNotNull(List<String> statuses);
+    List<Nol> findByStatusInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNull(List<String> statuses);
 
 }

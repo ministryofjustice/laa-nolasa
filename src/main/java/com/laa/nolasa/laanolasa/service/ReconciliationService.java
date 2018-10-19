@@ -54,12 +54,21 @@ public class ReconciliationService {
     private void updateNol(Nol entity, InfoXSearchResult infoXSearchResult) {
         NolAutoSearchResults autoSearchResult = entity.getRepOrders().getNolAutoSearchResults();
 
+        if (autoSearchResult == null) {
+            autoSearchResult = new NolAutoSearchResults();
+            autoSearchResult.setRepOrders(entity.getRepOrders());
+            autoSearchResult.setSearchDate(LocalDateTime.now());
+            entity.getRepOrders().setNolAutoSearchResults(autoSearchResult);
+        }
+
         if (isLibraIDsNotEqual(autoSearchResult, infoXSearchResult.getLibraIDs())) {
 
             updateLibraDetails(autoSearchResult, infoXSearchResult.getLibraIDs());
             autoSearchResult.setSearchDate(LocalDateTime.now());
 
             entity.setStatus(NolStatuses.RESULTS_FOUND.valueOf());
+            entity.setDateLastModified(LocalDateTime.now());
+            entity.setUserLastModified("NOLASA");
             nolRepository.save(entity);
             log.info("Nol table updated for entity with MAAT ID {} ", entity.getRepOrders().getId());
 
