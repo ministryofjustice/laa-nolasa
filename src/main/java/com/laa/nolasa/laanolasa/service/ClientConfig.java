@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.soap.SoapVersion;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 
 @Configuration
 public class ClientConfig {
@@ -26,7 +28,14 @@ public class ClientConfig {
     webServiceTemplate.setMarshaller(jaxb2Marshaller());
     webServiceTemplate.setUnmarshaller(jaxb2Marshaller());
     webServiceTemplate.setDefaultUri(defaultUri);
-
+    webServiceTemplate.setMessageFactory(soapMessageFactory());
     return webServiceTemplate;
+  }
+
+  @Bean
+  public SaajSoapMessageFactory soapMessageFactory() {
+      SaajSoapMessageFactory saajSoapMessageFactory = new SaajSoapMessageFactory();
+      saajSoapMessageFactory.setSoapVersion(SoapVersion.SOAP_12);
+      return saajSoapMessageFactory;
   }
 }
