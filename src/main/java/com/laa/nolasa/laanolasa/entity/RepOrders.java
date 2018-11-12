@@ -34,6 +34,6 @@ public class RepOrders {
     @JoinColumn(name = "CMU_ID")
     private CaseManagementUnits caseManagementUnits;
 
-    @OneToOne(mappedBy = "repOrders")
+    @OneToOne(mappedBy = "repOrders",  cascade={CascadeType.ALL})
     private NolAutoSearchResults nolAutoSearchResults;
 }
