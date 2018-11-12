@@ -1,7 +1,5 @@
 package com.laa.nolasa.laanolasa.service;
 
-import com.laa.nolasa.laanolasa.common.InfoxErrors;
-import com.laa.nolasa.laanolasa.common.exception.InfoXServiceException;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
@@ -17,7 +15,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 
 @Service
