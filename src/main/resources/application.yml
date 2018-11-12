@@ -18,3 +18,18 @@ debug: false
 
 client:
   default-uri: ${LIBRA_ENDPOINTURI}
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+        ws:
+          client:
+            MessageTracing:
+              sent: TRACE
+              received: DEBUG
+          server:
+            MessageTracing:
+              sent: TRACE
+              received: DEBUG
