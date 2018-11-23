@@ -52,20 +52,19 @@ The 'nolasa-0.1.0.jar' is available at:
 ```./build/libs```
 
 
-#### Endpoints Requirement
-Database:
-You will need to have the relevant database accessible on port 1521 locally. This can be provided by [an SSH tunnel to an RDS instance in AWS](https://dsdmoj.atlassian.net/wiki/spaces/LM/pages/804159615/Access#Access-SSHTunneling).
+>#### Endpoints Requirement
+>#####Database:
+>You will need to have the relevant database accessible on port 1521 locally. This can be provided by [an SSH tunnel to an RDS instance in AWS](https://dsdmoj.atlassian.net/wiki/spaces/LM/pages/804159615/Access#Access-SSHTunneling).
 
-InfoX Connection
-Nolasa requires connection to InfoX to search against Libra. The simplest way is to run InfoX stub locally by following the instructions from https://github.com/ministryofjustice/laa-infoX-application.
-The application needs an environment variable to be provided when the container is run so the InfoX connection works correctly
+>#####InfoX Connection:
+>Nolasa requires connection to InfoX to search against Libra. The simplest way is to run InfoX stub locally by following the instructions from https://github.com/ministryofjustice/laa-infoX-application.
+>The application needs an environment variable to be provided when the container is run so the InfoX connection works correctly
 
-The LIBRA_ENDPOINTURI environment variable has been assigned to http://host.docker.internal:8080/infoX/gateway, but if you want to connect to differnt end point you can set the environment varaible as follows:
+>The LIBRA_ENDPOINTURI environment variable has been assigned to http://host.docker.internal:8080/infoX/gateway, but if you want to connect to differnt end point you can set the environment varaible as follows:
 
-```sh
--e LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
-```
-
+>```sh
+>-e LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
+>```
 
 The apps should then startup cleanly if you run
 
@@ -74,10 +73,10 @@ docker-compose build
 docker-compose up app
 ```
 
-You should now be able to visit http://localhost:8081 which will show you the application.
+This application does not have any user interface, so nothing would be available on the corresponding web page http://localhost:8081.
 
 Environment variables are specified for DEV environment. It is also possible to override them before running docker-compose. If you want to connect to a different environment you can override them with the following runtime arguments:
 
 ```sh
-docker-compose.exe run -e DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb -e DATASOURCE_USERNAME=mla -e DATASOURCE_PASSWORD=dietc0ke -e LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway app
+docker-compose run -e DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb -e DATASOURCE_USERNAME=mla -e DATASOURCE_PASSWORD=dietc0ke -e LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway app
 ```
