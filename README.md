@@ -22,6 +22,9 @@ The NOSALA micro-service has been developed using Springboot framewrok with enbe
 
 We're using [Gradle](https://gradle.org/) to build the application. This also includes plugins for generating IntelliJ configuration.
 
+### Configuring NOLASA in Eclipse / IntelliJ (if required)
+Important: These steps must be done after you have cloned the repository.
+
 Run `./gradlew tasks` to see more details.
 
 Eclipse and IntelliJ both support Gradle projects. You should be able to define a new project in either IDE, and import this codebase.
@@ -37,36 +40,42 @@ We do not check these files into version control. Gradle is our repeatable build
 
 ### Configuration
 
+1. Database and InfoX endpoints need to be up and running before the application runs
+
+Database:
+You will need to have the relevant database accessible on port 1521 locally. This can be provided by an SSH tunnel to an RDS instance in AWS. Here is the command to tunnel to Dev (add your user Bastion user name):
+
+```sh
+ssh -L 1521:laxg1mgfy6ef6s.cawpafeamjmu.eu-west-2.rds.amazonaws.com:1521 -i  ~/.ssh/id_rsa <username>@35.176.251.101
+```
+
+InfoX Connection:
+Nolasa requires connection to InfoX to search against Libra. The simplest way is to run InfoX stub locally by following the instructions from https://github.com/ministryofjustice/laa-infoX-application.
+The application needs an environment variable to be provided when the container is run so the InfoX connection works correctly
+
+The LIBRA_ENDPOINTURI environment variable has been assigned to http://host.docker.internal:8080/infoX/gateway, but if you want to connect to a different endpoint you can set the environment variable as follows:
+
+```sh
+-e LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
+```
+
+2. Clone Repository
 ```
 git clone {this repo}
 cd laa-nolasa
 ```
 
-You will need to build the artifacts for the source code, using `gradle`.
+3. You will need to build the artifacts for the source code, using `gradle`
 
 ```
 ./gradlew clean build
 ```
 
-The 'nolasa-0.1.0.jar' is available at:
+Information: The 'nolasa-0.1.0.jar' is located in:
 ```./build/libs```
 
 
->#### Endpoints Requirement
->#####Database:
->You will need to have the relevant database accessible on port 1521 locally. This can be provided by [an SSH tunnel to an RDS instance in AWS](https://dsdmoj.atlassian.net/wiki/spaces/LM/pages/804159615/Access#Access-SSHTunneling).
-
->#####InfoX Connection:
->Nolasa requires connection to InfoX to search against Libra. The simplest way is to run InfoX stub locally by following the instructions from https://github.com/ministryofjustice/laa-infoX-application.
->The application needs an environment variable to be provided when the container is run so the InfoX connection works correctly
-
->The LIBRA_ENDPOINTURI environment variable has been assigned to http://host.docker.internal:8080/infoX/gateway, but if you want to connect to differnt end point you can set the environment varaible as follows:
-
->```sh
->-e LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
->```
-
-The apps should then startup cleanly if you run
+4. The apps should then startup cleanly if you run
 
 ```sh
 docker-compose build
