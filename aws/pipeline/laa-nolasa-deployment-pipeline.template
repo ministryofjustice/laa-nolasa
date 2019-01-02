@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: CodePipeline for the Not on Libra Autosearch microservice
+Description: CodePipeline for the nolasa microservice
 Parameters:
 
   ApplicationName:

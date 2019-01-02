@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
-Description: LAA Not on Libra Autosearch tooling stack.
+Description: LAA nolasa tooling stack.
 Metadata:
   Stack:
     Value: 0
