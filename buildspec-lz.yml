@@ -37,7 +37,6 @@ phases:
       - cp ./aws/application/parameters/uat-${APPLICATION_NAME}-pipeline.json uat.json
       - cp ./aws/application/parameters/staging-${APPLICATION_NAME}-pipeline.json staging.json
       - cp ./aws/application/parameters/production-${APPLICATION_NAME}-pipeline.json production.json
-      - cp ./aws/application/parameters/production-support-${APPLICATION_NAME}-pipeline.json production-support.json
       - echo Pushing the Docker image to... "$IMAGE_URI"
       - docker push "$IMAGE_URI"
       - echo '{ "tag":"'$DOCKER_TAG'" }' >> build_tag.json
@@ -52,5 +51,4 @@ artifacts:
       - uat.json
       - staging.json
       - production.json
-      - production-support.json
   discard-paths: yes
