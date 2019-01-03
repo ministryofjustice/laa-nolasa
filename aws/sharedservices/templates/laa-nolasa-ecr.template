@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: LAA nolasa ECR repository
+Description: LAA Not on Libra Autosearch ECR repository
 
 Parameters:
   pEcrRepositoryName:
