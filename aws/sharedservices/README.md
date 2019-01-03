@@ -1,9 +1,9 @@
 
-## LAA nolasa
+## Not on Libra Autosearch
 
 # Background
 
-Infrastructure as Code for LAA nolasa tooling.
+Infrastructure as Code for LAA Not on Libra Autosearch tooling.
 
 # Deployment
 
