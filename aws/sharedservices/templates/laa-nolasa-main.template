@@ -7,7 +7,7 @@ Metadata:
   VersionDate:
     Value: 20171218
   Identifier:
-    Value: laa-nola-main
+    Value: laa-nolasa-main
   Input:
     Description: Input of all required parameters in nested stacks
   Output:
