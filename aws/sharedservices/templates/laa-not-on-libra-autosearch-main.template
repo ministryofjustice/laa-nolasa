@@ -16,14 +16,14 @@ Parameters:
   pEcrRepositoryName:
     Description: Name of ECR repository
     Type: String
-    Default: laa-nolasa
+    Default: laa-not-on-libra-autosearch
     AllowedPattern: '^[a-z][0-9a-z-]+$'
 
 Resources:
   EcrTemplate:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: laa-nolasa-ecr.template
+      TemplateURL: laa-not-on-libra-autosearch-ecr.template
       TimeoutInMinutes: 20
       Parameters:
         pEcrRepositoryName: !Ref pEcrRepositoryName
@@ -41,4 +41,4 @@ Outputs:
       - EcrTemplate
       - Outputs.EcrArn
     Export:
-      Name: !Sub "laa-nolasa-ecr-EcrArn"
+      Name: !Sub "laa-not-on-libra-autosearch-ecr-EcrArn"
