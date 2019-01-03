@@ -25,7 +25,7 @@ phases:
       - export LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
       ## The above are to allow unit tests to run. They are not accessed during the build.
       - echo Building the jar file image...
-      - chmod +x ./gradlew && ./gradlew build
+      - chmod +x ./gradlew && ./gradlew test
       - echo Building the Docker image...
       - docker build -f ./Dockerfile --tag "$IMAGE_URI" .
   post_build:
