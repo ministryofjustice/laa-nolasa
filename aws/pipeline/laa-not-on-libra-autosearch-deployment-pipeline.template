@@ -5,7 +5,7 @@ Parameters:
   ApplicationName:
     Description: Name of the Application
     Type: String
-    Default: laa-nolasa
+    Default: laa-not-on-libra-autosearch
 
   GitHubRepo:
     Type: String
