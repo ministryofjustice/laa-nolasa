@@ -27,10 +27,7 @@ LAA_ACCOUNT=484221692666
 LAA_APP=laa-not-on-libra-autosearch
 LAA_ENV=production
 LAA_ACCOUNT=842522700642
-## Production Support
-LAA_APP=laa-not-on-libra-autosearch
-LAA_ENV=productionsupport
-LAA_ACCOUNT=441527764669
+
 
 aws cloudformation package --template-file $GIT_DIR/aws/application/app-main.template --s3-bucket laa-cfn-${LAA_ACCOUNT}-eu-west-2 --s3-prefix ${LAA_APP}/$LAA_ENV --output-template-file $GIT_DIR/aws/application/app-main.packaged --profile laa-${LAA_ENV}-lz
 
