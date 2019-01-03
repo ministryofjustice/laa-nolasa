@@ -25,7 +25,7 @@ phases:
       - export LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
       ## The above are to allow unit tests to run. They are not accessed during the build.
       - echo Building the jar file image...
-      - chmod +x ./gradlew && ./gradlew test
+      - chmod +x ./gradlew && ./gradlew build
       - echo Building the Docker image...
       - docker build -f ./Dockerfile --tag "$IMAGE_URI" .
   post_build:
@@ -37,7 +37,6 @@ phases:
       - cp ./aws/application/parameters/uat-${APPLICATION_NAME}-pipeline.json uat.json
       - cp ./aws/application/parameters/staging-${APPLICATION_NAME}-pipeline.json staging.json
       - cp ./aws/application/parameters/production-${APPLICATION_NAME}-pipeline.json production.json
-      - cp ./aws/application/parameters/production-support-${APPLICATION_NAME}-pipeline.json production-support.json
       - echo Pushing the Docker image to... "$IMAGE_URI"
       - docker push "$IMAGE_URI"
       - echo '{ "tag":"'$DOCKER_TAG'" }' >> build_tag.json
@@ -52,5 +51,4 @@ artifacts:
       - uat.json
       - staging.json
       - production.json
-      - production-support.json
   discard-paths: yes

@@ -17,12 +17,12 @@ Parameters:
     Description: Application name optionally with application instance identifier,
       e.g. "CCR1" to accommodate multiple instances of the same stack under the same infrastructure
     Type: String
-    Default: 'laa-nolasa'
+    Default: 'laa-not-on-libra-autosearch'
     AllowedPattern: '^[a-zA-Z][0-9a-zA-Z-]+$'
   pECSRepositoryURI:
     Description: ECR repository URI of docker images
     Type: String
-    Default: '902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-nolasa'
+    Default: '902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-not-on-libra-autosearch'
   pDockerImageTag:
     Description: The docker image tag to be used by ECS cluster
     Type: String

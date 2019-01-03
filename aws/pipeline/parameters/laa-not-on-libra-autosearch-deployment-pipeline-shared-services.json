@@ -1,7 +1,7 @@
 [
   {
     "ParameterKey"    : "ApplicationName",
-    "ParameterValue"  : "laa-nolasa"
+    "ParameterValue"  : "laa-not-on-libra-autosearch"
   },
   {
     "ParameterKey"    : "DevAccount",
@@ -33,7 +33,7 @@
   },
   {
     "ParameterKey"    : "GitHubBranch",
-    "ParameterValue"  : "master"
+    "ParameterValue"  : "feature/docker-build"
   },
   {
     "ParameterKey"    : "GitHubToken",
@@ -45,11 +45,11 @@
   },
   {
     "ParameterKey"    : "ECRRepository",
-    "ParameterValue"  : "arn:aws:ecr:eu-west-2:902837325998:repository/laa-nolasa"
+    "ParameterValue"  : "arn:aws:ecr:eu-west-2:902837325998:repository/laa-not-on-libra-autosearch"
   },
   {
     "ParameterKey"    : "ECRURI",
-    "ParameterValue"  : "902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-nolasa"
+    "ParameterValue"  : "902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-not-on-libra-autosearch"
   },
   {
     "ParameterKey"    : "pIsRouteToLive",
