@@ -19,7 +19,7 @@ import static com.laa.nolasa.laanolasa.util.LibraUtil.updateLibraDetails;
 
 @Service
 @Slf4j
-//@XRayEnabled
+@XRayEnabled
 public class ReconciliationService {
 
     private InfoXServiceClient infoXServiceClient;
