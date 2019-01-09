@@ -46,7 +46,7 @@ Database:
 You will need to have the relevant database accessible on port 1521 locally. This can be provided by an SSH tunnel to an RDS instance in AWS. Here is the command to tunnel to Dev (add your user Bastion user name):
 
 ```sh
-ssh -L 1521:laxg1mgfy6ef6s.cawpafeamjmu.eu-west-2.rds.amazonaws.com:1521 -i  ~/.ssh/id_rsa <username>@35.176.251.101
+ssh -L 1521:rds.maat.aws.dev.legalservices.gov.uk:1521 <username>@35.176.251.101 -i ~/.ssh/id_rsa
 ```
 
 InfoX Connection:
