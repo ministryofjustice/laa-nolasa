@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey"    : "pDataSourceUrl",
-    "ParameterValue"  : "jdbc:oracle:thin:@172.16.4.136:1671:SITCCM10"
+    "ParameterValue"  : "jdbc:oracle:thin:@rds.maat.aws.tst.legalservices.gov.uk:1521:MAATDB"
   },
   {
     "ParameterKey"    : "pDataSourceUname",
@@ -33,11 +33,11 @@
   },
   {
     "ParameterKey"    : "pAppCronString",
-    "ParameterValue"  : "“*/60 * * * * *”"
+    "ParameterValue"  : "“0 0 * * * *”"
   },
   {
     "ParameterKey"    : "pLibraEndPointURI",
-    "ParameterValue"  : "http://172.16.3.123:8550/infoX/gateway"
+    "ParameterValue"  : "http://infox.aws.tst.legalservices.gov.uk/infoX/gateway"
   },
   {
     "ParameterKey"    : "pSev5SnsTopicArn",
