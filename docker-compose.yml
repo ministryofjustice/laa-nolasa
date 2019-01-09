@@ -1,0 +1,15 @@
+version: "3.2"
+
+services:
+  app:
+    build:
+      context: .
+    environment:
+      - DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb
+      - DATASOURCE_USERNAME=mla
+      - DATASOURCE_PASSWORD=dietc0ke
+      - APP_CRON_STRING=0 * * ? * *
+      - LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway
+    ports:
+    - 8081:8080
+    - 8001:8000
