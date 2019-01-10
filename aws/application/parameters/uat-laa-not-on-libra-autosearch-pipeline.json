@@ -6,10 +6,10 @@
     "pEcsAmiId" : "ami-3622cf51",
     "pEc2InstanceType" : "t2.small",
     "pSshKeyName" : "uat-general",
-    "pDataSourceUrl" : "jdbc:oracle:thin:@10.110.38.34:1530:CCMT",
+    "pDataSourceUrl" : "jdbc:oracle:thin:@rds.maat.aws.uat.legalservices.gov.uk:1521:MAATDB",
     "pDataSourceUname" : "MLA",
-    "pAppCronString" : "“*/10 * * * * ?”",
-    "pLibraEndPointURI" : "http://10.254.110.78:8000/infoX/gateway",
+    "pAppCronString" : "“0 0 20 * * *”",
+    "pLibraEndPointURI" : "http://infox.aws.uat.legalservices.gov.uk/infoX/gateway",
     "pSev5SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev5SnsTopic",
     "pSev2SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev2SnsTopic",
     "pSev1SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev1SnsTopic"
