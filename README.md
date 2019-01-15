@@ -17,30 +17,22 @@ The NOSALA micro-service has been developed using Springboot framewrok with enbe
 ### Pre-requisites
 1. Docker
 1. SSH
+1. Access to the MAAT development database
 1. An editor/IDE of some sort for example IntelliJ, eclipse, or atom.
-1. Gradle
 
 We're using [Gradle](https://gradle.org/) to build the application. This also includes plugins for generating IntelliJ configuration.
 
-### Configuring NOLASA in Eclipse / IntelliJ (if required)
-Important: These steps must be done after you have cloned the repository.
 
-Run `./gradlew tasks` to see more details.
+### 1. Clone the repository
 
-Eclipse and IntelliJ both support Gradle projects. You should be able to define a new project in either IDE, and import this codebase.
+```
+git clone {this repo}
+cd laa-nolasa
+```
 
-That is the recommended approach.
+### 2. Set up an SSH tunnel to access the database
 
-Alternatively, you can use Gradle to generate configuration for your preferred IDE.
-
-* `./gradlew eclipse` will generate the Eclipse meta-data project files
-* `./gradlew idea` will generate the IntelliJ meta-data project files
-
-We do not check these files into version control. Gradle is our repeatable build process; not an IDE.
-
-### Configuration
-
-1. Database and InfoX endpoints need to be up and running before the application runs
+Database and InfoX endpoints need to be up and running before the application runs. This step is not required if you are running in an AWS workspace.
 
 Database:
 You will need to have the relevant database accessible on port 1521 locally. This can be provided by an SSH tunnel to an RDS instance in AWS. Here is the command to tunnel to Dev (add your user Bastion user name):
@@ -59,13 +51,9 @@ The LIBRA_ENDPOINTURI environment variable has been assigned to http://host.dock
 -e LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
 ```
 
-2. Clone Repository
-```
-git clone {this repo}
-cd laa-nolasa
-```
+### 3. Build and run the app
 
-3. You will need to build the artifacts for the source code, using `gradle`
+You will need to build the artifacts for the source code, using `gradle`
 
 ```
 ./gradlew clean build
@@ -75,7 +63,7 @@ Information: The 'nolasa-0.1.0.jar' is located in:
 ```./build/libs```
 
 
-4. The apps should then startup cleanly if you run
+The apps should then startup cleanly if you run
 
 ```sh
 docker-compose build
@@ -89,3 +77,18 @@ Environment variables are specified for DEV environment. It is also possible to 
 ```sh
 docker-compose run -e DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb -e DATASOURCE_USERNAME=mla -e DATASOURCE_PASSWORD=dietc0ke -e LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway app
 ```
+
+### 4. Configure your IDE
+
+Run `./gradlew tasks` to see more details.
+
+Eclipse and IntelliJ both support Gradle projects. You should be able to define a new project in either IDE, and import this codebase.
+
+That is the recommended approach.
+
+Alternatively, you can use Gradle to generate configuration for your preferred IDE.
+
+* `./gradlew eclipse` will generate the Eclipse meta-data project files
+* `./gradlew idea` will generate the IntelliJ meta-data project files
+
+We do not check these files into version control. Gradle is our repeatable build process; not an IDE.
