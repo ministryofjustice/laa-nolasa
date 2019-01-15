@@ -92,3 +92,6 @@ Alternatively, you can use Gradle to generate configuration for your preferred I
 * `./gradlew idea` will generate the IntelliJ meta-data project files
 
 We do not check these files into version control. Gradle is our repeatable build process; not an IDE.
+
+We use [Lombok](https://projectlombok.org/) for code generation, so you need to install a plugin for whichever IDE
+you are using.
