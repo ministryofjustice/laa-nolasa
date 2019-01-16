@@ -8,14 +8,6 @@
     "ParameterValue"  : "feature/docker-build"
   },
   {
-    "ParameterKey"    : "GitHubToken",
-    "ParameterValue"  : "APP_NOLASA_DEVPIPELINE_GITHUBTOKEN"
-  },
-  {
-    "ParameterKey"    : "GitHubUser",
-    "ParameterValue"  : "ministryofjustice"
-  },
-  {
     "ParameterKey"    : "ECRRepository",
     "ParameterValue"  : "arn:aws:ecr:eu-west-2:902837325998:repository/laa-not-on-libra-autosearch"
   },
