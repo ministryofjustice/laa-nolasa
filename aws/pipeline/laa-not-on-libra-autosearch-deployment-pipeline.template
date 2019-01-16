@@ -36,14 +36,7 @@ Parameters:
   ProductionAccount:
     Description: AWS AccountNumber for production
     Type: Number
-
-  ProductionSupportAccount:
-    Description: AWS AccountNumber for production support
-    Type: Number
-
-  UATAccount:
-    Description: AWS AccountNumber for UAT
-    Type: Number
+    Default: '842522700642'
 
   ECRRepository:
     Type: String
@@ -85,7 +78,6 @@ Resources:
                 - codebuild.amazonaws.com
             Action:
               - sts:AssumeRole
-      Path: /
   CodeBuildPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -261,7 +253,6 @@ Resources:
               - !Sub arn:aws:iam::${StagingAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${ProductionAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${UATAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
-              - !Sub arn:aws:iam::${ProductionSupportAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
       Roles:
         - !Ref CodePipelineServiceRole
 
@@ -604,67 +595,6 @@ Resources:
                   - Name: BuildOutput
                 RunOrder: 2
                 RoleArn: !Sub arn:aws:iam::${ProductionAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
-
-          - !Ref AWS::NoValue
-
-        - !If
-          - cIsRouteToLive
-          - Name: ApproveInProductionSupport
-            Actions:
-            - Name: Approve
-              ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: 1
-              RunOrder: 1
-          - !Ref AWS::NoValue
-
-        - !If
-          - cIsRouteToLive
-          - Name: DeployToProductionSupport
-            Actions:
-              - Name: CreateChangeSetProductionSupport
-                ActionTypeId:
-                  Category: Deploy
-                  Owner: AWS
-                  Version: 1
-                  Provider: CloudFormation
-                Configuration:
-                  ChangeSetName: !Sub LAA-${ApplicationName}-productionsupport
-                  ActionMode: CHANGE_SET_REPLACE
-                  StackName: !Sub LAA-${ApplicationName}-productionsupport
-                  Capabilities: CAPABILITY_NAMED_IAM
-                  TemplatePath: BuildOutput::app-main-packaged.template
-                  RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/cloudformationdeployer-role
-                  ParameterOverrides: !Sub |
-                    {
-                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
-                      "pAppName" : "${ApplicationName}"
-                    }
-                  TemplateConfiguration: BuildOutput::productionsupport.json
-                  OutputFileName: productionsupport-stackoutputs.json
-                InputArtifacts:
-                  - Name: BuildOutput
-                OutputArtifacts:
-                  - Name: ProductionSupportStackOutput
-                RunOrder: 1
-                RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
-              - Name: DeployChangeSetProductionSupport
-                ActionTypeId:
-                  Category: Deploy
-                  Owner: AWS
-                  Version: 1
-                  Provider: CloudFormation
-                Configuration:
-                  ChangeSetName: !Sub LAA-${ApplicationName}-productionsupport
-                  ActionMode: CHANGE_SET_EXECUTE
-                  StackName: !Sub LAA-${ApplicationName}-productionsupport
-                  RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/cloudformationdeployer-role
-                InputArtifacts:
-                  - Name: BuildOutput
-                RunOrder: 2
-                RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
 
           - !Ref AWS::NoValue
 

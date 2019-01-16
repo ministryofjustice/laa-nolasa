@@ -4,34 +4,6 @@
     "ParameterValue"  : "laa-not-on-libra-autosearch"
   },
   {
-    "ParameterKey"    : "DevAccount",
-    "ParameterValue"  : "411213865113"
-  },
-  {
-    "ParameterKey"    : "TestAccount",
-    "ParameterValue"  : "013163512034"
-  },
-  {
-    "ParameterKey"    : "StagingAccount",
-    "ParameterValue"  : "484221692666"
-  },
-  {
-    "ParameterKey"    : "UATAccount",
-    "ParameterValue"  : "140455166311"
-  },
-  {
-    "ParameterKey"    : "ProductionSupportAccount",
-    "ParameterValue"  : "441527764669"
-  },
-  {
-    "ParameterKey"    : "ProductionAccount",
-    "ParameterValue"  : "842522700642"
-  },
-  {
-    "ParameterKey"    : "GitHubRepo",
-    "ParameterValue"  : "laa-nolasa"
-  },
-  {
     "ParameterKey"    : "GitHubBranch",
     "ParameterValue"  : "feature/docker-build"
   },
