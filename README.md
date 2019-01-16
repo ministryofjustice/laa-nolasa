@@ -41,7 +41,7 @@ You will need to have the relevant database accessible on port 1521 locally. Thi
 ssh -L 1521:rds.maat.aws.dev.legalservices.gov.uk:1521 <username>@35.176.251.101 -i ~/.ssh/id_rsa
 ```
 
-InfoX Connection:
+### 3. InfoX connection
 Nolasa requires connection to InfoX to search against Libra. The simplest way is to run InfoX stub locally by following the instructions from https://github.com/ministryofjustice/laa-infoX-application.
 The application needs an environment variable to be provided when the container is run so the InfoX connection works correctly
 
@@ -51,7 +51,7 @@ The LIBRA_ENDPOINTURI environment variable has been assigned to http://host.dock
 -e LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
 ```
 
-### 3. Build and run the app
+### 4. Build and run the app
 
 You will need to build the artifacts for the source code, using `gradle`
 
@@ -78,7 +78,7 @@ Environment variables are specified for DEV environment. It is also possible to 
 docker-compose run -e DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb -e DATASOURCE_USERNAME=mla -e DATASOURCE_PASSWORD=dietc0ke -e LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway app
 ```
 
-### 4. Configure your IDE
+### 5. Configure your IDE
 
 Run `./gradlew tasks` to see more details.
 
