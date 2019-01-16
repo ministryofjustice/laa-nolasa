@@ -5,7 +5,7 @@
   },
   {
     "ParameterKey"    : "GitHubBranch",
-    "ParameterValue"  : "feature/docker-build"
+    "ParameterValue"  : "master"
   },
   {
     "ParameterKey"    : "ECRRepository",
