@@ -1,3 +1,4 @@
+---
 AWSTemplateFormatVersion: '2010-09-09'
 Description: CodePipeline for the Not on Libra Autosearch microservice
 Parameters:
@@ -9,6 +10,7 @@ Parameters:
 
   GitHubRepo:
     Type: String
+    Default: laa-nolasa
 
   GitHubBranch:
     Type: String
@@ -20,30 +22,32 @@ Parameters:
 
   GitHubUser:
     Type: String
+    Default: ministryofjustice
 
   DevAccount:
     Description: AWS Account Number for Development
     Type: Number
+    Default: '411213865113'
 
   TestAccount:
     Description: AWS AccountNumber for test
     Type: Number
-
-  StagingAccount:
-    Description: AWS AccountNumber for staging
-    Type: Number
-
-  ProductionAccount:
-    Description: AWS AccountNumber for production
-    Type: Number
-
-  ProductionSupportAccount:
-    Description: AWS AccountNumber for production support
-    Type: Number
+    Default: '013163512034'
 
   UATAccount:
     Description: AWS AccountNumber for UAT
     Type: Number
+    Default: '140455166311'
+
+  StagingAccount:
+    Description: AWS AccountNumber for staging
+    Type: Number
+    Default: '484221692666'
+
+  ProductionAccount:
+    Description: AWS AccountNumber for production
+    Type: Number
+    Default: '842522700642'
 
   ECRRepository:
     Type: String
@@ -85,7 +89,6 @@ Resources:
                 - codebuild.amazonaws.com
             Action:
               - sts:AssumeRole
-      Path: /
   CodeBuildPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -101,8 +104,8 @@ Resources:
               - logs:PutLogEvents
               - ecr:GetAuthorizationToken
           - Resource:
-              -  !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket ] ]
-              -  !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket, "/*" ] ]
+              - !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket ] ]
+              - !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket, "/*" ] ]
             Effect: Allow
             Action:
               - s3:GetObject
@@ -140,7 +143,7 @@ Resources:
   CloudwatchLogsGroupCB:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Join [ "", [ '/aws/codebuild/' , !Ref ApplicationName , "-appbuild" ] ]
+      LogGroupName: !Join [ "", [ '/aws/codebuild/', !Ref ApplicationName, "-appbuild" ] ]
       RetentionInDays: 90
 
   CloudwatchLogsECSKeyAssociation:
@@ -153,8 +156,8 @@ Resources:
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Join [ "", [ !Ref ApplicationName , "-appbuild" ] ]
-      Description: !Join [ '', [ 'Project to build the NOLASA Java application ', !Ref ApplicationName ] ]
+      Name: !Join [ "", [ !Ref ApplicationName, "-appbuild" ] ]
+      Description: !Join [ '', [ 'Project to build the NOLASA Java application', !Ref ApplicationName ] ]
       EncryptionKey: !ImportValue pipeline-EncryptionKey
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Artifacts:
@@ -221,7 +224,7 @@ Resources:
               - cloudformation:ValidateTemplate
               - iam:ListRoles
               - s3:ListAllMyBuckets
-              - s3:GetBucketLocation 
+              - s3:GetBucketLocation
           - Resource: "*"
             Effect: Allow
             Action:
@@ -250,7 +253,7 @@ Resources:
               - s3:ListBucket
             Resource:
               - !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket ] ]
-              - !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket, "/*" ] ]              
+              - !Join [ "", [ "arn:aws:s3:::", !ImportValue pipeline-ArtifactBucket, "/*" ] ]
           -
             Effect: Allow
             Action:
@@ -261,7 +264,6 @@ Resources:
               - !Sub arn:aws:iam::${StagingAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${ProductionAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${UATAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
-              - !Sub arn:aws:iam::${ProductionSupportAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
       Roles:
         - !Ref CodePipelineServiceRole
 
@@ -336,7 +338,7 @@ Resources:
                 RoleArn: !Sub arn:aws:iam::${DevAccount}:role/cloudformationdeployer-role
                 ParameterOverrides: !Sub |
                   {
-                    "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                    "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]},
                     "pAppName" : "${ApplicationName}"
                   }
                 TemplateConfiguration: BuildOutput::development.json
@@ -367,13 +369,13 @@ Resources:
           - cIsRouteToLive
           - Name: ApproveInTest
             Actions:
-            - Name: Approve
-              ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: 1
-              RunOrder: 1
+              - Name: Approve
+                ActionTypeId:
+                  Category: Approval
+                  Owner: AWS
+                  Provider: Manual
+                  Version: 1
+                RunOrder: 1
           - !Ref AWS::NoValue
 
         - !If
@@ -395,7 +397,7 @@ Resources:
                   RoleArn: !Sub arn:aws:iam::${TestAccount}:role/cloudformationdeployer-role
                   ParameterOverrides: !Sub |
                     {
-                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]},
                       "pAppName" : "${ApplicationName}"
                     }
                   TemplateConfiguration: BuildOutput::test.json
@@ -428,13 +430,13 @@ Resources:
           - cIsRouteToLive
           - Name: ApproveInUAT
             Actions:
-            - Name: Approve
-              ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: 1
-              RunOrder: 1
+              - Name: Approve
+                ActionTypeId:
+                  Category: Approval
+                  Owner: AWS
+                  Provider: Manual
+                  Version: 1
+                RunOrder: 1
           - !Ref AWS::NoValue
 
         - !If
@@ -456,7 +458,7 @@ Resources:
                   RoleArn: !Sub arn:aws:iam::${UATAccount}:role/cloudformationdeployer-role
                   ParameterOverrides: !Sub |
                     {
-                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]},
                       "pAppName" : "${ApplicationName}"
                     }
                   TemplateConfiguration: BuildOutput::uat.json
@@ -489,13 +491,13 @@ Resources:
           - cIsRouteToLive
           - Name: ApproveInStaging
             Actions:
-            - Name: Approve
-              ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: 1
-              RunOrder: 1
+              - Name: Approve
+                ActionTypeId:
+                  Category: Approval
+                  Owner: AWS
+                  Provider: Manual
+                  Version: 1
+                RunOrder: 1
           - !Ref AWS::NoValue
 
         - !If
@@ -517,7 +519,7 @@ Resources:
                   RoleArn: !Sub arn:aws:iam::${StagingAccount}:role/cloudformationdeployer-role
                   ParameterOverrides: !Sub |
                     {
-                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]},
                       "pAppName" : "${ApplicationName}"
                     }
                   TemplateConfiguration: BuildOutput::staging.json
@@ -550,13 +552,13 @@ Resources:
           - cIsRouteToLive
           - Name: ApproveInProduction
             Actions:
-            - Name: Approve
-              ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: 1
-              RunOrder: 1
+              - Name: Approve
+                ActionTypeId:
+                  Category: Approval
+                  Owner: AWS
+                  Provider: Manual
+                  Version: 1
+                RunOrder: 1
           - !Ref AWS::NoValue
 
         - !If
@@ -578,7 +580,7 @@ Resources:
                   RoleArn: !Sub arn:aws:iam::${ProductionAccount}:role/cloudformationdeployer-role
                   ParameterOverrides: !Sub |
                     {
-                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
+                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]},
                       "pAppName" : "${ApplicationName}"
                     }
                   TemplateConfiguration: BuildOutput::production.json
@@ -604,67 +606,6 @@ Resources:
                   - Name: BuildOutput
                 RunOrder: 2
                 RoleArn: !Sub arn:aws:iam::${ProductionAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
-
-          - !Ref AWS::NoValue
-
-        - !If
-          - cIsRouteToLive
-          - Name: ApproveInProductionSupport
-            Actions:
-            - Name: Approve
-              ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: 1
-              RunOrder: 1
-          - !Ref AWS::NoValue
-
-        - !If
-          - cIsRouteToLive
-          - Name: DeployToProductionSupport
-            Actions:
-              - Name: CreateChangeSetProductionSupport
-                ActionTypeId:
-                  Category: Deploy
-                  Owner: AWS
-                  Version: 1
-                  Provider: CloudFormation
-                Configuration:
-                  ChangeSetName: !Sub LAA-${ApplicationName}-productionsupport
-                  ActionMode: CHANGE_SET_REPLACE
-                  StackName: !Sub LAA-${ApplicationName}-productionsupport
-                  Capabilities: CAPABILITY_NAMED_IAM
-                  TemplatePath: BuildOutput::app-main-packaged.template
-                  RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/cloudformationdeployer-role
-                  ParameterOverrides: !Sub |
-                    {
-                      "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]}, 
-                      "pAppName" : "${ApplicationName}"
-                    }
-                  TemplateConfiguration: BuildOutput::productionsupport.json
-                  OutputFileName: productionsupport-stackoutputs.json
-                InputArtifacts:
-                  - Name: BuildOutput
-                OutputArtifacts:
-                  - Name: ProductionSupportStackOutput
-                RunOrder: 1
-                RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
-              - Name: DeployChangeSetProductionSupport
-                ActionTypeId:
-                  Category: Deploy
-                  Owner: AWS
-                  Version: 1
-                  Provider: CloudFormation
-                Configuration:
-                  ChangeSetName: !Sub LAA-${ApplicationName}-productionsupport
-                  ActionMode: CHANGE_SET_EXECUTE
-                  StackName: !Sub LAA-${ApplicationName}-productionsupport
-                  RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/cloudformationdeployer-role
-                InputArtifacts:
-                  - Name: BuildOutput
-                RunOrder: 2
-                RoleArn: !Sub arn:aws:iam::${ProductionSupportAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
 
           - !Ref AWS::NoValue
 
