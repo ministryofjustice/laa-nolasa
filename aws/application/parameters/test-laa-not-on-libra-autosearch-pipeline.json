@@ -13,5 +13,16 @@
     "pSev5SnsTopicArn": "arn:aws:sns:eu-west-2:902837325998:Sev5SnsTopic",
     "pSev2SnsTopicArn": "arn:aws:sns:eu-west-2:902837325998:Sev2SnsTopic",
     "pSev1SnsTopicArn": "arn:aws:sns:eu-west-2:902837325998:Sev1SnsTopic"
+  },
+  "Tags" : {
+    "business-unit" : "LAA",
+    "application" : "Not On Libra AutoSearch Application - NOLASA",
+    "component" : "app-server",
+    "is-production" : "false",
+    "environment-name" : "test",
+    "owner" : "laa-team-nolasa@digital.justice.gov.uk",
+    "infrastructure-support" : "laa-role-sre@digital.justice.gov.uk",
+    "runbook" : "https://dsdmoj.atlassian.net/wiki/spaces/LM/pages/760545284/Runbooks",
+    "source-code" : "https://github.com/ministryofjustice/laa-nolasa"
   }
 }
