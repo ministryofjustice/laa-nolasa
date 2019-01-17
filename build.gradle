@@ -76,7 +76,7 @@ dependencies {
     compileOnly "org.projectlombok:lombok"
     testCompile('org.springframework.boot:spring-boot-starter-test')
     compile 'com.amazonaws:aws-xray-recorder-sdk-spring:2.1.0'
-    compile 'org.aspectj:aspectjrt:1.9.1'
+    compile 'org.aspectj:aspectjrt:1.9.2'
     compile(files(genJaxb.classesDir).builtBy(genJaxb))
     jaxb "com.sun.xml.bind:jaxb-xjc:2.1.7"
 }
