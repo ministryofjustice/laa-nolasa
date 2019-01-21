@@ -63,6 +63,7 @@ public class ReconciliationServiceTest {
 
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
+        nol1.setStatus( NolStatuses.RESULTS_REJECTED.valueOf());
 
         NolAutoSearchResults autoSearch2 = new NolAutoSearchResults();
         autoSearch2.setLibrId1(21L);
