@@ -41,15 +41,11 @@ public class ReconciliationService {
 
             if (InfoXSearchStatus.FAILURE == infoXSearchResult.getStatus()) {
                 log.debug("No matching record returned by infoX service for MAATID {}", entity.getRepOrders().getId());
-                return;
-            }
-
-            if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && isLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
+            } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && isLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
                 log.info("No changes were detected in libra IDs corresponding to the MAAT ID {} ", entity.getRepOrders().getId());
-                return;
-            }
-
+            } else {
                 updateNol(entity, infoXSearchResult);
+            }
         });
     }
 
