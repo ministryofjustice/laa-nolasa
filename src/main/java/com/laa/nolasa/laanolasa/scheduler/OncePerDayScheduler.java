@@ -2,6 +2,7 @@ package com.laa.nolasa.laanolasa.scheduler;
 
 import com.amazonaws.xray.AWSXRay;
 import com.laa.nolasa.laanolasa.service.ReconciliationService;
+import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ public class OncePerDayScheduler {
         this.reconciliationService = reconciliationService;
     }
 
+    @Timed(value = "reconciliation.tasks", longTask = true)
     @Scheduled(cron = "${app.cron.string}")
     public void reconcile() {
         AWSXRay.beginSegment("Scorekeep-init");
