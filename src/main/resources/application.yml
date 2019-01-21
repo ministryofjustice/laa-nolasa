@@ -36,3 +36,12 @@ logging:
             MessageTracing:
               sent: TRACE
               received: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+
