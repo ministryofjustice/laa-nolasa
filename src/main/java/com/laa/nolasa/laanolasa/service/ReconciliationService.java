@@ -7,6 +7,7 @@ import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
+import io.micrometer.core.instrument.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +25,16 @@ public class ReconciliationService {
 
     private InfoXServiceClient infoXServiceClient;
     private NolRepository nolRepository;
+    private Counter failedQueries;
+    private Counter successfulQueries;
+    private DistributionSummary numberOfResults;
 
     public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService) {
         this.nolRepository = nolRepository;
         this.infoXServiceClient = infoXService;
+        this.failedQueries = Metrics.globalRegistry.counter("reconciliation.failed");
+        this.successfulQueries = Metrics.globalRegistry.counter("reconciliation.successful");
+        this.numberOfResults = Metrics.globalRegistry.summary("reconciliation.numberOfResults");
     }
 
     @Transactional
@@ -37,16 +44,26 @@ public class ReconciliationService {
         log.info("Retrieved libra {} entities from db", notInLibraEntities.size());
 
         notInLibraEntities.stream().forEach(entity -> {
+            try {
+                InfoXSearchResult infoXSearchResult = infoXServiceClient.search(entity);
 
-            InfoXSearchResult infoXSearchResult = infoXServiceClient.search(entity);
+                if (InfoXSearchStatus.SUCCESS == infoXSearchResult.getStatus()) {
+                    int numberOfResults = infoXSearchResult.getLibraIDs().length;
+                    this.numberOfResults.record(numberOfResults);
+                    log.info("Number of results: {}", numberOfResults);
 
-            if (InfoXSearchStatus.SUCCESS == infoXSearchResult.getStatus()) {
+                    updateNol(entity, infoXSearchResult);
 
-                updateNol(entity, infoXSearchResult);
+                } else {
 
-            } else {
+                    log.debug("No matching record returned by infoX service for MAATID {}", entity.getRepOrders().getId());
+                }
 
-                log.debug("No matching record returned by infoX service for MAATID {}", entity.getRepOrders().getId());
+                this.successfulQueries.increment();
+            } catch (Exception e) {
+                this.failedQueries.increment();
+
+                log.error("Failed to run query for MAATID " + entity.getRepOrders().getId(), e);
             }
         });
     }
