@@ -26,8 +26,8 @@ public class LibraUtil {
         autoSearchResult.setLibrId15(libraIDs[14]);
     }
 
-    public static boolean isLibraIDsNotEqual(NolAutoSearchResults nolAutoSearchResults, Long[] libraIDs) {
-        return !stringifyLibraIDs(nolAutoSearchResults).equals(stringifyLibraIDs(libraIDs));
+    public static boolean isLibraIDsEqual(NolAutoSearchResults nolAutoSearchResults, Long[] libraIDs) {
+        return stringifyLibraIDs(nolAutoSearchResults).equals(stringifyLibraIDs(libraIDs));
     }
 
     private static String stringifyLibraIDs(NolAutoSearchResults nolAutoSearchResults) {
