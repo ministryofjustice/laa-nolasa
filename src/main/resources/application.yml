@@ -48,4 +48,10 @@ management:
         namespace: nolasa
         batch-size: 20
 
+cloud:
+  aws:
+    region:
+      static: eu-west-2
 
+    stack:
+      auto: false
