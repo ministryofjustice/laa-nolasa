@@ -2,6 +2,8 @@ package com.laa.nolasa.laanolasa.util;
 
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 
+import java.util.Arrays;
+
 public class LibraUtil {
 
     private static final String COLON = ":";
@@ -9,6 +11,7 @@ public class LibraUtil {
 
     public static void updateLibraDetails(NolAutoSearchResults autoSearchResult, Long[] libraIDs) {
 
+        Arrays.sort(libraIDs);
         autoSearchResult.setLibrId1(libraIDs[0]);
         autoSearchResult.setLibrId2(libraIDs[1]);
         autoSearchResult.setLibrId3(libraIDs[2]);
@@ -26,7 +29,7 @@ public class LibraUtil {
         autoSearchResult.setLibrId15(libraIDs[14]);
     }
 
-    public static boolean isLibraIDsEqual(NolAutoSearchResults nolAutoSearchResults, Long[] libraIDs) {
+    public static boolean areLibraIDsEqual(NolAutoSearchResults nolAutoSearchResults, Long[] libraIDs) {
         return stringifyLibraIDs(nolAutoSearchResults).equals(stringifyLibraIDs(libraIDs));
     }
 

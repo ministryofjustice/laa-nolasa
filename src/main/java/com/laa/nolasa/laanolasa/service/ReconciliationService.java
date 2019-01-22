@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.laa.nolasa.laanolasa.util.LibraUtil.isLibraIDsEqual;
+import static com.laa.nolasa.laanolasa.util.LibraUtil.areLibraIDsEqual;
 import static com.laa.nolasa.laanolasa.util.LibraUtil.updateLibraDetails;
 
 @Service
@@ -41,7 +41,7 @@ public class ReconciliationService {
 
             if (InfoXSearchStatus.FAILURE == infoXSearchResult.getStatus()) {
                 log.debug("No matching record returned by infoX service for MAATID {}", entity.getRepOrders().getId());
-            } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && isLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
+            } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && areLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
                 log.info("No changes were detected in libra IDs corresponding to the MAAT ID {} ", entity.getRepOrders().getId());
             } else {
                 updateNol(entity, infoXSearchResult);
