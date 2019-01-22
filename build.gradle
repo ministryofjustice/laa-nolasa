@@ -16,6 +16,7 @@ plugins {
     id 'idea'
     id 'org.springframework.boot' version '2.0.4.RELEASE'
     id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+    id "com.palantir.docker" version "0.19.2"
 }
 
 configurations {
@@ -99,4 +100,10 @@ dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.RELEASE"
     }
+}
+
+ext.imageName = project.hasProperty('imageName') ? project.getProperty('imageName') : 'ministryofjustice/nolasa'
+
+docker {
+    name imageName
 }
