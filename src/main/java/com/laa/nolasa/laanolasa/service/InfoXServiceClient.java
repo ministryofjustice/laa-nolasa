@@ -15,6 +15,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 
 @Service
@@ -75,6 +76,7 @@ public class InfoXServiceClient {
                 for (int i = 0; (i < libraSearchResponse.getSearchResultItem().size() && i < MAX_LIBRA_RECORDS); i++) {
                     result[i] = Long.valueOf(libraSearchResponse.getSearchResultItem().get(i).getCaseResult().get(0).getCaseDetail().getLibraCaseId());
                 }
+                Arrays.sort(result);
                 return new InfoXSearchResult(result, InfoXSearchStatus.SUCCESS);
             case "999999":
                 return new InfoXSearchResult(result, InfoXSearchStatus.FAILURE);
