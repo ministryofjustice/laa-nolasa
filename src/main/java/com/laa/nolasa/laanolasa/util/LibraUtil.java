@@ -11,7 +11,6 @@ public class LibraUtil {
 
     public static void updateLibraDetails(NolAutoSearchResults autoSearchResult, Long[] libraIDs) {
 
-        Arrays.sort(libraIDs);
         autoSearchResult.setLibrId1(libraIDs[0]);
         autoSearchResult.setLibrId2(libraIDs[1]);
         autoSearchResult.setLibrId3(libraIDs[2]);
