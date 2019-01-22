@@ -42,5 +42,10 @@ management:
       exposure:
         include: "*"
 
+  metrics:
+    export:
+      cloudwatch:
+        namespace: nolasa
+        batch-size: 20
 
 
