@@ -22,6 +22,7 @@ public class PostConstructLogger {
             "LIBRA_ENDPOINTURI",
             "DATASOURCE_USERNAME",
             "DATASOURCE_URL",
+            "AWS_ACCESS_KEY_ID",
             "spring.datasource.url",
             "spring.datasource.username",
             "spring.datasource.driver-class-name",
