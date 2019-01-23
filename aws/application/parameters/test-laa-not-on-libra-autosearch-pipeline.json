@@ -9,6 +9,7 @@
     "pDataSourceUrl": "jdbc:oracle:thin:@rds.maat.aws.tst.legalservices.gov.uk:1521:MAATDB",
     "pDataSourceUname": "MLA",
     "pAppCronString": "0 0 * * * *",
+    "pAppDryRunMode" : "false",
     "pLibraEndPointURI": "http://infox.aws.tst.legalservices.gov.uk/infoX/gateway",
     "pSev5SnsTopicArn": "arn:aws:sns:eu-west-2:902837325998:Sev5SnsTopic",
     "pSev2SnsTopicArn": "arn:aws:sns:eu-west-2:902837325998:Sev2SnsTopic",

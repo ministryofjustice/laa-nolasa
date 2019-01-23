@@ -30,6 +30,10 @@ Parameters:
     Type: String
     Default: ''
     Description: Crontab style entry for job schedule
+  pAppDryRunMode:
+    Type: String
+    Default: ''
+    Description: To run app in dry mode
   pLibraEndPointURI:
     Type: String
     Default: String
@@ -133,6 +137,8 @@ Resources:
               Value: !GetAtt DataSourcePwd.Value
             - Name: APP_CRON_STRING
               Value: !Ref pAppCronString
+            - Name: APP_DRY_RUN_MODE
+              Value: !Ref pAppDryRunMode
             - Name: LIBRA_ENDPOINTURI
               Value: !Ref pLibraEndPointURI
 
