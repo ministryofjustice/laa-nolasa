@@ -47,13 +47,14 @@ public class ReconciliationService {
                 log.info("No matching record returned by infoX service for MAATID {}", entity.getRepOrders().getId());
             } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && areLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
                 log.info("Results were previously rejected, no changes are detected in libra IDs corresponding to the MAAT ID: {} ", entity.getRepOrders().getId());
-            } else if (dryRunMode) {
-                log.info("Dry run mode - so no changes to the database", entity.getRepOrders().getId());
             } else {
                 updateNol(entity, infoXSearchResult);
-                nolRepository.save(entity);
-                log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", entity.getRepOrders().getId());
-
+                if (dryRunMode) {
+                    log.info("Dry run mode - so no changes to the database", entity.getRepOrders().getId());
+                } else {
+                    nolRepository.save(entity);
+                    log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", entity.getRepOrders().getId());
+                }
             }
         });
     }
