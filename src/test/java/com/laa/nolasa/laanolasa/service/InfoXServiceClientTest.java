@@ -2,25 +2,20 @@ package com.laa.nolasa.laanolasa.service;
 
 import com.laa.nolasa.laanolasa.builder.InfoxSearchResultBuilder;
 import com.laa.nolasa.laanolasa.builder.LibraSearchRequestBuilder;
-import com.laa.nolasa.laanolasa.common.NolStatuses;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
-import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.omg.CORBA.Any;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import uk.gov.justice._2013._11.magistrates.LibraSearchRequest;
 import uk.gov.justice._2013._11.magistrates.LibraSearchResponse;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
