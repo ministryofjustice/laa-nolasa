@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class InfoXSearchResult {
+    public static final int MAX_LIBRA_RECORDS = 15;
     private Long[] libraIDs  = new Long[15];
     private final InfoXSearchStatus status;
 }

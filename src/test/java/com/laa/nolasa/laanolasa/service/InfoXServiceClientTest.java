@@ -3,6 +3,7 @@ package com.laa.nolasa.laanolasa.service;
 import com.laa.nolasa.laanolasa.builder.InfoxSearchResultBuilder;
 import com.laa.nolasa.laanolasa.builder.LibraSearchRequestBuilder;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
+import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InfoXServiceClientTest {
@@ -56,7 +58,7 @@ public class InfoXServiceClientTest {
         verify(infoxSearchResultBuilder).buildInfoXSearchResult(libraSearchResponse);
     }
 
-    @Test(expected = DatatypeConfigurationException.class)
+    @Test
     public void shouldSearchThrowException() throws DatatypeConfigurationException {
 
         Nol nol = new Nol();
@@ -65,8 +67,8 @@ public class InfoXServiceClientTest {
 
         when(libraSearchRequestBuilder.buildLibraSearchRequest(nol)).thenThrow(DatatypeConfigurationException.class);
 
-        infoXServiceClient.search(nol);
+        InfoXSearchResult infoXSearchResult = infoXServiceClient.search(nol);
 
-        verify(libraSearchRequestBuilder).buildLibraSearchRequest(nol);
+        assertEquals(InfoXSearchStatus.FAILURE, infoXSearchResult.getStatus());
     }
 }
