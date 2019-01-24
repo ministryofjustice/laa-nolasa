@@ -50,7 +50,7 @@ public class ReconciliationService {
             } else {
                 updateNol(entity, infoXSearchResult);
                 if (dryRunMode) {
-                    log.info("Dry run mode - so no changes to the database", entity.getRepOrders().getId());
+                    log.info("Dry run mode - so no changes made to the database for MAAT ID {}", entity.getRepOrders().getId());
                 } else {
                     nolRepository.save(entity);
                     log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", entity.getRepOrders().getId());
