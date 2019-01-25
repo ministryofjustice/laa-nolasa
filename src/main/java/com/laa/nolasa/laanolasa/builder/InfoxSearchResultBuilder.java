@@ -6,6 +6,10 @@ import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice._2013._11.magistrates.LibraSearchResponse;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.laa.nolasa.laanolasa.dto.InfoXSearchResult.MAX_LIBRA_RECORDS;
 
 @Component
@@ -25,19 +29,22 @@ public class InfoxSearchResultBuilder {
                 log.info("{} matches found by Libra", libraSearchResponse.getSearchResultItem().size());
                 return getInfoXSearchResult(libraSearchResponse);
             case LIBRA_FAILED_EXCEPTION:
-                return new InfoXSearchResult(InfoXSearchStatus.FAILURE);
             case LIBRA_INVALID_CODE:
-                return new InfoXSearchResult(InfoXSearchStatus.FAILURE);
             default:
                 return new InfoXSearchResult(InfoXSearchStatus.FAILURE);
         }
     }
 
     InfoXSearchResult getInfoXSearchResult(LibraSearchResponse libraSearchResponse) {
-        Long result[] = new Long[MAX_LIBRA_RECORDS];
-        for (int i = 0; (i < libraSearchResponse.getSearchResultItem().size() && i < MAX_LIBRA_RECORDS); i++) {
-            result[i] = Long.valueOf(libraSearchResponse.getSearchResultItem().get(i).getCaseResult().get(0).getCaseDetail().getLibraCaseId());
-        }
-        return new InfoXSearchResult(result, InfoXSearchStatus.SUCCESS);
+
+        List<Long> results  = libraSearchResponse.getSearchResultItem().stream()
+                .limit(MAX_LIBRA_RECORDS)
+                .map(rs -> rs.getCaseResult().stream()
+                        .findFirst().get()
+                        .getCaseDetail()
+                        .getLibraCaseId())
+                .map(Long::valueOf).collect(Collectors.toList());
+
+        return new InfoXSearchResult(results.toArray(new Long[MAX_LIBRA_RECORDS]), InfoXSearchStatus.SUCCESS);
     }
 }
