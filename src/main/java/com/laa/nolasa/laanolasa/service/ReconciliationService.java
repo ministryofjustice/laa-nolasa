@@ -7,6 +7,7 @@ import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -20,6 +21,9 @@ import static com.laa.nolasa.laanolasa.util.LibraUtil.updateLibraDetails;
 @Slf4j
 //@XRayEnabled
 public class ReconciliationService {
+
+    @Value("${app.dry-run-mode}")
+    private boolean dryRunMode;
 
     private InfoXServiceClient infoXServiceClient;
     private NolRepository nolRepository;
@@ -40,16 +44,22 @@ public class ReconciliationService {
             InfoXSearchResult infoXSearchResult = infoXServiceClient.search(entity);
 
             if (InfoXSearchStatus.FAILURE == infoXSearchResult.getStatus()) {
-                log.debug("No matching record returned by infoX service for MAATID {}", entity.getRepOrders().getId());
+                log.info("No matching record returned by infoX service for MAATID {}", entity.getRepOrders().getId());
             } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && areLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
-                log.info("No changes were detected in libra IDs corresponding to the MAAT ID {} ", entity.getRepOrders().getId());
+                log.info("Results were previously rejected, no changes are detected in libra IDs corresponding to the MAAT ID: {} ", entity.getRepOrders().getId());
             } else {
                 updateNol(entity, infoXSearchResult);
+                if (dryRunMode) {
+                    log.info("Dry run mode - so no changes made to the database for MAAT ID {}", entity.getRepOrders().getId());
+                } else {
+                    nolRepository.save(entity);
+                    log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", entity.getRepOrders().getId());
+                }
             }
         });
     }
 
-    private void updateNol(Nol entity, InfoXSearchResult infoXSearchResult) {
+    void updateNol(Nol entity, InfoXSearchResult infoXSearchResult) {
         NolAutoSearchResults autoSearchResult = entity.getRepOrders().getNolAutoSearchResults();
 
         if (autoSearchResult == null) {
@@ -65,8 +75,6 @@ public class ReconciliationService {
         entity.setStatus(NolStatuses.RESULTS_FOUND.valueOf());
         entity.setDateLastModified(LocalDateTime.now());
         entity.setUserLastModified("NOLASA");
-        nolRepository.save(entity);
-        log.info("Nol table updated for entity with MAAT ID {} ", entity.getRepOrders().getId());
 
     }
 
