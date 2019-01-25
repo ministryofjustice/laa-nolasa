@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -33,7 +34,7 @@ public class LibraSearchRequestBuilder {
         criteria.setSurname(nol.getRepOrders().getApplicants().getLastName());
         criteria.setCJSAreaCode(nol.getRepOrders().getMagistrateCourts().getCjsAreaCode());
 
-        if (null != nol.getRepOrders().getHearingDate()) {
+        if (Optional.of(nol.getRepOrders().getHearingDate()).isPresent()) {
             criteria.setDateOfHearing(getGregorianCalendar(nol.getRepOrders().getHearingDate()));
         }
 
