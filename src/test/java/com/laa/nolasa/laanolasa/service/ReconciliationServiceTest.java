@@ -12,10 +12,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -166,6 +168,60 @@ public class ReconciliationServiceTest {
         verify(nolRepository).getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf());
         verify(infoXServiceClient).search(nol1);
         verify(nolRepository).save(nol1);
+    }
+
+    @Test
+    public void shouldNotSaveNolInDryRunMode() {
+
+        List<Nol> nols = new ArrayList<Nol>();
+
+        NolAutoSearchResults autoSearch1 = getNolAutoSearchResults(0L);
+
+        RepOrders repoOrder1 = new RepOrders();
+        repoOrder1.setId(901L);
+        repoOrder1.setNolAutoSearchResults(autoSearch1);
+
+        Nol nol1 = new Nol();
+        nol1.setRepOrders(repoOrder1);
+        nols.add(nol1);
+
+        when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf())).thenReturn(nols);
+
+        Long[] libraIDs1 = getLibraIds(0L);
+        libraIDs1[10] = 16L;
+
+        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, InfoXSearchStatus.SUCCESS);
+
+
+        when(infoXServiceClient.search(any(Nol.class))).thenReturn(infoXSearchResult1);
+
+        ReflectionTestUtils.setField(reconciliationService, "dryRunMode", true);
+
+        reconciliationService.reconcile();
+
+        verify(nolRepository).getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf());
+        verify(infoXServiceClient).search(nol1);
+        verify(nolRepository, never()).save(nol1);
+    }
+
+    @Test
+    public void shouldUpdateNolSucceedWhenNoPreviousAutoSearchResult() {
+
+        NolAutoSearchResults autoSearch1 = null;
+
+        RepOrders repoOrder1 = new RepOrders();
+        repoOrder1.setId(901L);
+        repoOrder1.setNolAutoSearchResults(autoSearch1);
+
+        Nol nol1 = new Nol();
+        nol1.setRepOrders(repoOrder1);
+
+        Long[] libraIDs1 = getLibraIds(0L);
+
+        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, InfoXSearchStatus.SUCCESS);
+
+        reconciliationService.updateNol(nol1, infoXSearchResult1);
+        assertEquals(NolStatuses.RESULTS_FOUND.valueOf(),  nol1.getStatus());
     }
 
     private NolAutoSearchResults getNolAutoSearchResults(Long startValue) {
