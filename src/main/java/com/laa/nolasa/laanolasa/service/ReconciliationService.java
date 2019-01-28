@@ -1,5 +1,6 @@
 package com.laa.nolasa.laanolasa.service;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.laa.nolasa.laanolasa.common.NolStatuses;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
@@ -19,7 +20,7 @@ import static com.laa.nolasa.laanolasa.util.LibraUtil.updateLibraDetails;
 
 @Service
 @Slf4j
-//@XRayEnabled
+@XRayEnabled
 public class ReconciliationService {
 
     @Value("${app.dry-run-mode}")
