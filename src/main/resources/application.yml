@@ -46,6 +46,7 @@ management:
   metrics:
     export:
       cloudwatch:
+        enabled: ${CLOUDWATCH_EXPORT_ENABLED}
         namespace: nolasa
         batch-size: 20
 

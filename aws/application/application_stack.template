@@ -38,6 +38,13 @@ Parameters:
     Type: String
     Default: String
     Description: URI for Libra
+  pCloudWatchExportEnabled
+    Type: String
+    Default: false
+    AllowedValues:
+        - true
+        - false
+    Description: Enable export of application metrics to Cloudwatch
 
 Resources:
 
@@ -141,6 +148,8 @@ Resources:
               Value: !Ref pAppDryRunMode
             - Name: LIBRA_ENDPOINTURI
               Value: !Ref pLibraEndPointURI
+            - Name: CLOUDWATCH_EXPORT_ENABLED
+              Value: !Ref pCloudWatchExportEnabled
 
   CloudwatchLogsGroupECS:
     Type: AWS::Logs::LogGroup

@@ -38,7 +38,6 @@ public class ReconciliationService {
     public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService) {
         this.nolRepository = nolRepository;
         this.infoXServiceClient = infoXService;
-        this.failedQueries = Metrics.globalRegistry.counter("reconciliation.failed");
         this.successfulQueries = Metrics.globalRegistry.counter("reconciliation.successful");
         this.numberOfResults = Metrics.globalRegistry.summary("reconciliation.numberOfResults");
     }
