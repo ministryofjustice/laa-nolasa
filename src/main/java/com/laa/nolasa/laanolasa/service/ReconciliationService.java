@@ -7,6 +7,9 @@ import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.Metrics;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,10 +31,15 @@ public class ReconciliationService {
 
     private InfoXServiceClient infoXServiceClient;
     private NolRepository nolRepository;
+    private Counter failedQueries;
+    private Counter successfulQueries;
+    private DistributionSummary numberOfResults;
 
     public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService) {
         this.nolRepository = nolRepository;
         this.infoXServiceClient = infoXService;
+        this.successfulQueries = Metrics.globalRegistry.counter("reconciliation.successful");
+        this.numberOfResults = Metrics.globalRegistry.summary("reconciliation.numberOfResults");
     }
 
     @Transactional
@@ -49,6 +57,9 @@ public class ReconciliationService {
             } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && areLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
                 log.info("Results were previously rejected, no changes are detected in libra IDs corresponding to the MAAT ID: {} ", entity.getRepOrders().getId());
             } else {
+                int numberOfResults = infoXSearchResult.getLibraIDs().length;
+                this.numberOfResults.record(numberOfResults);
+
                 updateNol(entity, infoXSearchResult);
                 if (dryRunMode) {
                     log.info("Dry run mode - so no changes made to the database for MAAT ID {}", entity.getRepOrders().getId());
@@ -77,6 +88,7 @@ public class ReconciliationService {
         entity.setDateLastModified(LocalDateTime.now());
         entity.setUserLastModified("NOLASA");
 
+        this.successfulQueries.increment();
     }
 
 }

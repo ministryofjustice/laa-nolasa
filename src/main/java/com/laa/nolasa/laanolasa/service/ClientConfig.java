@@ -1,8 +1,11 @@
 package com.laa.nolasa.laanolasa.service;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.SoapVersion;
@@ -13,6 +16,12 @@ public class ClientConfig {
 
   @Value("${client.default-uri}")
   private String defaultUri;
+
+  @Bean
+  @Primary
+  public AWSCredentialsProvider awsCredentialsProvider() {
+    return new DefaultAWSCredentialsProviderChain();
+  }
 
   @Bean
   Jaxb2Marshaller jaxb2Marshaller() {
