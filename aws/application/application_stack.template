@@ -38,7 +38,7 @@ Parameters:
     Type: String
     Default: String
     Description: URI for Libra
-  pCloudWatchExportEnabled
+  pCloudWatchExportEnabled:
     Type: String
     Default: false
     AllowedValues:
