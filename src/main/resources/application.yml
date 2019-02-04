@@ -53,6 +53,3 @@ cloud:
   aws:
     region:
       static: eu-west-2
-
-    #stack:
-    #  auto: false
