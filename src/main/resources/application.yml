@@ -36,3 +36,21 @@ logging:
             MessageTracing:
               sent: TRACE
               received: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: "*"
+
+  metrics:
+    export:
+      cloudwatch:
+        enabled: ${CLOUDWATCH_EXPORT_ENABLED}
+        namespace: nolasa
+        batch-size: 20
+
+cloud:
+  aws:
+    region:
+      static: eu-west-2
