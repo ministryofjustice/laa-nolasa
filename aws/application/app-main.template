@@ -75,6 +75,13 @@ Parameters:
     Description: ARN of Sev5 SNS topic for alerting
     Type: String
     Default: ''
+  pCloudWatchExportEnabled:
+    Type: String
+    Default: false
+    AllowedValues:
+        - true
+        - false
+    Description: Enable export of application metrics to Cloudwatch
 
 Resources:
   AppInfrastructureTemplate:
@@ -107,6 +114,7 @@ Resources:
         pDataSourceUname: !Ref pDataSourceUname
         pDataSourcePwd: !Ref pDataSourcePwd
         pDataSourceUrl: !Ref pDataSourceUrl
+        pCloudWatchExportEnabled: !Ref pCloudWatchExportEnabled
 
   MonitoringTemplate:
     Type: AWS::CloudFormation::Stack
