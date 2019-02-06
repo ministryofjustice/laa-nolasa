@@ -13,7 +13,8 @@
     "pLibraEndPointURI": "http://infox.aws.tst.legalservices.gov.uk/infoX/gateway",
     "pSev5SnsTopicArn": "arn:aws:sns:eu-west-2:902837325998:Sev5SnsTopic",
     "pSev2SnsTopicArn": "arn:aws:sns:eu-west-2:902837325998:Sev2SnsTopic",
-    "pSev1SnsTopicArn": "arn:aws:sns:eu-west-2:902837325998:Sev1SnsTopic"
+    "pSev1SnsTopicArn": "arn:aws:sns:eu-west-2:902837325998:Sev1SnsTopic",
+    "pCloudWatchExportEnabled": true
   },
   "Tags" : {
     "business-unit" : "LAA",
