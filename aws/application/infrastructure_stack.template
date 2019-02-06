@@ -86,6 +86,7 @@ Resources:
               - 'logs:CreateLogStream'
               - 'logs:PutLogEvents'
               - 'ecr:*'
+              - 'cloudwatch:PutMetricData'
             Resource: '*'
 
   CloudwatchLogsGroupEC2:
