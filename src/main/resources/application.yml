@@ -56,4 +56,4 @@ cloud:
       static: eu-west-2
 
     stack:
-      auto: ${CLOUDWATCH_EXPORT_ENABLED}
+      auto: false
