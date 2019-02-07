@@ -9,8 +9,6 @@ import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
 import com.laa.nolasa.laanolasa.util.MetricHandler;
-import io.micrometer.core.instrument.DistributionSummary;
-import io.micrometer.core.instrument.Metrics;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,16 +29,12 @@ public class ReconciliationService {
 
     private InfoXServiceClient infoXServiceClient;
     private NolRepository nolRepository;
-    private DistributionSummary numberOfResults;
     private final MetricHandler metricHandler;
 
     public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService, MetricHandler metricHandler) {
         this.nolRepository = nolRepository;
         this.infoXServiceClient = infoXService;
         this.metricHandler = metricHandler;
-
-        // The number of results returned by Libra (a number between 0 and MAX_LIBRA_RECORDS)
-        this.numberOfResults = Metrics.globalRegistry.summary("reconciliation.numberOfResults");
     }
 
     @Transactional
@@ -58,7 +52,6 @@ public class ReconciliationService {
         try {
             InfoXSearchResult infoXSearchResult = infoXServiceClient.search(entity);
             int numberOfResults = infoXSearchResult.getLibraIDs().length;
-            this.numberOfResults.record(numberOfResults);
 
             if (InfoXSearchStatus.FAILURE == infoXSearchResult.getStatus()) {
                 log.info("No matching record returned by infoX service for MAATID {}", maatId);
