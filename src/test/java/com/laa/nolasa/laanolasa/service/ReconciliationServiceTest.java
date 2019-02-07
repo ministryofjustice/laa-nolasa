@@ -7,6 +7,7 @@ import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 import com.laa.nolasa.laanolasa.entity.RepOrders;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
+import com.laa.nolasa.laanolasa.util.MetricHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,11 +31,14 @@ public class ReconciliationServiceTest {
     @Mock
     private NolRepository nolRepository;
 
+    @Mock
+    private MetricHandler metricHandler;
+
     private ReconciliationService reconciliationService;
 
     @Before
     public void setUp() throws Exception {
-        reconciliationService = new ReconciliationService(nolRepository, infoXServiceClient);
+        reconciliationService = new ReconciliationService(nolRepository, infoXServiceClient, metricHandler);
     }
 
     @Test
