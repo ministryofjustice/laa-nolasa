@@ -2,7 +2,8 @@ package com.laa.nolasa.laanolasa.util;
 
 import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,14 +13,33 @@ public class MetricHandler {
     private Counter noMatchQueries;
     private Counter errorQueries;
     private Counter alreadyRejectedQueries;
+    private DistributionSummary numberOfResults;
 
-    public MetricHandler() {
-        // Counts of queries with each outcome
-        this.singleMatchQueries = Metrics.globalRegistry.counter("queries.singleMatch");
-        this.multiMatchQueries = Metrics.globalRegistry.counter("queries.multiMatch");
-        this.noMatchQueries = Metrics.globalRegistry.counter("queries.noMatch");
-        this.errorQueries = Metrics.globalRegistry.counter("queries.error");
-        this.alreadyRejectedQueries = Metrics.globalRegistry.counter("queries.alreadyRejected");
+    public MetricHandler(MeterRegistry registry) {
+        this.singleMatchQueries = Counter.builder("result.single_match")
+            .description("Number of queries returning a single match")
+            .register(registry);
+
+        this.multiMatchQueries = Counter.builder("result.multi_match")
+                .description("Number of queries returning multiple matches")
+                .register(registry);
+
+        this.noMatchQueries = Counter.builder("result.no_match")
+                .description("Number of queries returning no matches")
+                .register(registry);
+
+        this.errorQueries = Counter.builder("result.error")
+                .description("Number of exceptions thrown while running a query or updating the database")
+                .register(registry);
+
+        this.alreadyRejectedQueries = Counter.builder("result.already_rejected")
+                .description("Number of queries that returned matches that have already been rejected by a case worker")
+                .register(registry);
+
+        this.numberOfResults = DistributionSummary.builder("number_of_results")
+                .description("Distribution of sizes of Libra result sets")
+                .publishPercentileHistogram()
+                .register(registry);
     }
 
     public void recordReconciliationResult(ReconciliationResult result) {
@@ -40,5 +60,9 @@ public class MetricHandler {
                 this.alreadyRejectedQueries.increment();
                 break;
         }
+    }
+
+    public void recordNumberOfResults(int numberOfResults) {
+        this.numberOfResults.record(numberOfResults);
     }
 }
