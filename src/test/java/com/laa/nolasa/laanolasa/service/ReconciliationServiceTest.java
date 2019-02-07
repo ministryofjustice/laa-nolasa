@@ -252,6 +252,25 @@ public class ReconciliationServiceTest {
         verify(metricHandler).recordReconciliationResult(ReconciliationResult.ONE_MATCH);
     }
 
+    @Test
+    public void shouldHandleSuccessWithNoMatches() {
+        RepOrders repoOrder1 = new RepOrders();
+        repoOrder1.setId(901L);
+        repoOrder1.setNolAutoSearchResults(mock(NolAutoSearchResults.class));
+
+        Nol nol1 = new Nol();
+        nol1.setRepOrders(repoOrder1);
+
+        Long[] nothing = {};
+
+        InfoXSearchResult infoXSearchResult = new InfoXSearchResult(nothing, InfoXSearchStatus.SUCCESS);
+
+        when(infoXServiceClient.search(nol1)).thenReturn(infoXSearchResult);
+
+        ReconciliationResult result = reconciliationService.reconcileNolRecord(nol1);
+        assertEquals(ReconciliationResult.NO_MATCHES, result);
+    }
+
     private NolAutoSearchResults getNolAutoSearchResults(Long startValue) {
         NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
         autoSearch1.setLibrId1(startValue + 1L);
