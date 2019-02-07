@@ -46,7 +46,7 @@ public class ReconciliationService {
         notInLibraEntities.stream().map(this::reconcileNolRecord).forEach(metricHandler::recordReconciliationResult);
     }
 
-    private ReconciliationResult reconcileNolRecord(Nol entity) {
+    public ReconciliationResult reconcileNolRecord(Nol entity) {
         Long maatId = entity.getRepOrders().getId();
 
         try {
@@ -54,6 +54,9 @@ public class ReconciliationService {
             int numberOfResults = infoXSearchResult.getLibraIDs().length;
 
             if (InfoXSearchStatus.FAILURE == infoXSearchResult.getStatus()) {
+                log.info("Unable to make request to infoX service for MAATID {}", maatId);
+                return ReconciliationResult.ERROR;
+            } else if (numberOfResults == 0) {
                 log.info("No matching record returned by infoX service for MAATID {}", maatId);
                 return ReconciliationResult.NO_MATCHES;
             } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && areLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
@@ -61,13 +64,6 @@ public class ReconciliationService {
                 return ReconciliationResult.MATCHES_ALREADY_REJECTED;
             } else {
                 updateNol(entity, infoXSearchResult);
-
-                if (dryRunMode) {
-                    log.info("Dry run mode - so no changes made to the database for MAAT ID {}", maatId);
-                } else {
-                    nolRepository.save(entity);
-                    log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", maatId);
-                }
 
                 return numberOfResults > 1 ? ReconciliationResult.MANY_MATCHES : ReconciliationResult.ONE_MATCH;
             }
@@ -93,6 +89,14 @@ public class ReconciliationService {
         entity.setStatus(NolStatuses.RESULTS_FOUND.valueOf());
         entity.setDateLastModified(LocalDateTime.now());
         entity.setUserLastModified("NOLASA");
+
+        Long maatId = entity.getRepOrders().getId();
+        if (dryRunMode) {
+            log.info("Dry run mode - so no changes made to the database for MAAT ID {}", maatId);
+        } else {
+            nolRepository.save(entity);
+            log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", maatId);
+        }
     }
 
 }
