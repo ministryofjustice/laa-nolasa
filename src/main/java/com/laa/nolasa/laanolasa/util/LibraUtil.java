@@ -10,21 +10,51 @@ public class LibraUtil {
     private static final String EMPTY_STRING = "";
 
     public static void updateLibraDetails(NolAutoSearchResults autoSearchResult, Long[] libraIDs) {
+        int numberOfResults = libraIDs.length;
 
+        if(numberOfResults == 0) return;
         autoSearchResult.setLibrId1(libraIDs[0]);
+
+        if(numberOfResults <= 1) return;
         autoSearchResult.setLibrId2(libraIDs[1]);
+
+        if(numberOfResults == 2) return;
         autoSearchResult.setLibrId3(libraIDs[2]);
+
+        if(numberOfResults == 3) return;
         autoSearchResult.setLibrId4(libraIDs[3]);
+
+        if(numberOfResults == 4) return;
         autoSearchResult.setLibrId5(libraIDs[4]);
+
+        if(numberOfResults == 5) return;
         autoSearchResult.setLibrId6(libraIDs[5]);
+
+        if(numberOfResults == 6) return;
         autoSearchResult.setLibrId7(libraIDs[6]);
+
+        if(numberOfResults == 7) return;
         autoSearchResult.setLibrId8(libraIDs[7]);
+
+        if(numberOfResults == 8) return;
         autoSearchResult.setLibrId9(libraIDs[8]);
+
+        if(numberOfResults == 9) return;
         autoSearchResult.setLibrId10(libraIDs[9]);
+
+        if(numberOfResults == 10) return;
         autoSearchResult.setLibrId11(libraIDs[10]);
+
+        if(numberOfResults == 11) return;
         autoSearchResult.setLibrId12(libraIDs[11]);
+
+        if(numberOfResults == 12) return;
         autoSearchResult.setLibrId13(libraIDs[12]);
+
+        if(numberOfResults == 13) return;
         autoSearchResult.setLibrId14(libraIDs[13]);
+
+        if(numberOfResults == 14) return;
         autoSearchResult.setLibrId15(libraIDs[14]);
     }
 

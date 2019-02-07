@@ -1,6 +1,8 @@
 package com.laa.nolasa.laanolasa.service;
 
+import com.laa.nolasa.laanolasa.builder.InfoxSearchResultBuilder;
 import com.laa.nolasa.laanolasa.common.NolStatuses;
+import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
@@ -16,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -226,6 +229,27 @@ public class ReconciliationServiceTest {
 
         reconciliationService.updateNol(nol1, infoXSearchResult1);
         assertEquals(NolStatuses.RESULTS_FOUND.valueOf(),  nol1.getStatus());
+    }
+
+    @Test
+    public void shouldReportMetrics() {
+        RepOrders repoOrder1 = new RepOrders();
+        repoOrder1.setId(901L);
+        repoOrder1.setNolAutoSearchResults(mock(NolAutoSearchResults.class));
+
+        Nol nol1 = new Nol();
+        nol1.setRepOrders(repoOrder1);
+
+        Long[] libraIds = {123L};
+
+        InfoXSearchResult infoXSearchResult = new InfoXSearchResult(libraIds, InfoXSearchStatus.SUCCESS);
+
+        when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf())).thenReturn(Arrays.asList(nol1));
+        when(infoXServiceClient.search(nol1)).thenReturn(infoXSearchResult);
+
+        reconciliationService.reconcile();
+
+        verify(metricHandler).recordReconciliationResult(ReconciliationResult.ONE_MATCH);
     }
 
     private NolAutoSearchResults getNolAutoSearchResults(Long startValue) {
