@@ -2,12 +2,13 @@ package com.laa.nolasa.laanolasa.service;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.laa.nolasa.laanolasa.common.NolStatuses;
+import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
-import io.micrometer.core.instrument.Counter;
+import com.laa.nolasa.laanolasa.util.MetricHandler;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Metrics;
 import lombok.extern.slf4j.Slf4j;
@@ -25,29 +26,18 @@ import static com.laa.nolasa.laanolasa.util.LibraUtil.updateLibraDetails;
 @Slf4j
 @XRayEnabled
 public class ReconciliationService {
-
     @Value("${app.dry-run-mode}")
     private boolean dryRunMode;
 
     private InfoXServiceClient infoXServiceClient;
     private NolRepository nolRepository;
-    private Counter singleMatchQueries;
-    private Counter multiMatchQueries;
-    private Counter noMatchQueries;
-    private Counter errorQueries;
-    private Counter alreadyRejectedQueries;
     private DistributionSummary numberOfResults;
+    private final MetricHandler metricHandler;
 
-    public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService) {
+    public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService, MetricHandler metricHandler) {
         this.nolRepository = nolRepository;
         this.infoXServiceClient = infoXService;
-
-        // Counts of queries with each outcome
-        this.singleMatchQueries = Metrics.globalRegistry.counter("queries.singleMatch");
-        this.multiMatchQueries = Metrics.globalRegistry.counter("queries.multiMatch");
-        this.noMatchQueries = Metrics.globalRegistry.counter("queries.noMatch");
-        this.errorQueries = Metrics.globalRegistry.counter("queries.error");
-        this.alreadyRejectedQueries = Metrics.globalRegistry.counter("queries.alreadyRejected");
+        this.metricHandler = metricHandler;
 
         // The number of results returned by Libra (a number between 0 and MAX_LIBRA_RECORDS)
         this.numberOfResults = Metrics.globalRegistry.summary("reconciliation.numberOfResults");
@@ -59,10 +49,10 @@ public class ReconciliationService {
 
         log.info("Retrieved libra {} entities from db", notInLibraEntities.size());
 
-        notInLibraEntities.stream().forEach(this::reconcileNolRecord);
+        notInLibraEntities.stream().map(this::reconcileNolRecord).forEach(metricHandler::recordReconciliationResult);
     }
 
-    private void reconcileNolRecord(Nol entity) {
+    private ReconciliationResult reconcileNolRecord(Nol entity) {
         Long maatId = entity.getRepOrders().getId();
 
         try {
@@ -72,10 +62,10 @@ public class ReconciliationService {
 
             if (InfoXSearchStatus.FAILURE == infoXSearchResult.getStatus()) {
                 log.info("No matching record returned by infoX service for MAATID {}", maatId);
-                this.noMatchQueries.increment();
+                return ReconciliationResult.NO_MATCHES;
             } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && areLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
                 log.info("Results were previously rejected, no changes are detected in libra IDs corresponding to the MAAT ID: {} ", maatId);
-                this.alreadyRejectedQueries.increment();
+                return ReconciliationResult.MATCHES_ALREADY_REJECTED;
             } else {
                 updateNol(entity, infoXSearchResult);
 
@@ -86,15 +76,11 @@ public class ReconciliationService {
                     log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", maatId);
                 }
 
-                if (numberOfResults == 1) {
-                    this.singleMatchQueries.increment();
-                } else {
-                    this.multiMatchQueries.increment();
-                }
+                return numberOfResults > 1 ? ReconciliationResult.MANY_MATCHES : ReconciliationResult.ONE_MATCH;
             }
         } catch (Exception e) {
             log.error("Error handling MAATID " + maatId + " - skipping", e);
-            this.errorQueries.increment();
+            return ReconciliationResult.ERROR;
         }
     }
 
