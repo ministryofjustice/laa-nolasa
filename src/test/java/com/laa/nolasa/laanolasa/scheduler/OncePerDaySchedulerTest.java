@@ -9,6 +9,7 @@ import com.laa.nolasa.laanolasa.entity.RepOrders;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
 import com.laa.nolasa.laanolasa.service.InfoXServiceClient;
 import com.laa.nolasa.laanolasa.service.ReconciliationService;
+import com.laa.nolasa.laanolasa.util.MetricHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,13 +32,16 @@ public class OncePerDaySchedulerTest {
     @Mock
     private NolRepository nolRepository;
 
+    @Mock
+    private MetricHandler metricHandler;
+
     private ReconciliationService reconciliationService;
 
     private OncePerDayScheduler oncePerDayScheduler;
 
     @Before
     public void setUp() throws Exception {
-        reconciliationService = new ReconciliationService(nolRepository, infoXServiceClient);
+        reconciliationService = new ReconciliationService(nolRepository, infoXServiceClient, metricHandler);
         oncePerDayScheduler = new OncePerDayScheduler(reconciliationService);
     }
 
