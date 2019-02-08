@@ -166,20 +166,25 @@ Resources:
       DashboardBody: !Sub |
         {
           "widgets" : [
-            {
+           {
                 "type": "metric",
                 "x": 0,
                 "y": 0,
                 "width": 12,
                 "height": 6,
                 "properties": {
-                    "view": "timeSeries",
-                    "stacked": false,
                     "metrics": [
-                        [ "nolasa", "reconciliation.successful", "statistic", "count" ]
+                        [ "nolasa", "result.error", "statistic", "count", { "stat": "Sum", "period": 3600 } ],
+                        [ ".", "result.no_match", ".", ".", { "stat": "Sum", "period": 3600 } ],
+                        [ ".", "result.single_match", ".", ".", { "stat": "Sum", "period": 3600 } ],
+                        [ ".", "result.multi_match", ".", ".", { "stat": "Sum", "period": 3600 } ],
+                        [ ".", "result.already_rejected", ".", ".", { "stat": "Sum", "period": 3600 } ]
                     ],
+                    "view": "timeSeries",
+                    "stacked": true,
                     "region": "${AWS::Region}",
-                    "title": "Number of NOL cases successfully processed"
+                    "title": "Number of NOL cases processed",
+                    "period": 300
                 }
             },
             {
@@ -191,7 +196,7 @@ Resources:
                 "properties": {
                     "view": "singleValue",
                     "metrics": [
-                        [ "nolasa", "reconciliation.numberOfResults.avg" ]
+                        [ "nolasa", "number_of_results.avg" ]
                     ],
                     "region": "${AWS::Region}",
                     "title": "Average number of results returned by autosearch queries"
