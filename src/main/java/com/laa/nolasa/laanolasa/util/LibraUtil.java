@@ -2,8 +2,6 @@ package com.laa.nolasa.laanolasa.util;
 
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 
-import java.util.Arrays;
-
 import static com.laa.nolasa.laanolasa.dto.InfoXSearchResult.MAX_LIBRA_RECORDS;
 
 public class LibraUtil {
