@@ -51,7 +51,7 @@ public class ReconciliationService {
 
         try {
             InfoXSearchResult infoXSearchResult = infoXServiceClient.search(entity);
-            int numberOfResults = infoXSearchResult.getLibraIDs().length;
+            long numberOfResults = infoXSearchResult.size();
 
             if (InfoXSearchStatus.FAILURE == infoXSearchResult.getStatus()) {
                 log.info("Unable to make request to infoX service for MAATID {}", maatId);
