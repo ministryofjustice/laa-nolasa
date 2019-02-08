@@ -4,12 +4,17 @@ import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
 
 import java.util.Arrays;
 
+import static com.laa.nolasa.laanolasa.dto.InfoXSearchResult.MAX_LIBRA_RECORDS;
+
 public class LibraUtil {
 
     private static final String COLON = ":";
     private static final String EMPTY_STRING = "";
 
     public static void updateLibraDetails(NolAutoSearchResults autoSearchResult, Long[] libraIDs) {
+        if(libraIDs.length != MAX_LIBRA_RECORDS) {
+            throw new IllegalArgumentException("libraIDs should have length " + MAX_LIBRA_RECORDS);
+        }
 
         autoSearchResult.setLibrId1(libraIDs[0]);
         autoSearchResult.setLibrId2(libraIDs[1]);
@@ -53,6 +58,10 @@ public class LibraUtil {
     }
 
     private static String stringifyLibraIDs(Long[] libraIDsArray) {
+        if(libraIDsArray.length != MAX_LIBRA_RECORDS) {
+            throw new IllegalArgumentException("libraIDs should have length " + MAX_LIBRA_RECORDS);
+        }
+
         StringBuilder libraIDs = new StringBuilder();
         appendNotNullValue(libraIDs, libraIDsArray[0], COLON);
         appendNotNullValue(libraIDs, libraIDsArray[1], COLON);

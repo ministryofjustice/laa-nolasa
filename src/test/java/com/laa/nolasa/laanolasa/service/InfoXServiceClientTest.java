@@ -5,6 +5,7 @@ import com.laa.nolasa.laanolasa.builder.LibraSearchRequestBuilder;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
+import com.laa.nolasa.laanolasa.util.MetricHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,11 +34,14 @@ public class InfoXServiceClientTest {
     @Mock
     private WebServiceTemplate webServiceTemplate;
 
+    @Mock
+    private MetricHandler metricHandler;
+
     private InfoXServiceClient infoXServiceClient;
 
     @Before
     public void setUp() throws Exception {
-        infoXServiceClient = new InfoXServiceClient(libraSearchRequestBuilder, infoxSearchResultBuilder, webServiceTemplate);
+        infoXServiceClient = new InfoXServiceClient(libraSearchRequestBuilder, infoxSearchResultBuilder, webServiceTemplate, metricHandler);
     }
 
     @Test
