@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.laa.nolasa.laanolasa.dto.InfoXSearchResult.MAX_LIBRA_RECORDS;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -240,7 +241,8 @@ public class ReconciliationServiceTest {
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
 
-        Long[] libraIds = {123L};
+        Long[] libraIds = new Long[MAX_LIBRA_RECORDS];
+        libraIds[0] = 123l;
 
         InfoXSearchResult infoXSearchResult = new InfoXSearchResult(libraIds, InfoXSearchStatus.SUCCESS);
 
@@ -261,7 +263,7 @@ public class ReconciliationServiceTest {
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
 
-        Long[] nothing = {};
+        Long[] nothing = new Long[MAX_LIBRA_RECORDS];
 
         InfoXSearchResult infoXSearchResult = new InfoXSearchResult(nothing, InfoXSearchStatus.SUCCESS);
 
@@ -269,6 +271,25 @@ public class ReconciliationServiceTest {
 
         ReconciliationResult result = reconciliationService.reconcileNolRecord(nol1);
         assertEquals(ReconciliationResult.NO_MATCHES, result);
+    }
+
+    @Test
+    public void shouldHandleSuccessWithManyMatches() {
+        RepOrders repoOrder1 = new RepOrders();
+        repoOrder1.setId(901L);
+        repoOrder1.setNolAutoSearchResults(mock(NolAutoSearchResults.class));
+
+        Nol nol1 = new Nol();
+        nol1.setRepOrders(repoOrder1);
+
+        Long[] libraIDs = getLibraIds(0L);
+
+        InfoXSearchResult infoXSearchResult = new InfoXSearchResult(libraIDs, InfoXSearchStatus.SUCCESS);
+
+        when(infoXServiceClient.search(nol1)).thenReturn(infoXSearchResult);
+
+        ReconciliationResult result = reconciliationService.reconcileNolRecord(nol1);
+        assertEquals(ReconciliationResult.MANY_MATCHES, result);
     }
 
     private NolAutoSearchResults getNolAutoSearchResults(Long startValue) {
