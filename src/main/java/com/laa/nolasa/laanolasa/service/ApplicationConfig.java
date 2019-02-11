@@ -14,7 +14,7 @@ import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 
 @Configuration
-public class ClientConfig {
+public class ApplicationConfig {
 
   @Value("${client.default-uri}")
   private String defaultUri;
