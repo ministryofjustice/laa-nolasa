@@ -99,6 +99,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: application_stack.template
+      TimeoutInMinutes: 20
       Parameters:
         pAppName: !Ref pAppName
         pAppEcsCluster:
