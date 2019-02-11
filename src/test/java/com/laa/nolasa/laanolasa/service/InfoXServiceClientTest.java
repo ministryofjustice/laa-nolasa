@@ -40,7 +40,7 @@ public class InfoXServiceClientTest {
     private InfoXServiceClient infoXServiceClient;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         infoXServiceClient = new InfoXServiceClient(libraSearchRequestBuilder, infoxSearchResultBuilder, webServiceTemplate, metricHandler);
     }
 
@@ -66,8 +66,6 @@ public class InfoXServiceClientTest {
     public void shouldSearchThrowException() throws DatatypeConfigurationException {
 
         Nol nol = new Nol();
-        LibraSearchRequest libraSearchRequest = new LibraSearchRequest();
-        LibraSearchResponse libraSearchResponse = new LibraSearchResponse();
 
         when(libraSearchRequestBuilder.buildLibraSearchRequest(nol)).thenThrow(DatatypeConfigurationException.class);
 

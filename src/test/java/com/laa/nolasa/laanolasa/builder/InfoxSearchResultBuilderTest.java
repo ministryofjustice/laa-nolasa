@@ -14,7 +14,7 @@ public class InfoxSearchResultBuilderTest {
     private InfoxSearchResultBuilder infoxSearchResultBuilder;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         infoxSearchResultBuilder = new InfoxSearchResultBuilder();
     }
 

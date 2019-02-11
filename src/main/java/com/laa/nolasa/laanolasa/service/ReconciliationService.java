@@ -15,10 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
-
-import static com.laa.nolasa.laanolasa.util.LibraUtil.areLibraIDsEqual;
-import static com.laa.nolasa.laanolasa.util.LibraUtil.updateLibraDetails;
 
 @Service
 @Slf4j
@@ -43,7 +41,8 @@ public class ReconciliationService {
 
         log.info("Retrieved libra {} entities from db", notInLibraEntities.size());
 
-        notInLibraEntities.stream().map(this::reconcileNolRecord).forEach(metricHandler::recordReconciliationResult);
+        notInLibraEntities.stream().map(this::reconcileNolRecord)
+                                   .forEach(metricHandler::recordReconciliationResult);
     }
 
     public ReconciliationResult reconcileNolRecord(Nol entity) {
@@ -51,7 +50,7 @@ public class ReconciliationService {
 
         try {
             InfoXSearchResult infoXSearchResult = infoXServiceClient.search(entity);
-            long numberOfResults = infoXSearchResult.size();
+            long numberOfResults = infoXSearchResult.getLibraIDs().size();
 
             if (InfoXSearchStatus.FAILURE == infoXSearchResult.getStatus()) {
                 log.info("Unable to make request to infoX service for MAATID {}", maatId);
@@ -59,7 +58,8 @@ public class ReconciliationService {
             } else if (numberOfResults == 0) {
                 log.info("No matching record returned by infoX service for MAATID {}", maatId);
                 return ReconciliationResult.NO_MATCHES;
-            } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus()) && areLibraIDsEqual(entity.getRepOrders().getNolAutoSearchResults(), infoXSearchResult.getLibraIDs())) {
+            } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus())
+                    && areLibraIdsEqual(entity, infoXSearchResult)) {
                 log.info("Results were previously rejected, no changes are detected in libra IDs corresponding to the MAAT ID: {} ", maatId);
                 return ReconciliationResult.MATCHES_ALREADY_REJECTED;
             } else {
@@ -83,7 +83,7 @@ public class ReconciliationService {
             entity.getRepOrders().setNolAutoSearchResults(autoSearchResult);
         }
 
-        updateLibraDetails(autoSearchResult, infoXSearchResult.getLibraIDs());
+        autoSearchResult.setLibraIds(infoXSearchResult.getLibraIDs());
         autoSearchResult.setSearchDate(LocalDateTime.now());
 
         entity.setStatus(NolStatuses.RESULTS_FOUND.valueOf());
@@ -97,6 +97,13 @@ public class ReconciliationService {
             nolRepository.save(entity);
             log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", maatId);
         }
+    }
+
+    boolean areLibraIdsEqual(Nol nol, InfoXSearchResult infoXSearchResult) {
+        List<Long> libraIds = nol.getRepOrders().getNolAutoSearchResults().getLibraIds();
+        Collections.sort(libraIds);
+        Collections.sort(infoXSearchResult.getLibraIDs());
+        return nol.getRepOrders().getNolAutoSearchResults().getLibraIds().equals(infoXSearchResult.getLibraIDs());
     }
 
 }
