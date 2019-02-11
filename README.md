@@ -1,5 +1,5 @@
 ## Background and context
-The [MAAT-Libra interface application (MLRA)](https://github.com/ministryofjustice/laa-mlra-application) is an LAA system that for linking cases to their corresponding cases in the HMCTS Libra system. This is for the purposes of tracking cases through the course / Legal Aid system in a joined up way (i.e. updates of a person's status through the courts system is updated in LAA systems once a case is linked).
+The [Managed Libra records application (MLRA)](https://github.com/ministryofjustice/laa-mlra-application) is an LAA system that shares a database with the [means assessment administration tool (MAAT)](https://github.com/ministryofjustice/laa-maat-application). It links cases to their corresponding cases in the HMCTS Libra system. This is for the purposes of tracking cases through the course / Legal Aid system in a joined up way (i.e. updates of a person's status through the courts system is updated in LAA systems once a case is linked).
 
 If an LAA caseworker searches for a case on the Libra system using MLRA and they are unable to find a corresponding case (this can happen for numerous reasons, for instance a Legal Aid application being submitted by a legal provider before the police/courts have added onto LIBRA), the case is marked by a caseworker as 'NOT ON LIBRA' and places onto a backlog queue (the 'not on libra' queue). Case workers will then research these cases at a later date to see if the corresponding case is now on Libra system.
 
@@ -11,7 +11,7 @@ Not On Libra Auto-Search Application (NOLASA) is a micro-service that reads case
 If NOLASA finds that there are results returned for a case it updates its status in MLRA to say 'RESULTS FOUND'. This means that caseworkers can filter 'not on libra' cases to ones that they know they will have results for. They can then prioritize their case searching and linking more effectively.
 
 ## NOLASA Springboot Micro-service
-The NOSALA micro-service has been developed using Springboot framewrok with enbedded Tomcat server. Tomocat is fully contained in the fat JAR file. Gradle packages executable JAR file which is deployed as Docker image on AWS ECS.
+The NOSALA micro-service has been developed using Springboot framework with enbedded Tomcat server. Tomcat is fully contained in the fat JAR file. Gradle packages executable JAR file which is deployed as Docker image on AWS ECS.
 
 ## Developer setup
 ### Pre-requisites
@@ -95,3 +95,6 @@ We do not check these files into version control. Gradle is our repeatable build
 
 We use [Lombok](https://projectlombok.org/) for code generation, so you need to install a plugin for whichever IDE
 you are using.
+
+## Additional documentation
+- [Metrics](./doc/metrics.md)
