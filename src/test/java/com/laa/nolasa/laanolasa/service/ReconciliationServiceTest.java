@@ -1,6 +1,5 @@
 package com.laa.nolasa.laanolasa.service;
 
-import com.laa.nolasa.laanolasa.builder.InfoxSearchResultBuilder;
 import com.laa.nolasa.laanolasa.common.NolStatuses;
 import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.laa.nolasa.laanolasa.dto.InfoXSearchResult.MAX_LIBRA_RECORDS;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -41,16 +39,17 @@ public class ReconciliationServiceTest {
     private ReconciliationService reconciliationService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp()  {
         reconciliationService = new ReconciliationService(nolRepository, infoXServiceClient, metricHandler);
     }
 
     @Test
     public void shouldReconcileLibraIDs() {
 
-        List<Nol> nols = new ArrayList<Nol>();
+        List<Nol> nols = new ArrayList<>();
 
-        NolAutoSearchResults autoSearch1 = getNolAutoSearchResults(0L);
+        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
+        autoSearch1.setLibraIds(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L));
 
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
@@ -60,7 +59,8 @@ public class ReconciliationServiceTest {
         nol1.setRepOrders(repoOrder1);
         nol1.setStatus(NolStatuses.RESULTS_REJECTED.valueOf());
 
-        NolAutoSearchResults autoSearch2 = getNolAutoSearchResults(20L);
+        NolAutoSearchResults autoSearch2 = new NolAutoSearchResults();
+        autoSearch2.setLibraIds(Arrays.asList(21L, 22L, 23L, 24L, 25L, 26L, 27L, 28L, 29L, 30L, 31L, 32L, 33L, 34L, 35L));
 
         RepOrders repoOrder2 = new RepOrders();
         repoOrder2.setId(920L);
@@ -80,19 +80,17 @@ public class ReconciliationServiceTest {
 
         when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf())).thenReturn(nols);
 
-        Long[] libraIDs1 = getLibraIds(0L);
-
+        List<Long> libraIDs1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L);
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, status1);
 
-        Long[] libraIDs2 = getLibraIds(30L);
-
+         List<Long> libraIDs2 = Arrays.asList(31L, 32L, 33L, 34L, 35L, 36L, 37L, 38L, 39L, 40L, 41L, 42L, 43L, 44L, 45L);
 
         InfoXSearchStatus status2 = InfoXSearchStatus.SUCCESS;
         InfoXSearchResult infoXSearchResult2 = new InfoXSearchResult(libraIDs2, status2);
 
         InfoXSearchStatus status3 = InfoXSearchStatus.FAILURE;
-        InfoXSearchResult infoXSearchResult3 = new InfoXSearchResult(new Long[15], status3);
+        InfoXSearchResult infoXSearchResult3 = new InfoXSearchResult(new ArrayList<>(), status3);
 
         when(infoXServiceClient.search(any(Nol.class))).thenReturn(infoXSearchResult1).thenReturn(infoXSearchResult2).thenReturn(infoXSearchResult3);
 
@@ -110,9 +108,10 @@ public class ReconciliationServiceTest {
     public void shouldNotProcessRejectedResultsWhenLibraIdsMatch() {
 
         List<Nol> nols = new ArrayList<Nol>();
+        List<Long> libraIDs1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L);
 
-        NolAutoSearchResults autoSearch1 = getNolAutoSearchResults(0L);
-
+        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
+        autoSearch1.setLibraIds(libraIDs1);
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
         repoOrder1.setNolAutoSearchResults(autoSearch1);
@@ -125,8 +124,6 @@ public class ReconciliationServiceTest {
         nols.add(nol1);
 
         when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf())).thenReturn(nols);
-
-        Long[] libraIDs1 = getLibraIds(0L);
 
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, status1);
@@ -144,9 +141,10 @@ public class ReconciliationServiceTest {
     @Test
     public void shoulProcessRejectedResultsWhenLibraIdsDoNotMatch() {
 
-        List<Nol> nols = new ArrayList<Nol>();
+        List<Nol> nols = new ArrayList<>();
 
-        NolAutoSearchResults autoSearch1 = getNolAutoSearchResults(0L);
+        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
+        autoSearch1.setLibraIds(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L));
 
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
@@ -156,14 +154,11 @@ public class ReconciliationServiceTest {
         nol1.setRepOrders(repoOrder1);
         nol1.setStatus(NolStatuses.RESULTS_REJECTED.valueOf());
 
-
         nols.add(nol1);
 
         when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf())).thenReturn(nols);
 
-        Long[] libraIDs1 = getLibraIds(0L);
-
-        libraIDs1[10] = 16L;
+        List<Long> libraIDs1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 16L, 12L, 13L, 14L, 15L);
 
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, status1);
@@ -181,9 +176,12 @@ public class ReconciliationServiceTest {
     @Test
     public void shouldNotSaveNolInDryRunMode() {
 
-        List<Nol> nols = new ArrayList<Nol>();
+        List<Nol> nols = new ArrayList<>();
 
-        NolAutoSearchResults autoSearch1 = getNolAutoSearchResults(0L);
+        List<Long> libraIDs1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 16L);
+
+        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
+        autoSearch1.setLibraIds(libraIDs1);
 
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
@@ -195,8 +193,6 @@ public class ReconciliationServiceTest {
 
         when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf())).thenReturn(nols);
 
-        Long[] libraIDs1 = getLibraIds(0L);
-        libraIDs1[10] = 16L;
 
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, InfoXSearchStatus.SUCCESS);
 
@@ -214,17 +210,13 @@ public class ReconciliationServiceTest {
 
     @Test
     public void shouldUpdateNolSucceedWhenNoPreviousAutoSearchResult() {
-
-        NolAutoSearchResults autoSearch1 = null;
-
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
-        repoOrder1.setNolAutoSearchResults(autoSearch1);
 
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
 
-        Long[] libraIDs1 = getLibraIds(0L);
+        List<Long> libraIDs1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L);
 
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, InfoXSearchStatus.SUCCESS);
 
@@ -241,8 +233,7 @@ public class ReconciliationServiceTest {
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
 
-        Long[] libraIds = new Long[MAX_LIBRA_RECORDS];
-        libraIds[0] = 123l;
+        List<Long> libraIds = Arrays.asList(123L);
 
         InfoXSearchResult infoXSearchResult = new InfoXSearchResult(libraIds, InfoXSearchStatus.SUCCESS);
 
@@ -263,7 +254,7 @@ public class ReconciliationServiceTest {
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
 
-        Long[] nothing = new Long[MAX_LIBRA_RECORDS];
+        List<Long> nothing = new ArrayList<>();
 
         InfoXSearchResult infoXSearchResult = new InfoXSearchResult(nothing, InfoXSearchStatus.SUCCESS);
 
@@ -282,7 +273,7 @@ public class ReconciliationServiceTest {
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
 
-        Long[] libraIDs = getLibraIds(0L);
+        List<Long> libraIDs = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L);
 
         InfoXSearchResult infoXSearchResult = new InfoXSearchResult(libraIDs, InfoXSearchStatus.SUCCESS);
 
@@ -290,46 +281,6 @@ public class ReconciliationServiceTest {
 
         ReconciliationResult result = reconciliationService.reconcileNolRecord(nol1);
         assertEquals(ReconciliationResult.MANY_MATCHES, result);
-    }
-
-    private NolAutoSearchResults getNolAutoSearchResults(Long startValue) {
-        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
-        autoSearch1.setLibrId1(startValue + 1L);
-        autoSearch1.setLibrId2(startValue + 2L);
-        autoSearch1.setLibrId3(startValue + 3L);
-        autoSearch1.setLibrId4(startValue + 4L);
-        autoSearch1.setLibrId5(startValue + 5L);
-        autoSearch1.setLibrId6(startValue + 6L);
-        autoSearch1.setLibrId7(startValue + 7L);
-        autoSearch1.setLibrId8(startValue + 8L);
-        autoSearch1.setLibrId9(startValue + 9L);
-        autoSearch1.setLibrId10(startValue + 10L);
-        autoSearch1.setLibrId11(startValue + 11L);
-        autoSearch1.setLibrId12(startValue + 12L);
-        autoSearch1.setLibrId13(startValue + 13L);
-        autoSearch1.setLibrId14(startValue + 14L);
-        autoSearch1.setLibrId15(startValue + 15L);
-        return autoSearch1;
-    }
-
-    private Long[] getLibraIds(Long startValue) {
-        Long[] libraIDs1 = new Long[15];
-        libraIDs1[0] = startValue + 1L;
-        libraIDs1[1] = startValue + 2L;
-        libraIDs1[2] = startValue + 3L;
-        libraIDs1[3] = startValue + 4L;
-        libraIDs1[4] = startValue + 5L;
-        libraIDs1[5] = startValue + 6L;
-        libraIDs1[6] = startValue + 7L;
-        libraIDs1[7] = startValue + 8L;
-        libraIDs1[8] = startValue + 9L;
-        libraIDs1[9] = startValue + 10L;
-        libraIDs1[10] = startValue + 11L;
-        libraIDs1[11] = startValue + 12L;
-        libraIDs1[12] = startValue + 13L;
-        libraIDs1[13] = startValue + 14L;
-        libraIDs1[14] = startValue + 15L;
-        return libraIDs1;
     }
 
 }

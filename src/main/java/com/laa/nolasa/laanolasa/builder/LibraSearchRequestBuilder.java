@@ -1,7 +1,6 @@
 package com.laa.nolasa.laanolasa.builder;
 
 import com.laa.nolasa.laanolasa.entity.Nol;
-import com.laa.nolasa.laanolasa.service.InfoXServiceClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice._2013._11.magistrates.LibraCriteriaType;
