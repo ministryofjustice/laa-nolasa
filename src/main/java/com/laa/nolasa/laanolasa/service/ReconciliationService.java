@@ -37,7 +37,7 @@ public class ReconciliationService {
 
     @Transactional
     public void reconcile() {
-        List<Nol> notInLibraEntities = nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf());
+        List<Nol> notInLibraEntities = nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus());
 
         log.info("Retrieved libra {} entities from db", notInLibraEntities.size());
 
@@ -58,14 +58,13 @@ public class ReconciliationService {
             } else if (numberOfResults == 0) {
                 log.info("No matching record returned by infoX service for MAATID {}", maatId);
                 return ReconciliationResult.NO_MATCHES;
-            } else if (NolStatuses.RESULTS_REJECTED.valueOf().equals(entity.getStatus())
+            } else if (NolStatuses.RESULTS_REJECTED.getStatus().equals(entity.getStatus())
                     && areLibraIdsEqual(entity, infoXSearchResult)) {
                 log.info("Results were previously rejected, no changes are detected in libra IDs corresponding to the MAAT ID: {} ", maatId);
                 return ReconciliationResult.MATCHES_ALREADY_REJECTED;
             } else {
                 updateNol(entity, infoXSearchResult);
-
-                return numberOfResults > 1 ? ReconciliationResult.MANY_MATCHES : ReconciliationResult.ONE_MATCH;
+                return ReconciliationResult.fromCount(numberOfResults);
             }
         } catch (Exception e) {
             log.error("Error handling MAATID " + maatId + " - skipping", e);
@@ -86,7 +85,7 @@ public class ReconciliationService {
         autoSearchResult.setLibraIds(infoXSearchResult.getLibraIDs());
         autoSearchResult.setSearchDate(LocalDateTime.now());
 
-        entity.setStatus(NolStatuses.RESULTS_FOUND.valueOf());
+        entity.setStatus(NolStatuses.RESULTS_FOUND.getStatus());
         entity.setDateLastModified(LocalDateTime.now());
         entity.setUserLastModified("NOLASA");
 
@@ -100,8 +99,7 @@ public class ReconciliationService {
     }
 
     boolean areLibraIdsEqual(Nol nol, InfoXSearchResult infoXSearchResult) {
-        List<Long> libraIds = nol.getRepOrders().getNolAutoSearchResults().getLibraIds();
-        Collections.sort(libraIds);
+        Collections.sort(nol.getRepOrders().getNolAutoSearchResults().getLibraIds());
         Collections.sort(infoXSearchResult.getLibraIDs());
         return nol.getRepOrders().getNolAutoSearchResults().getLibraIds().equals(infoXSearchResult.getLibraIDs());
     }

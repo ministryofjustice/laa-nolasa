@@ -80,7 +80,7 @@ public class OncePerDaySchedulerTest {
         nols.add(nol2);
         nols.add(nol3);
 
-        when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.valueOf(), NolStatuses.LETTER_SENT.valueOf(), NolStatuses.RESULTS_REJECTED.valueOf())).thenReturn(nols);
+        when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(nols);
 
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIds1, status1);
