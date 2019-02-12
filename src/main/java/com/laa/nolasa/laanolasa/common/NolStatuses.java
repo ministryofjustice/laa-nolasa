@@ -7,13 +7,13 @@ public enum NolStatuses {
     RESULTS_REJECTED("RESULTS REJECTED"),
     RESULTS_FOUND("RESULTS FOUND");
 
-    private String value;
+    private String status;
 
-    NolStatuses(String value) {
-        this.value = value;
+    NolStatuses(String status) {
+        this.status = status;
     }
 
-    public String valueOf() {
-        return this.value;
+    public String getStatus() {
+        return this.status;
     }
 }
