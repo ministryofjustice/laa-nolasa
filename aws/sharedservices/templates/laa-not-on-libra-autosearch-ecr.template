@@ -14,19 +14,21 @@ Resources:
 #
 ################################################################################
 
-  AppEcrRepository: 
+  AppEcrRepository:
     Type: "AWS::ECR::Repository"
-    Properties: 
+    Properties:
       RepositoryName: !Ref pEcrRepositoryName
-      RepositoryPolicyText: 
+      RepositoryPolicyText:
         Version: "2012-10-17"
-        Statement: 
-          - 
+        Statement:
+          -
             Sid: AllowPushPullAccount
             Effect: Allow
             Principal:
               AWS:
                 - "arn:aws:iam::902837325998:root"
+                - "arn:aws:iam::140455166311:root"
+                - "arn:aws:iam::484221692666:root"
                 - "arn:aws:iam::411213865113:root"
                 - "arn:aws:iam::013163512034:root"
                 - "arn:aws:iam::842522700642:root"
@@ -40,16 +42,12 @@ Resources:
               - "ecr:InitiateLayerUpload"
               - "ecr:UploadLayerPart"
               - "ecr:CompleteLayerUpload"
-          - 
+          -
             Sid: AllowPushPullAccountUsers
             Effect: Allow
             Principal:
-              AWS: 
+              AWS:
                 - "arn:aws:iam::902837325998:user/james.abley@digital.justice.gov.uk"
-                - "arn:aws:iam::902837325998:user/john.luck@digital.justice.gov.uk"
-                - "arn:aws:iam::902837325998:user/morten.jensen@digital.justice.gov.uk"
-                - "arn:aws:iam::902837325998:user/oisin.deconduin@digital.justice.gov.uk"
-                - "arn:aws:iam::902837325998:user/tariq.ali-adib@digital.justice.gov.uk"
             Action: 
               - "ecr:GetDownloadUrlForLayer"
               - "ecr:BatchGetImage"
