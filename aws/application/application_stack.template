@@ -64,7 +64,7 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref pAppEcsCluster
-      DesiredCount: '0'
+      DesiredCount: '1'
       TaskDefinition: !Ref 'TaskDefinition'
       DeploymentConfiguration:
         MaximumPercent: 200
