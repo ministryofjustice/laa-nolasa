@@ -1,6 +1,6 @@
 package com.laa.nolasa.laanolasa.service;
 
-import com.laa.nolasa.laanolasa.common.NolStatuses;
+import com.laa.nolasa.laanolasa.common.NolStatus;
 import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
@@ -54,7 +54,7 @@ public class ReconciliationServiceTest {
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
         nol1.setAutoSearchResults(LongStream.rangeClosed(1, 15).mapToObj(id -> new NolAutoSearchResult(id, nol1)).collect(Collectors.toList()));
-        nol1.setStatus(NolStatuses.RESULTS_REJECTED.getStatus());
+        nol1.setStatus(NolStatus.RESULTS_REJECTED.getStatus());
 
 
 
@@ -73,7 +73,7 @@ public class ReconciliationServiceTest {
         nols.add(nol2);
         nols.add(nol3);
 
-        when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(nols);
+        when(nolRepository.getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus())).thenReturn(nols);
 
         List<Long> libraIDs1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L);
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
@@ -91,7 +91,7 @@ public class ReconciliationServiceTest {
 
         reconciliationService.reconcile();
 
-        verify(nolRepository).getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus());
+        verify(nolRepository).getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus());
         verify(infoXServiceClient).search(nol1);
         verify(infoXServiceClient).search(nol2);
         verify(nolRepository).save(nol2);
@@ -109,12 +109,12 @@ public class ReconciliationServiceTest {
         Nol nol1 = new Nol();
         nol1.setAutoSearchResults(LongStream.rangeClosed(1, 15).mapToObj(id -> new NolAutoSearchResult(id, nol1)).collect(Collectors.toList()));
         nol1.setRepOrders(repoOrder1);
-        nol1.setStatus(NolStatuses.RESULTS_REJECTED.getStatus());
+        nol1.setStatus(NolStatus.RESULTS_REJECTED.getStatus());
 
 
         nols.add(nol1);
 
-        when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(nols);
+        when(nolRepository.getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus())).thenReturn(nols);
 
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L), status1);
@@ -124,7 +124,7 @@ public class ReconciliationServiceTest {
 
         reconciliationService.reconcile();
 
-        verify(nolRepository).getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus());
+        verify(nolRepository).getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus());
         verify(infoXServiceClient).search(nol1);
         verify(nolRepository, never()).save(nol1);
     }
@@ -140,11 +140,11 @@ public class ReconciliationServiceTest {
         Nol nol1 = new Nol();
         nol1.setAutoSearchResults(LongStream.rangeClosed(1, 15).mapToObj(id -> new NolAutoSearchResult(id, nol1)).collect(Collectors.toList()));
         nol1.setRepOrders(repoOrder1);
-        nol1.setStatus(NolStatuses.RESULTS_REJECTED.getStatus());
+        nol1.setStatus(NolStatus.RESULTS_REJECTED.getStatus());
 
         nols.add(nol1);
 
-        when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(nols);
+        when(nolRepository.getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus())).thenReturn(nols);
 
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 16L, 12L, 13L, 14L, 16L), status1);
@@ -154,7 +154,7 @@ public class ReconciliationServiceTest {
 
         reconciliationService.reconcile();
 
-        verify(nolRepository).getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus());
+        verify(nolRepository).getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus());
         verify(infoXServiceClient).search(nol1);
         verify(nolRepository).save(nol1);
     }
@@ -172,7 +172,7 @@ public class ReconciliationServiceTest {
         nol1.setRepOrders(repoOrder1);
         nols.add(nol1);
 
-        when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(nols);
+        when(nolRepository.getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus())).thenReturn(nols);
 
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 16L), InfoXSearchStatus.SUCCESS);
 
@@ -182,7 +182,7 @@ public class ReconciliationServiceTest {
 
         reconciliationService.reconcile();
 
-        verify(nolRepository).getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus());
+        verify(nolRepository).getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus());
         verify(infoXServiceClient).search(nol1);
         verify(nolRepository, never()).save(nol1);
     }
@@ -200,7 +200,7 @@ public class ReconciliationServiceTest {
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, InfoXSearchStatus.SUCCESS);
 
         reconciliationService.updateNol(nol1, infoXSearchResult1);
-        assertEquals(NolStatuses.RESULTS_FOUND.getStatus(),  nol1.getStatus());
+        assertEquals(NolStatus.RESULTS_FOUND.getStatus(),  nol1.getStatus());
     }
 
     @Test
@@ -218,7 +218,7 @@ public class ReconciliationServiceTest {
 
         InfoXSearchResult infoXSearchResult = new InfoXSearchResult(libraIds, InfoXSearchStatus.SUCCESS);
 
-        when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(Arrays.asList(nol1));
+        when(nolRepository.getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus())).thenReturn(Arrays.asList(nol1));
         when(infoXServiceClient.search(nol1)).thenReturn(infoXSearchResult);
 
         reconciliationService.reconcile();
