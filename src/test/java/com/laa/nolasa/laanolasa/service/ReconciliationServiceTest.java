@@ -5,7 +5,7 @@ import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
-import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
+import com.laa.nolasa.laanolasa.entity.NolAutoSearchResult;
 import com.laa.nolasa.laanolasa.entity.RepOrders;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
 import com.laa.nolasa.laanolasa.util.MetricHandler;
@@ -19,8 +19,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -47,27 +49,20 @@ public class ReconciliationServiceTest {
     public void shouldReconcileLibraIDs() {
 
         List<Nol> nols = new ArrayList<>();
-
-        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
-        autoSearch1.setLibraIds(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L));
-
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
-        repoOrder1.setNolAutoSearchResults(autoSearch1);
-
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
+        nol1.setAutoSearchResults(LongStream.rangeClosed(1, 15).mapToObj(id -> new NolAutoSearchResult(id, nol1)).collect(Collectors.toList()));
         nol1.setStatus(NolStatuses.RESULTS_REJECTED.getStatus());
 
-        NolAutoSearchResults autoSearch2 = new NolAutoSearchResults();
-        autoSearch2.setLibraIds(Arrays.asList(21L, 22L, 23L, 24L, 25L, 26L, 27L, 28L, 29L, 30L, 31L, 32L, 33L, 34L, 35L));
+
 
         RepOrders repoOrder2 = new RepOrders();
         repoOrder2.setId(920L);
-        repoOrder2.setNolAutoSearchResults(autoSearch2);
-
         Nol nol2 = new Nol();
         nol2.setRepOrders(repoOrder2);
+        nol2.setAutoSearchResults(LongStream.rangeClosed(21, 35).mapToObj(id -> new NolAutoSearchResult(id, nol2)).collect(Collectors.toList()));
 
         Nol nol3 = new Nol();
         RepOrders repoOrder3 = new RepOrders();
@@ -108,15 +103,11 @@ public class ReconciliationServiceTest {
     public void shouldNotProcessRejectedResultsWhenLibraIdsMatch() {
 
         List<Nol> nols = new ArrayList<Nol>();
-        List<Long> libraIDs1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L);
 
-        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
-        autoSearch1.setLibraIds(libraIDs1);
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
-        repoOrder1.setNolAutoSearchResults(autoSearch1);
-
         Nol nol1 = new Nol();
+        nol1.setAutoSearchResults(LongStream.rangeClosed(1, 15).mapToObj(id -> new NolAutoSearchResult(id, nol1)).collect(Collectors.toList()));
         nol1.setRepOrders(repoOrder1);
         nol1.setStatus(NolStatuses.RESULTS_REJECTED.getStatus());
 
@@ -126,7 +117,7 @@ public class ReconciliationServiceTest {
         when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(nols);
 
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
-        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, status1);
+        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L), status1);
 
 
         when(infoXServiceClient.search(any(Nol.class))).thenReturn(infoXSearchResult1);
@@ -139,18 +130,15 @@ public class ReconciliationServiceTest {
     }
 
     @Test
-    public void shoulProcessRejectedResultsWhenLibraIdsDoNotMatch() {
+    public void shouldProcessRejectedResultsWhenLibraIdsDoNotMatch() {
 
         List<Nol> nols = new ArrayList<>();
 
-        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
-        autoSearch1.setLibraIds(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L));
-
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
-        repoOrder1.setNolAutoSearchResults(autoSearch1);
 
         Nol nol1 = new Nol();
+        nol1.setAutoSearchResults(LongStream.rangeClosed(1, 15).mapToObj(id -> new NolAutoSearchResult(id, nol1)).collect(Collectors.toList()));
         nol1.setRepOrders(repoOrder1);
         nol1.setStatus(NolStatuses.RESULTS_REJECTED.getStatus());
 
@@ -158,10 +146,8 @@ public class ReconciliationServiceTest {
 
         when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(nols);
 
-        List<Long> libraIDs1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 16L, 12L, 13L, 14L, 15L);
-
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
-        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, status1);
+        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 16L, 12L, 13L, 14L, 16L), status1);
 
 
         when(infoXServiceClient.search(any(Nol.class))).thenReturn(infoXSearchResult1);
@@ -178,24 +164,17 @@ public class ReconciliationServiceTest {
 
         List<Nol> nols = new ArrayList<>();
 
-        List<Long> libraIDs1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 16L);
-
-        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
-        autoSearch1.setLibraIds(libraIDs1);
-
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
-        repoOrder1.setNolAutoSearchResults(autoSearch1);
 
         Nol nol1 = new Nol();
+        nol1.setAutoSearchResults(LongStream.rangeClosed(1, 15).mapToObj(id -> new NolAutoSearchResult(id, nol1)).collect(Collectors.toList()));
         nol1.setRepOrders(repoOrder1);
         nols.add(nol1);
 
         when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(nols);
 
-
-        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIDs1, InfoXSearchStatus.SUCCESS);
-
+        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 16L), InfoXSearchStatus.SUCCESS);
 
         when(infoXServiceClient.search(any(Nol.class))).thenReturn(infoXSearchResult1);
 
@@ -228,10 +207,12 @@ public class ReconciliationServiceTest {
     public void shouldReportMetrics() {
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
-        repoOrder1.setNolAutoSearchResults(mock(NolAutoSearchResults.class));
 
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
+        List<NolAutoSearchResult> nolAutoAutoSearchResults = new ArrayList<>();
+        NolAutoSearchResult mockAutoSearchResult = mock(NolAutoSearchResult.class);
+        nol1.setAutoSearchResults(nolAutoAutoSearchResults);
 
         List<Long> libraIds = Arrays.asList(123L);
 
@@ -249,10 +230,12 @@ public class ReconciliationServiceTest {
     public void shouldHandleSuccessWithNoMatches() {
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
-        repoOrder1.setNolAutoSearchResults(mock(NolAutoSearchResults.class));
 
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
+        List<NolAutoSearchResult> nolAutoAutoSearchResults = new ArrayList<>();
+        NolAutoSearchResult mockAutoSearchResult = mock(NolAutoSearchResult.class);
+        nol1.setAutoSearchResults(nolAutoAutoSearchResults);
 
         List<Long> nothing = new ArrayList<>();
 
@@ -268,10 +251,12 @@ public class ReconciliationServiceTest {
     public void shouldHandleSuccessWithManyMatches() {
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
-        repoOrder1.setNolAutoSearchResults(mock(NolAutoSearchResults.class));
 
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
+        List<NolAutoSearchResult> nolAutoAutoSearchResults = new ArrayList<>();
+        NolAutoSearchResult mockAutoSearchResult = mock(NolAutoSearchResult.class);
+        nol1.setAutoSearchResults(nolAutoAutoSearchResults);
 
         List<Long> libraIDs = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L);
 

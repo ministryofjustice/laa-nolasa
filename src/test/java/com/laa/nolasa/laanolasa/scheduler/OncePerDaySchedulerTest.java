@@ -4,7 +4,7 @@ import com.laa.nolasa.laanolasa.common.NolStatuses;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
-import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
+import com.laa.nolasa.laanolasa.entity.NolAutoSearchResult;
 import com.laa.nolasa.laanolasa.entity.RepOrders;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
 import com.laa.nolasa.laanolasa.service.InfoXServiceClient;
@@ -19,6 +19,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -48,28 +50,19 @@ public class OncePerDaySchedulerTest {
     public void reconcile() {
         List<Nol> nols = new ArrayList<>();
 
-        NolAutoSearchResults autoSearch1 = new NolAutoSearchResults();
-        List<Long> libraIds1 = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L);
-        autoSearch1.setLibraIds(libraIds1);
-
         RepOrders repoOrder1 = new RepOrders();
         repoOrder1.setId(901L);
-        repoOrder1.setNolAutoSearchResults(autoSearch1);
 
         Nol nol1 = new Nol();
         nol1.setRepOrders(repoOrder1);
-
-        NolAutoSearchResults autoSearch2 = new NolAutoSearchResults();
-
-        List<Long> libraIds2 = Arrays.asList(21L, 22L, 23L, 24L, 25L, 26L, 27L, 28L, 29L, 210L, 211L, 212L, 213L, 214L, 215L);
-        autoSearch2.setLibraIds(libraIds2);
+        nol1.setAutoSearchResults(LongStream.range(1, 15).mapToObj(id -> new NolAutoSearchResult(id, nol1)).collect(Collectors.toList()));
 
         RepOrders repoOrder2 = new RepOrders();
         repoOrder2.setId(920L);
-        repoOrder2.setNolAutoSearchResults(autoSearch2);
 
         Nol nol2 = new Nol();
         nol2.setRepOrders(repoOrder2);
+        nol2.setAutoSearchResults(LongStream.range(21, 35).mapToObj(id -> new NolAutoSearchResult(id, nol1)).collect(Collectors.toList()));
 
         Nol nol3 = new Nol();
         RepOrders repoOrder3 = new RepOrders();
@@ -83,10 +76,10 @@ public class OncePerDaySchedulerTest {
         when(nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus())).thenReturn(nols);
 
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
-        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(libraIds1, status1);
+        InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L), status1);
 
         InfoXSearchStatus status2 = InfoXSearchStatus.SUCCESS;
-        InfoXSearchResult infoXSearchResult2 = new InfoXSearchResult(libraIds2, status2);
+        InfoXSearchResult infoXSearchResult2 = new InfoXSearchResult(Arrays.asList(21L, 22L, 23L, 24L, 25L, 26L, 27L, 28L, 29L, 30L, 31L, 32L, 33L, 34L, 35L), status2);
 
         InfoXSearchStatus status3 = InfoXSearchStatus.FAILURE;
         InfoXSearchResult infoXSearchResult3 = new InfoXSearchResult(new ArrayList<>(), status3);

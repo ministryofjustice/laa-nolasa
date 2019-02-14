@@ -1,10 +1,8 @@
 package com.laa.nolasa.laanolasa.entity;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,6 +32,6 @@ public class RepOrders {
     @JoinColumn(name = "CMU_ID")
     private CaseManagementUnits caseManagementUnits;
 
-    @OneToOne(mappedBy = "repOrders",  cascade={CascadeType.ALL})
-    private NolAutoSearchResults nolAutoSearchResults;
+    @OneToOne(mappedBy = "repOrders", cascade={CascadeType.ALL})
+    private Nol nol;
 }
