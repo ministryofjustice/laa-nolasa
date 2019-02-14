@@ -1,7 +1,7 @@
 package com.laa.nolasa.laanolasa.service;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
-import com.laa.nolasa.laanolasa.common.NolStatuses;
+import com.laa.nolasa.laanolasa.common.NolStatus;
 import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
@@ -15,8 +15,13 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.laa.nolasa.laanolasa.common.NolStatus.*;
 
 @Service
 @Slf4j
@@ -37,7 +42,7 @@ public class ReconciliationService {
 
     @Transactional
     public void reconcile() {
-        List<Nol> notInLibraEntities = nolRepository.getNolForAutoSearch(NolStatuses.NOT_ON_LIBRA.getStatus(), NolStatuses.LETTER_SENT.getStatus(), NolStatuses.RESULTS_REJECTED.getStatus());
+        List<Nol> notInLibraEntities = nolRepository.getNolForAutoSearch(NOT_ON_LIBRA, LETTER_SENT, RESULTS_REJECTED);
 
         log.info("Retrieved libra {} entities from db", notInLibraEntities.size());
 
@@ -58,7 +63,7 @@ public class ReconciliationService {
             } else if (numberOfResults == 0) {
                 log.info("No matching record returned by infoX service for MAATID {}", maatId);
                 return ReconciliationResult.NO_MATCHES;
-            } else if (NolStatuses.RESULTS_REJECTED.getStatus().equals(entity.getStatus())
+            } else if (NolStatus.RESULTS_REJECTED.getStatus().equals(entity.getStatus())
                     && areLibraIdsEqual(entity, infoXSearchResult)) {
                 log.info("Results were previously rejected, no changes are detected in libra IDs corresponding to the MAAT ID: {} ", maatId);
                 return ReconciliationResult.MATCHES_ALREADY_REJECTED;
@@ -79,7 +84,7 @@ public class ReconciliationService {
 
         nol.setAutoSearchDate(LocalDateTime.now());
 
-        nol.setStatus(NolStatuses.RESULTS_FOUND.getStatus());
+        nol.setStatus(NolStatus.RESULTS_FOUND.getStatus());
         nol.setDateLastModified(LocalDateTime.now());
         nol.setUserLastModified("NOLASA");
 

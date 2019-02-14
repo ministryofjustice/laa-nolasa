@@ -1,6 +1,6 @@
 package com.laa.nolasa.laanolasa.common;
 
-public enum NolStatuses {
+public enum NolStatus {
 
     NOT_ON_LIBRA("NOT ON LIBRA"),
     LETTER_SENT("LETTER SENT"),
@@ -9,7 +9,7 @@ public enum NolStatuses {
 
     private String status;
 
-    NolStatuses(String status) {
+    NolStatus(String status) {
         this.status = status;
     }
 
