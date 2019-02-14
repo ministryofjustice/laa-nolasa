@@ -6,7 +6,7 @@ import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
-import com.laa.nolasa.laanolasa.entity.NolAutoSearchResults;
+import com.laa.nolasa.laanolasa.entity.NolAutoSearchResult;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
 import com.laa.nolasa.laanolasa.util.MetricHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -42,7 +42,7 @@ public class ReconciliationService {
         log.info("Retrieved libra {} entities from db", notInLibraEntities.size());
 
         notInLibraEntities.stream().map(this::reconcileNolRecord)
-                                   .forEach(metricHandler::recordReconciliationResult);
+                .forEach(metricHandler::recordReconciliationResult);
     }
 
     public ReconciliationResult reconcileNolRecord(Nol entity) {
@@ -63,6 +63,7 @@ public class ReconciliationService {
                 log.info("Results were previously rejected, no changes are detected in libra IDs corresponding to the MAAT ID: {} ", maatId);
                 return ReconciliationResult.MATCHES_ALREADY_REJECTED;
             } else {
+                log.info("about to update");
                 updateNol(entity, infoXSearchResult);
                 return ReconciliationResult.fromCount(numberOfResults);
             }
@@ -72,36 +73,62 @@ public class ReconciliationService {
         }
     }
 
-    void updateNol(Nol entity, InfoXSearchResult infoXSearchResult) {
-        NolAutoSearchResults autoSearchResult = entity.getRepOrders().getNolAutoSearchResults();
+    void updateNol(Nol nol, InfoXSearchResult infoXSearchResult) {
 
-        if (autoSearchResult == null) {
-            autoSearchResult = new NolAutoSearchResults();
-            autoSearchResult.setRepOrders(entity.getRepOrders());
-            autoSearchResult.setSearchDate(LocalDateTime.now());
-            entity.getRepOrders().setNolAutoSearchResults(autoSearchResult);
-        }
+        populateAutoSearchResults(nol, infoXSearchResult);
 
-        autoSearchResult.setLibraIds(infoXSearchResult.getLibraIDs());
-        autoSearchResult.setSearchDate(LocalDateTime.now());
+        nol.setAutoSearchDate(LocalDateTime.now());
 
-        entity.setStatus(NolStatuses.RESULTS_FOUND.getStatus());
-        entity.setDateLastModified(LocalDateTime.now());
-        entity.setUserLastModified("NOLASA");
+        nol.setStatus(NolStatuses.RESULTS_FOUND.getStatus());
+        nol.setDateLastModified(LocalDateTime.now());
+        nol.setUserLastModified("NOLASA");
 
-        Long maatId = entity.getRepOrders().getId();
+        Long maatId = nol.getRepOrders().getId();
         if (dryRunMode) {
             log.info("Dry run mode - so no changes made to the database for MAAT ID {}", maatId);
         } else {
-            nolRepository.save(entity);
+            log.info("Children : {}", nol.getAutoSearchResults().size());
+            nolRepository.save(nol);
             log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", maatId);
         }
     }
 
+    private void populateAutoSearchResults(Nol nol, InfoXSearchResult infoXSearchResult) {
+        Set<Long> nolLibraIds = nol.getAutoSearchResults()
+                .stream()
+                .map(NolAutoSearchResult::getLibraId)
+                .collect(Collectors.toSet());
+
+        Set<Long> infoxLibraIds = new HashSet<>(infoXSearchResult.getLibraIDs());
+
+        List<Long> removeLibraIds = nolLibraIds
+                .stream()
+                .filter(id -> !infoxLibraIds.contains(id))
+                .collect(Collectors.toList());
+
+        List<Long> newLibraIds = infoxLibraIds
+                .stream()
+                .filter(id -> !nolLibraIds.contains(id))
+                .collect(Collectors.toList());
+
+        nol.getAutoSearchResults().removeIf(r -> removeLibraIds.contains(r.getLibraId()));
+
+        nol.getAutoSearchResults().addAll(newLibraIds.stream()
+                .map(libraId -> new NolAutoSearchResult(libraId, nol)).collect(Collectors.toList()));
+    }
+
     boolean areLibraIdsEqual(Nol nol, InfoXSearchResult infoXSearchResult) {
-        Collections.sort(nol.getRepOrders().getNolAutoSearchResults().getLibraIds());
-        Collections.sort(infoXSearchResult.getLibraIDs());
-        return nol.getRepOrders().getNolAutoSearchResults().getLibraIds().equals(infoXSearchResult.getLibraIDs());
+        if (nol.getAutoSearchResults() != null) {
+            List<Long> libraIds = nol.getAutoSearchResults()
+                    .stream()
+                    .map(NolAutoSearchResult::getLibraId)
+                    .sorted()
+                    .collect(Collectors.toList());
+
+            Collections.sort(infoXSearchResult.getLibraIDs());
+            return libraIds.equals(infoXSearchResult.getLibraIDs());
+        }
+        return false;
     }
 
 }
