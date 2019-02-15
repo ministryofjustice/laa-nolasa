@@ -1,6 +1,5 @@
 package com.laa.nolasa.laanolasa.scheduler;
 
-import com.laa.nolasa.laanolasa.common.NolStatus;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
@@ -24,6 +23,7 @@ import java.util.stream.LongStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static com.laa.nolasa.laanolasa.common.NolStatus.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OncePerDaySchedulerTest {
@@ -73,7 +73,7 @@ public class OncePerDaySchedulerTest {
         nols.add(nol2);
         nols.add(nol3);
 
-        when(nolRepository.getNolForAutoSearch(NolStatus.NOT_ON_LIBRA.getStatus(), NolStatus.LETTER_SENT.getStatus(), NolStatus.RESULTS_REJECTED.getStatus())).thenReturn(nols);
+        when(nolRepository.getNolForAutoSearch(NOT_ON_LIBRA, LETTER_SENT, RESULTS_REJECTED)).thenReturn(nols);
 
         InfoXSearchStatus status1 = InfoXSearchStatus.SUCCESS;
         InfoXSearchResult infoXSearchResult1 = new InfoXSearchResult(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L), status1);

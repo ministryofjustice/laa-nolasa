@@ -21,5 +21,4 @@ public interface NolRepository extends JpaRepository<Nol, Long> {
     }
 
     List<Nol> findByStatusInAndRepOrdersHearingDateNotNullAndRepOrdersApplicantsFirstNameNotNullAndRepOrdersMagistrateCourtsCjsAreaCodeNotNull(List<String> statuses);
-
 }
