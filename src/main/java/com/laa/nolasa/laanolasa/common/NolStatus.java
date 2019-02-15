@@ -1,19 +1,19 @@
 package com.laa.nolasa.laanolasa.common;
 
-public enum NolStatuses {
+public enum NolStatus {
 
     NOT_ON_LIBRA("NOT ON LIBRA"),
     LETTER_SENT("LETTER SENT"),
     RESULTS_REJECTED("RESULTS REJECTED"),
     RESULTS_FOUND("RESULTS FOUND");
 
-    private String value;
+    private String status;
 
-    NolStatuses(String value) {
-        this.value = value;
+    NolStatus(String status) {
+        this.status = status;
     }
 
-    public String valueOf() {
-        return this.value;
+    public String getStatus() {
+        return this.status;
     }
 }
