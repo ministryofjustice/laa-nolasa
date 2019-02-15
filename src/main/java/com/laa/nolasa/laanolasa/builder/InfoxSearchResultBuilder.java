@@ -45,6 +45,6 @@ public class InfoxSearchResultBuilder {
                         .getLibraCaseId())
                 .map(Long::valueOf).collect(Collectors.toList());
 
-        return new InfoXSearchResult(results.toArray(new Long[MAX_LIBRA_RECORDS]), InfoXSearchStatus.SUCCESS);
+        return new InfoXSearchResult(results, InfoXSearchStatus.SUCCESS);
     }
 }

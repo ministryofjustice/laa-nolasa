@@ -19,7 +19,7 @@ public class LibraSearchRequestBuilderTest {
     private LibraSearchRequestBuilder libraSearchRequestBuilder;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         libraSearchRequestBuilder = new LibraSearchRequestBuilder();
     }
 

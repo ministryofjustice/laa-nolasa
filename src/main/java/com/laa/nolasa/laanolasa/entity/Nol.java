@@ -4,8 +4,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,12 +18,12 @@ public class Nol {
     @Column(name = "ID", updatable = false, nullable = false)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "MAAT_ID")
     private RepOrders repOrders;
 
     @Column(name = "DATE_ADDED", nullable = false)
-    private Date dateAdded;
+    private LocalDateTime dateAdded;
 
     @Column(name = "CASEWORKER_ADDED", nullable = false)
     private String caseWorkerAdded;
@@ -53,5 +54,11 @@ public class Nol {
 
     @Column(name = "REMOVED_CASEWORKER")
     private String removedCaseWorker;
+
+    @Column(name = "AUTO_SEARCH_DATE")
+    private LocalDateTime autoSearchDate;
+
+    @OneToMany(mappedBy = "nol",fetch=FetchType.LAZY,cascade=CascadeType.ALL, targetEntity = NolAutoSearchResult.class, orphanRemoval=true)
+    private List<NolAutoSearchResult> autoSearchResults = new ArrayList<>();
 
 }
