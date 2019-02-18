@@ -55,9 +55,6 @@ public class Nol {
     @Column(name = "REMOVED_CASEWORKER")
     private String removedCaseWorker;
 
-    @Column(name = "AUTO_SEARCH_DATE")
-    private LocalDateTime autoSearchDate;
-
     @OneToMany(mappedBy = "nol",fetch=FetchType.LAZY,cascade=CascadeType.ALL, targetEntity = NolAutoSearchResult.class, orphanRemoval=true)
     private List<NolAutoSearchResult> autoSearchResults = new ArrayList<>();
 
