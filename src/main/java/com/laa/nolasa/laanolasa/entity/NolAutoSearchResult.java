@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -24,8 +25,12 @@ public class NolAutoSearchResult {
     @JoinColumn(name = "NOL_ID", referencedColumnName = "id")
     private Nol nol;
 
+    @Column(name = "SEARCH_DATE")
+    private LocalDateTime searchDate;
+
     public NolAutoSearchResult(Long libraId, Nol nol) {
         this.libraId = libraId;
         this.nol = nol;
+        this.searchDate = LocalDateTime.now();
     }
 }
