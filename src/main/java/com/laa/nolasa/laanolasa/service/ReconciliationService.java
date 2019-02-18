@@ -82,8 +82,6 @@ public class ReconciliationService {
 
         populateAutoSearchResults(nol, infoXSearchResult);
 
-        nol.setAutoSearchDate(LocalDateTime.now());
-
         nol.setStatus(NolStatus.RESULTS_FOUND.getStatus());
         nol.setDateLastModified(LocalDateTime.now());
         nol.setUserLastModified("NOLASA");
