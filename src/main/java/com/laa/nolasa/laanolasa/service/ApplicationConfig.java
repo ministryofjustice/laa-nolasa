@@ -2,6 +2,7 @@ package com.laa.nolasa.laanolasa.service;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,9 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class ApplicationConfig {
@@ -29,6 +33,17 @@ public class ApplicationConfig {
   Jaxb2Marshaller jaxb2Marshaller() {
     Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
     jaxb2Marshaller.setContextPath("uk.gov.justice._2013._11.magistrates");
+    NamespacePrefixMapper mapper = new NamespacePrefixMapper() {
+      public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
+        if ("http://www.justice.gov.uk/2013/11/magistrates".equals(namespaceUri) && !requirePrefix)
+          return "";
+        return "ns";
+      }
+    };
+    Map<String, Object> propertiesMap = new HashMap<>();
+    propertiesMap.put("jaxb.formatted.output", true);
+    propertiesMap.put("com.sun.xml.bind.namespacePrefixMapper", mapper);
+    jaxb2Marshaller.setMarshallerProperties(propertiesMap);
 
     return jaxb2Marshaller;
   }
