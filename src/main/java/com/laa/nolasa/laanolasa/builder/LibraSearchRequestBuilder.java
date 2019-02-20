@@ -8,11 +8,13 @@ import uk.gov.justice._2013._11.magistrates.LibraSearchRequest;
 import uk.gov.justice._2013._11.magistrates.ObjectFactory;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Optional;
 
@@ -43,6 +45,10 @@ public class LibraSearchRequestBuilder {
 
     XMLGregorianCalendar getGregorianCalendar(LocalDateTime date) throws DatatypeConfigurationException {
         GregorianCalendar gcal = GregorianCalendar.from(ZonedDateTime.of(date, ZoneId.systemDefault()));
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+
+        XMLGregorianCalendar xmlCal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+        xmlCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+
+        return xmlCal;
     }
 }
