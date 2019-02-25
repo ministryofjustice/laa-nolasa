@@ -9,7 +9,7 @@ services:
       - DATASOURCE_USERNAME=mla
       - DATASOURCE_PASSWORD=dietc0ke
       - APP_CRON_STRING=0 * * ? * *
-      - APP_DRY_RUN_MODE=true
+      - APP_DRY_RUN_MODE=false
       - LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway
       - CLOUDWATCH_EXPORT_ENABLED=false
     ports:

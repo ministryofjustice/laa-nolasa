@@ -11,6 +11,7 @@ public class MetricHandler {
     private Counter singleMatchQueries;
     private Counter multiMatchQueries;
     private Counter noMatchQueries;
+    private Counter over15MatchQueries;
     private Counter errorQueries;
     private Counter alreadyRejectedQueries;
     private DistributionSummary numberOfResults;
@@ -26,6 +27,10 @@ public class MetricHandler {
 
         this.noMatchQueries = Counter.builder("result.no_match")
                 .description("Number of queries returning no matches")
+                .register(registry);
+
+        this.over15MatchQueries = Counter.builder("result.over_15_match")
+                .description("Number of queries returning over 15 matches")
                 .register(registry);
 
         this.errorQueries = Counter.builder("result.error")
@@ -44,6 +49,9 @@ public class MetricHandler {
 
     public void recordReconciliationResult(ReconciliationResult result) {
         switch (result) {
+            case OVER_15_MATCHES:
+                this.over15MatchQueries.increment();
+                break;
             case ERROR:
                 this.errorQueries.increment();
                 break;
