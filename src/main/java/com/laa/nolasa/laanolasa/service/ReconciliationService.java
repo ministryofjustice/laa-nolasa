@@ -68,7 +68,6 @@ public class ReconciliationService {
                 log.info("Results were previously rejected, no changes are detected in libra IDs corresponding to the MAAT ID: {} ", maatId);
                 return ReconciliationResult.MATCHES_ALREADY_REJECTED;
             } else {
-                log.info("about to update");
                 updateNol(entity, infoXSearchResult);
                 return ReconciliationResult.fromCount(numberOfResults);
             }

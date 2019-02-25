@@ -1,5 +1,7 @@
 package com.laa.nolasa.laanolasa.builder;
 
+import com.laa.nolasa.laanolasa.common.InfoxStatus;
+import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import org.junit.Before;
@@ -19,33 +21,33 @@ public class InfoxSearchResultBuilderTest {
     }
 
     @Test
-    public void shouldBuildInfoXSearchResultSucceedWhenStatusIs100100() {
+    public void shouldBuildInfoXSearchResultSucceedWhenStatusIsGreaterThan15Code() {
         LibraSearchResponse libraSearchResponse = getLibraSearchResponse();
-        libraSearchResponse.getAckResponse().getException().setERRORCODE("100100");
+        libraSearchResponse.getAckResponse().getException().setERRORCODE(InfoxStatus.LIBRA_GREATER_THAN_15_CODE.getCode());
         InfoXSearchResult infoXSearchResult = infoxSearchResultBuilder.buildInfoXSearchResult(libraSearchResponse);
         assertEquals(InfoXSearchStatus.SUCCESS, infoXSearchResult.getStatus());
     }
     @Test
-    public void shouldBuildInfoXSearchResultSucceedWhenStatusIs1() {
+    public void shouldBuildInfoXSearchResultSucceedWhenStatusIsSuccessCode() {
         LibraSearchResponse libraSearchResponse = getLibraSearchResponse();
-        libraSearchResponse.getAckResponse().getException().setERRORCODE("1");
+        libraSearchResponse.getAckResponse().getException().setERRORCODE(InfoxStatus.LIBRA_SUCCESS_CODE.getCode());
         InfoXSearchResult infoXSearchResult = infoxSearchResultBuilder.buildInfoXSearchResult(libraSearchResponse);
         assertEquals(InfoXSearchStatus.SUCCESS, infoXSearchResult.getStatus());
     }
     @Test
-    public void shouldBuildInfoXSearchResultFailWhenStatusIs999999() {
+    public void shouldBuildInfoXSearchResultFailWhenStatusIsLibraFailedException() {
         LibraSearchResponse libraSearchResponse = getLibraSearchResponse();
-        libraSearchResponse.getAckResponse().getException().setERRORCODE("999999");
+        libraSearchResponse.getAckResponse().getException().setERRORCODE(InfoxStatus.LIBRA_FAILED_EXCEPTION.getCode());
         InfoXSearchResult infoXSearchResult = infoxSearchResultBuilder.buildInfoXSearchResult(libraSearchResponse);
         assertEquals(InfoXSearchStatus.FAILURE, infoXSearchResult.getStatus());
     }
 
     @Test
-    public void shouldBuildInfoXSearchResultFailWhenStatusIs100000() {
+    public void shouldBuildInfoXSearchResultFailWhenStatusIsNoMatchFound() {
         LibraSearchResponse libraSearchResponse = getLibraSearchResponse();
-        libraSearchResponse.getAckResponse().getException().setERRORCODE("100000");
+        libraSearchResponse.getAckResponse().getException().setERRORCODE(InfoxStatus.LIBRA_NO_MATCH_FOUND.getCode());
         InfoXSearchResult infoXSearchResult = infoxSearchResultBuilder.buildInfoXSearchResult(libraSearchResponse);
-        assertEquals(InfoXSearchStatus.FAILURE, infoXSearchResult.getStatus());
+        assertEquals(InfoXSearchStatus.SUCCESS, infoXSearchResult.getStatus());
     }
 
     @Test

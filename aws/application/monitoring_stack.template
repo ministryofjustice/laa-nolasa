@@ -178,6 +178,7 @@ Resources:
                         [ ".", "result.no_match", ".", ".", { "stat": "Sum", "period": 3600 } ],
                         [ ".", "result.single_match", ".", ".", { "stat": "Sum", "period": 3600 } ],
                         [ ".", "result.multi_match", ".", ".", { "stat": "Sum", "period": 3600 } ],
+                        [ ".", "result.over_15_match", ".", ".", { "stat": "Sum", "period": 3600 } ],
                         [ ".", "result.already_rejected", ".", ".", { "stat": "Sum", "period": 3600 } ]
                     ],
                     "view": "timeSeries",
