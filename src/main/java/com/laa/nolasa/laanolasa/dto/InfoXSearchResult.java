@@ -13,7 +13,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Getter
 public class InfoXSearchResult {
-    public static final int MAX_LIBRA_RECORDS = 15;
     private List<Long> libraIDs  = new ArrayList<>();
     private final InfoXSearchStatus status;
 }
