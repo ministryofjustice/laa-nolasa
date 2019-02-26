@@ -45,6 +45,10 @@ Parameters:
         - true
         - false
     Description: Enable export of application metrics to Cloudwatch
+  pCloudWatchStep:
+    Type: String
+    Default: "10m"
+    Description: How often metrics are exported to Cloudwatch
 
 Resources:
 
@@ -150,6 +154,8 @@ Resources:
               Value: !Ref pLibraEndPointURI
             - Name: CLOUDWATCH_EXPORT_ENABLED
               Value: !Ref pCloudWatchExportEnabled
+            - Name: CLOUDWATCH_STEP
+              Value: !Ref pCloudWatchStep
 
   CloudwatchLogsGroupECS:
     Type: AWS::Logs::LogGroup
