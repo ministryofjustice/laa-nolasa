@@ -49,6 +49,7 @@ management:
         enabled: ${CLOUDWATCH_EXPORT_ENABLED}
         namespace: nolasa
         batch-size: 20
+        step: ${CLOUDWATCH_EXPORT_STEP}
 
 cloud:
   aws:
