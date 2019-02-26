@@ -82,6 +82,10 @@ Parameters:
         - true
         - false
     Description: Enable export of application metrics to Cloudwatch
+  pCloudWatchStep:
+    Type: String
+    Default: "10m"
+    Description: How often metrics are exported to Cloudwatch
 
 Resources:
   AppInfrastructureTemplate:
@@ -115,6 +119,7 @@ Resources:
         pDataSourcePwd: !Ref pDataSourcePwd
         pDataSourceUrl: !Ref pDataSourceUrl
         pCloudWatchExportEnabled: !Ref pCloudWatchExportEnabled
+        pCloudWatchStep: !Ref pCloudWatchStep
 
   MonitoringTemplate:
     Type: AWS::CloudFormation::Stack
