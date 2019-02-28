@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM openjdk:11-jdk
 
 VOLUME /tmp
 ADD ./build/libs/nolasa.jar app.jar
