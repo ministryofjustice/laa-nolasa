@@ -35,6 +35,7 @@ dependencies {
     compile('org.springframework.cloud:spring-cloud-starter-aws')
     compile('io.micrometer:micrometer-registry-cloudwatch:1.0.6')
     compile('org.apache.cxf:cxf-spring-boot-starter-jaxws:3.3.0')
+    compile('org.apache.cxf:cxf-rt-features-logging:3.3.0')
     compile name: 'ojdbc8'
     compileOnly "org.projectlombok:lombok:1.18.6"
     annotationProcessor 'org.projectlombok:lombok:1.18.6'
@@ -59,7 +60,7 @@ wsdl2java{
     wsdlsToGenerate = [
             ["$projectDir/src/main/resources/wsdl/LIBRAService.wsdl"]
     ]
-    generatedWsdlDir = file("${buildDir}/generated-sources/wsdl")
+    generatedWsdlDir = file("$buildDir/generated-sources/wsdl")
     wsdlDir = file("src/main/resources/wsdl")
 }
 

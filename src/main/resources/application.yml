@@ -24,18 +24,6 @@ logging:
   level:
     com:
       amazonaws: TRACE
-    org:
-      springframework:
-        web: DEBUG
-        ws:
-          client:
-            MessageTracing:
-              sent: TRACE
-              received: DEBUG
-          server:
-            MessageTracing:
-              sent: TRACE
-              received: DEBUG
 
 management:
   endpoints:

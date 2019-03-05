@@ -23,18 +23,15 @@ public class PostConstructLogger {
             "DATASOURCE_USERNAME",
             "DATASOURCE_URL",
             "AWS_ACCESS_KEY_ID",
+            "CLOUDWATCH_EXPORT_ENABLED",
+            "CLOUDWATCH_STEP",
             "spring.datasource.url",
             "spring.datasource.username",
             "spring.datasource.driver-class-name",
             "spring.jpa.show-sql",
             "app.cron.string",
             "debug",
-            "client.default-uri",
-            "logging.level.org.springframework.web",
-            "logging.level.org.springframework.ws.client.MessageTracing.sent",
-            "logging.level.org.springframework.ws.client.MessageTracing.received",
-            "logging.level.org.springframework.ws.server.MessageTracing.sent",
-            "logging.level.org.springframework.ws.server.MessageTracing.received");
+            "client.default-uri");
 
 
     @PostConstruct

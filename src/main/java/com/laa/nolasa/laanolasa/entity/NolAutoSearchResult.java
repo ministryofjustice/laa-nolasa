@@ -33,4 +33,7 @@ public class NolAutoSearchResult {
         this.nol = nol;
         this.searchDate = LocalDateTime.now();
     }
+    public NolAutoSearchResult() {
+
+    }
 }
