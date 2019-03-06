@@ -1,6 +1,7 @@
 package com.laa.nolasa.laanolasa.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @Table(name = "XXMLA_NOL_AUTOSEARCH_RESULT", schema = "MLA")
 @Slf4j
+@NoArgsConstructor
 public class NolAutoSearchResult {
 
     @Id
@@ -33,7 +35,5 @@ public class NolAutoSearchResult {
         this.nol = nol;
         this.searchDate = LocalDateTime.now();
     }
-    public NolAutoSearchResult() {
 
-    }
 }
