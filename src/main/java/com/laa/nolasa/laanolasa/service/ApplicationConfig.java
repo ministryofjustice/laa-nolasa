@@ -40,7 +40,7 @@ public class ApplicationConfig {
         return loggingFeature;
     }
     @Bean(name = "infoxProxy")
-    public LIBRAServicePortType helloWorldProxy() {
+    public LIBRAServicePortType infoxProxy() {
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.setServiceClass(LIBRAServicePortType.class);
         factory.setAddress(defaultUri);
