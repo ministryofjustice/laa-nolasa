@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.ws.client.core.WebServiceTemplate;
+import uk.gov.justice._2013._11.magistrates.LIBRAServicePortType;
 import uk.gov.justice._2013._11.magistrates.LibraSearchRequest;
 import uk.gov.justice._2013._11.magistrates.LibraSearchResponse;
 
@@ -32,7 +32,7 @@ public class InfoXServiceClientTest {
     private InfoxSearchResultBuilder infoxSearchResultBuilder;
 
     @Mock
-    private WebServiceTemplate webServiceTemplate;
+    private LIBRAServicePortType infoxProxy;
 
     @Mock
     private MetricHandler metricHandler;
@@ -41,7 +41,7 @@ public class InfoXServiceClientTest {
 
     @Before
     public void setUp() {
-        infoXServiceClient = new InfoXServiceClient(libraSearchRequestBuilder, infoxSearchResultBuilder, webServiceTemplate, metricHandler);
+        infoXServiceClient = new InfoXServiceClient(libraSearchRequestBuilder, infoxSearchResultBuilder, infoxProxy, metricHandler);
     }
 
     @Test
@@ -52,13 +52,13 @@ public class InfoXServiceClientTest {
         LibraSearchResponse libraSearchResponse = new LibraSearchResponse();
 
         when(libraSearchRequestBuilder.buildLibraSearchRequest(nol)).thenReturn(libraSearchRequest);
-        when(webServiceTemplate.marshalSendAndReceive(libraSearchRequest)).thenReturn(libraSearchResponse);
+        when(infoxProxy.libraSearch(libraSearchRequest)).thenReturn(libraSearchResponse);
         when(infoxSearchResultBuilder.buildInfoXSearchResult(libraSearchResponse)).thenReturn(any(InfoXSearchResult.class));
 
         infoXServiceClient.search(nol);
 
         verify(libraSearchRequestBuilder).buildLibraSearchRequest(nol);
-        verify(webServiceTemplate).marshalSendAndReceive(libraSearchRequest);
+        verify(infoxProxy).libraSearch(libraSearchRequest);
         verify(infoxSearchResultBuilder).buildInfoXSearchResult(libraSearchResponse);
     }
 

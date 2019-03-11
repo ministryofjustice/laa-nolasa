@@ -8,7 +8,7 @@ import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.util.MetricHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.ws.client.core.WebServiceTemplate;
+import uk.gov.justice._2013._11.magistrates.LIBRAServicePortType;
 import uk.gov.justice._2013._11.magistrates.LibraSearchResponse;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -20,20 +20,20 @@ public class InfoXServiceClient {
     private final MetricHandler metricHandler;
     private LibraSearchRequestBuilder libraSearchRequestBuilder;
     private InfoxSearchResultBuilder infoxSearchResultBuilder;
-    private WebServiceTemplate webServiceTemplate;
+    private LIBRAServicePortType infoxProxy;
 
 
-    public InfoXServiceClient(LibraSearchRequestBuilder libraSearchRequestBuilder, InfoxSearchResultBuilder infoxSearchResultBuilder, WebServiceTemplate webServiceTemplate, MetricHandler metricHandler) {
+    public InfoXServiceClient(LibraSearchRequestBuilder libraSearchRequestBuilder, InfoxSearchResultBuilder infoxSearchResultBuilder, LIBRAServicePortType infoxProxy, MetricHandler metricHandler) {
         this.libraSearchRequestBuilder = libraSearchRequestBuilder;
         this.infoxSearchResultBuilder = infoxSearchResultBuilder;
-        this.webServiceTemplate = webServiceTemplate;
+        this.infoxProxy = infoxProxy;
         this.metricHandler = metricHandler;
     }
 
     public InfoXSearchResult search(Nol nol) {
         LibraSearchResponse libraSearchResponse;
         try {
-            libraSearchResponse = (LibraSearchResponse) webServiceTemplate.marshalSendAndReceive(libraSearchRequestBuilder.buildLibraSearchRequest(nol));
+            libraSearchResponse = (LibraSearchResponse) infoxProxy.libraSearch(libraSearchRequestBuilder.buildLibraSearchRequest(nol));
         } catch (DatatypeConfigurationException e) {
             log.error("Exception thrown while populating Libra Search Request", e);
             return new InfoXSearchResult(InfoXSearchStatus.FAILURE);
