@@ -46,7 +46,8 @@ public class ReconciliationService {
 
         log.info("Retrieved libra {} entities from db", notInLibraEntities.size());
 
-        notInLibraEntities.stream().map(this::reconcileNolRecord)
+        notInLibraEntities.stream()
+                .map(this::reconcileNolRecord)
                 .forEach(metricHandler::recordReconciliationResult);
     }
 
@@ -89,7 +90,6 @@ public class ReconciliationService {
         if (dryRunMode) {
             log.info("Dry run mode - so no changes made to the database for MAAT ID {}", maatId);
         } else {
-            log.info("Children : {}", nol.getAutoSearchResults().size());
             nolRepository.save(nol);
             log.info("Status for MAAT ID {} has been updated to 'RESULTS FOUND'", maatId);
         }
