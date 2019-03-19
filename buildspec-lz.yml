@@ -5,7 +5,7 @@ phases:
       - apt-get update -y
       - add-apt-repository ppa:openjdk-r/ppa
       - apt-get update -y
-      - apt-get install -y software-properties-common openjdk-8-jdk zip
+      - apt-get install -y software-properties-common openjdk-11-jdk zip
 #      - add-apt-repository ppa:openjdk-r/ppa
 #      - apt-get install -y openjdk-8-jdk
       - update-ca-certificates -f
