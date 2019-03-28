@@ -11,8 +11,6 @@ spring:
     properties:
       hibernate.jdbc.lob.non_contextual_creation: true
 app:
-  cron:
-    string: ${APP_CRON_STRING}
   dry-run-mode : ${APP_DRY_RUN_MODE}
 
 debug: false
