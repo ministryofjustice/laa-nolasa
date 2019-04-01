@@ -165,8 +165,12 @@ Resources:
       State: ENABLED
       Targets:
         -
-          Arn: !GetAtt EcsServiceRole.Arn
+          Arn: !GetAtt EcsService.Arn
+          RoleArn: !GetAtt EcsServiceRole.Arn
           Id: TargetFunctionV1
+          EcsParameters:
+            TaskDefinitionArn: !Ref TaskDefinition
+
 
   CloudwatchLogsGroupECS:
     Type: AWS::Logs::LogGroup
