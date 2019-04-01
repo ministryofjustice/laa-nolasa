@@ -165,11 +165,11 @@ Resources:
       State: ENABLED
       Targets:
         -
-          Arn: !GetAtt EcsService.Arn
+          Arn: !GetAtt EcsServiceRole.Arn
           RoleArn: !GetAtt EcsServiceRole.Arn
           Id: TargetFunctionV1
           EcsParameters:
-            TaskDefinitionArn: !Ref TaskDefinition
+            TaskDefinitionArn: !Ref 'TaskDefinition'
 
 
   CloudwatchLogsGroupECS:
