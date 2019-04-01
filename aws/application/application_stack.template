@@ -167,9 +167,6 @@ Resources:
         -
           Arn: !GetAtt EcsServiceRole.Arn
           Id: TargetFunctionV1
-          EcsParameters:
-            TaskCount: 1
-            TaskDefinitionArn: !GetAtt TaskDefinition.Arn
 
   CloudwatchLogsGroupECS:
     Type: AWS::Logs::LogGroup
