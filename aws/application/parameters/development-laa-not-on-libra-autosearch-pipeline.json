@@ -8,7 +8,7 @@
     "pSshKeyName" : "development-general",
     "pDataSourceUrl" : "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB",
     "pDataSourceUname" : "MLA",
-    "pAppCronString" : "0 0 * * * *",
+    "pAppCronString" : "cron(0 0 * * * *)",
     "pAppDryRunMode" : "false",
     "pLibraEndPointURI" : "http://infox.aws.dev.legalservices.gov.uk/infoX/gateway",
     "pSev5SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev5SnsTopic",
