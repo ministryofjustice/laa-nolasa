@@ -157,6 +157,20 @@ Resources:
             - Name: CLOUDWATCH_STEP
               Value: !Ref pCloudWatchStep
 
+  TaskSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: NOLASA Schedule
+      ScheduleExpression: !Ref pAppCronString
+      State: ENABLED
+      Targets:
+        -
+          Arn: !GetAtt EcsServiceRole.Arn
+          Id: TargetFunctionV1
+          EcsParameters:
+            TaskCount: 1
+            TaskDefinitionArn: !GetAtt TaskDefinition.Arn
+
   CloudwatchLogsGroupECS:
     Type: AWS::Logs::LogGroup
     Properties:
