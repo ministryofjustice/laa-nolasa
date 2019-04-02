@@ -156,7 +156,7 @@ Resources:
       State: ENABLED
       Targets:
         -
-          Arn: !GetAtt EcsServiceRole.Arn
+          Arn: !GetAtt cluster.Arn
           RoleArn: !GetAtt EcsServiceRole.Arn
           Id: TargetFunctionV1
           EcsParameters:
