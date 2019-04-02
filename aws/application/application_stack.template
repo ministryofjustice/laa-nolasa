@@ -152,7 +152,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: NOLASA Schedule
-      ScheduleExpression: !Ref pAppCronString
+      ScheduleExpression: cron(0 0 * * * * *)
       State: ENABLED
       Targets:
         -
