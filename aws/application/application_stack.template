@@ -64,15 +64,6 @@ Resources:
       ServiceToken: !ImportValue "security-SecretFinderLambdaArn"
       Name: !Ref pDataSourcePwd
 
-  EcsService:
-    Type: AWS::ECS::Service
-    Properties:
-      Cluster: !Ref pAppEcsCluster
-      DesiredCount: '1'
-      TaskDefinition: !Ref 'TaskDefinition'
-      DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 0
   EcsServiceRole:
     Type: AWS::IAM::Role
     Properties:
