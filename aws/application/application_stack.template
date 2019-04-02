@@ -152,7 +152,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: NOLASA Schedule
-      ScheduleExpression: cron(0 0 * * * * *)
+      ScheduleExpression: rate(5 minutes)
       State: ENABLED
       Targets:
         -
