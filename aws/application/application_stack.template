@@ -92,11 +92,11 @@ Resources:
                 Resource: '*'
   ServiceScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
-    DependsOn: EcsService
+    DependsOn: TaskSchedule
     Properties:
       MaxCapacity: 2
       MinCapacity: 1
-      ResourceId: !Join ['', [service/, !Ref pAppEcsCluster, /, !GetAtt EcsService.Name]]
+      ResourceId: !Join ['', [service/, !Ref pAppEcsCluster, /, 'Nolasa']]
       RoleARN: !GetAtt AutoscalingRole.Arn
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
@@ -203,6 +203,6 @@ Resources:
 
 Outputs:
   EcsService:
-    Value: !Ref EcsService
+    Value: !Ref TaskSchedule
   taskdef:
     Value: !Ref 'TaskDefinition'
