@@ -160,6 +160,7 @@ Resources:
           RoleArn: !GetAtt EcsServiceRole.Arn
           Id: TargetFunctionV1
           EcsParameters:
+            TaskCount: 1
             TaskDefinitionArn: !Ref 'TaskDefinition'
 
 
