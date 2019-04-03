@@ -156,7 +156,7 @@ Resources:
       State: ENABLED
       Targets:
         -
-          Arn: !GetAtt EcsServiceRole.Arn
+          Arn: 'TemporaryARN'
           Id: TargetFunctionV1
           EcsParameters:
             TaskCount: 1
