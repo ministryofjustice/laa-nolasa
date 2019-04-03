@@ -156,8 +156,6 @@ Resources:
       State: ENABLED
       Targets:
         -
-          Arn: !GetAtt cluster.Arn
-          RoleArn: !GetAtt EcsServiceRole.Arn
           Id: TargetFunctionV1
           EcsParameters:
             TaskCount: 1
