@@ -156,7 +156,7 @@ Resources:
       State: ENABLED
       Targets:
         -
-          Arn: Fn::GetAtt: [ l!Ref 'pAppEcsCluster', 'Arn' ]
+          Arn: Fn::GetAtt: [!Ref 'pAppEcsCluster', 'Arn' ]
           Id: TargetFunctionV1
           EcsParameters:
             TaskCount: 1
