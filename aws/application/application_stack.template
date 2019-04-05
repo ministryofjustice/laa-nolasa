@@ -64,6 +64,15 @@ Resources:
       ServiceToken: !ImportValue "security-SecretFinderLambdaArn"
       Name: !Ref pDataSourcePwd
 
+  EcsService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref pAppEcsCluster
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'TaskDefinition'
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 0
   EcsServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -92,11 +101,11 @@ Resources:
                 Resource: '*'
   ServiceScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
-    DependsOn: TaskSchedule
+    DependsOn: EcsService
     Properties:
       MaxCapacity: 2
       MinCapacity: 1
-      ResourceId: !Join ['', [service/, !Ref pAppEcsCluster, /, 'Nolasa']]
+      ResourceId: !Join ['', [service/, !Ref pAppEcsCluster, /, !GetAtt EcsService.Name]]
       RoleARN: !GetAtt AutoscalingRole.Arn
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
@@ -156,7 +165,7 @@ Resources:
       State: ENABLED
       Targets:
         -
-          Arn: !GetAtt pAppEcsCluster.Arn
+          Arn: !GetAtt EcsService.Arn
           Id: TargetFunctionV1
           EcsParameters:
             TaskCount: 1
@@ -203,6 +212,6 @@ Resources:
 
 Outputs:
   EcsService:
-    Value: !Ref TaskSchedule
+    Value: !Ref EcsService
   taskdef:
     Value: !Ref 'TaskDefinition'
