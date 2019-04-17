@@ -1,0 +1,6 @@
+version: "3.2"
+
+services:
+  app:
+    environment:
+      - DATASOURCE_PASSWORD=dietc0ke
