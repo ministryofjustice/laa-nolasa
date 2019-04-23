@@ -5,7 +5,9 @@ jobs:
       - image: circleci/openjdk:11-jdk
     steps:
       - checkout
-      - run: ./gradlew test
+      - run: ./gradlew check
+      - store_test_results:
+          path: build/test-results/test
 workflows:
   version: 2
   build_and_test:
