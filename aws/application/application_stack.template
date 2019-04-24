@@ -58,7 +58,7 @@ Resources:
 #
 ################################################################################
 
-  DataSourcePwd:
+  DataSourcePwd2:
     Type: Custom::SecretFinder
     Properties:
       ServiceToken: !ImportValue "security-SecretFinderLambdaArn"
@@ -145,7 +145,7 @@ Resources:
             - Name: DATASOURCE_USERNAME
               Value: !Ref pDataSourceUname
             - Name: DATASOURCE_PASSWORD
-              Value: !GetAtt DataSourcePwd.Value
+              Value: !GetAtt DataSourcePwd2.Value
             - Name: APP_CRON_STRING
               Value: !Ref pAppCronString
             - Name: APP_DRY_RUN_MODE

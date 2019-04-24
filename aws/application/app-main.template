@@ -45,8 +45,8 @@ Parameters:
     Description: URL for database connection
   pDataSourcePwd:
     Type: String
-    Default: 'APP_MLRA_DBPASSWORD'
-    Description: MLRA Database password Param Store entry
+    Default: 'APP_NOLASA_DBPASSWORD'
+    Description: Database password Param Store entry
   pDataSourceUname:
     Type: String
     Default: ''
