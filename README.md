@@ -75,7 +75,7 @@ This application does not have any user interface, so nothing would be available
 Environment variables are specified for DEV environment. It is also possible to override them before running docker-compose. If you want to connect to a different environment you can override them with the following runtime arguments:
 
 ```sh
-docker-compose run -e DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb -e DATASOURCE_USERNAME=mla -e DATASOURCE_PASSWORD=dietc0ke -e LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway app
+docker-compose run -e DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb -e DATASOURCE_USERNAME=mla -e DATASOURCE_PASSWORD=****** -e LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway app
 ```
 
 ### 5. Configure your IDE
