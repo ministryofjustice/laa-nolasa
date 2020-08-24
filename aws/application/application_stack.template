@@ -177,7 +177,7 @@ Resources:
           Cpu: '1024'
           Essential: 'true'
           Image: !Join [':', [!Ref pECSRepositoryURI, !Ref pDockerImageTag ]]
-          Memory: '900'
+          Memory: '450'
           LogConfiguration:
             LogDriver: awslogs
             Options:
