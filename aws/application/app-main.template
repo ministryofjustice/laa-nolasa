@@ -86,6 +86,9 @@ Parameters:
     Type: String
     Default: "10m"
     Description: How often metrics are exported to Cloudwatch
+  pEnvironment:
+    Type: String
+    Default: ''
 
 Resources:
   AppInfrastructureTemplate:
@@ -120,6 +123,7 @@ Resources:
         pDataSourceUrl: !Ref pDataSourceUrl
         pCloudWatchExportEnabled: !Ref pCloudWatchExportEnabled
         pCloudWatchStep: !Ref pCloudWatchStep
+        pEnvironment: !Ref pEnvironment
 
   MonitoringTemplate:
     Type: AWS::CloudFormation::Stack
