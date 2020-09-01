@@ -49,6 +49,9 @@ Parameters:
     Type: String
     Default: "10m"
     Description: How often metrics are exported to Cloudwatch
+  pEnvironment:
+    Type: String
+    Default: ''
 
 Conditions:
   cCreateNonprodResources:
