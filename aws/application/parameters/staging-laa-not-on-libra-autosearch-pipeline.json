@@ -15,7 +15,8 @@
     "pSev2SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev2SnsTopic",
     "pSev1SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev1SnsTopic",
     "pCloudWatchExportEnabled": "true",
-    "pCloudWatchStep": "1h"
+    "pCloudWatchStep": "1h",
+    "pEnvironment": "staging"
   },
   "Tags" : {
     "business-unit" : "LAA",
