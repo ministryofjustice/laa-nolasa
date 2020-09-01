@@ -50,6 +50,16 @@ Parameters:
     Default: "10m"
     Description: How often metrics are exported to Cloudwatch
 
+Conditions:
+  cCreateNonprodResources:
+    !Or
+      - !Equals [ !Ref pEnvironment, "development" ]
+      - !Equals [ !Ref pEnvironment, "test" ]
+      - !Equals [ !Ref pEnvironment, "uat" ]
+      - !Equals [ !Ref pEnvironment, "staging" ]
+
+  cProdTaskDefinition: !Equals [ !Ref pEnvironment, "production" ]
+
 Resources:
 
 ################################################################################
@@ -69,7 +79,7 @@ Resources:
     Properties:
       Cluster: !Ref pAppEcsCluster
       DesiredCount: '1'
-      TaskDefinition: !Ref 'TaskDefinition'
+      TaskDefinition: !If [cProdTaskDefinition, !Ref TaskDefinition, !Ref NonProdTaskDefinition]
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 0
@@ -157,6 +167,41 @@ Resources:
             - Name: CLOUDWATCH_STEP
               Value: !Ref pCloudWatchStep
 
+  NonProdTaskDefinition:
+    Condition: cCreateNonprodResources
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Join [ '', [ !Ref pAppName, '-app' ] ]
+      ContainerDefinitions:
+        - Name: !Ref pAppName
+          Cpu: '1024'
+          Essential: 'true'
+          Image: !Join [':', [!Ref pECSRepositoryURI, !Ref pDockerImageTag ]]
+          Memory: '450'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref 'CloudwatchLogsGroupECS'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: !Sub '${pAppName}-app'
+          Environment:
+            - Name: DATASOURCE_URL
+              Value: !Ref pDataSourceUrl
+            - Name: DATASOURCE_USERNAME
+              Value: !Ref pDataSourceUname
+            - Name: DATASOURCE_PASSWORD
+              Value: !GetAtt DataSourcePwd2.Value
+            - Name: APP_CRON_STRING
+              Value: !Ref pAppCronString
+            - Name: APP_DRY_RUN_MODE
+              Value: !Ref pAppDryRunMode
+            - Name: LIBRA_ENDPOINTURI
+              Value: !Ref pLibraEndPointURI
+            - Name: CLOUDWATCH_EXPORT_ENABLED
+              Value: !Ref pCloudWatchExportEnabled
+            - Name: CLOUDWATCH_STEP
+              Value: !Ref pCloudWatchStep
+
   CloudwatchLogsGroupECS:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -199,4 +244,4 @@ Outputs:
   EcsService:
     Value: !Ref EcsService
   taskdef:
-    Value: !Ref 'TaskDefinition'
+    Value: !If [cProdTaskDefinition, !Ref TaskDefinition, !Ref NonProdTaskDefinition]

@@ -4,7 +4,7 @@
     "pECSRepositoryURI" : "902837325998.dkr.ecr.eu-west-2.amazonaws.com/laa-not-on-libra-autosearch",
     "pDockerImageTag" : "latest",
     "pEcsAmiId" : "ami-3622cf51",
-    "pEc2InstanceType" : "t2.small",
+    "pEc2InstanceType" : "t3a.micro",
     "pSshKeyName" : "uat-general",
     "pDataSourceUrl" : "jdbc:oracle:thin:@rds.maat.aws.uat.legalservices.gov.uk:1521:MAATDB",
     "pDataSourceUname" : "MLA",
