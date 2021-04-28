@@ -1,0 +1,42 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "03:00"
+    timezone: Europe/London
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: io.micrometer:micrometer-registry-cloudwatch
+    versions:
+    - 1.6.5
+  - dependency-name: org.springframework.boot
+    versions:
+    - 2.4.2
+    - 2.4.3
+    - 2.4.4
+  - dependency-name: com.amazonaws:aws-xray-recorder-sdk-spring
+    versions:
+    - 2.8.0
+  - dependency-name: org.springframework.boot:spring-boot-gradle-plugin
+    versions:
+    - 2.4.2
+    - 2.4.3
+    - 2.4.4
+  - dependency-name: org.springframework.cloud:spring-cloud-dependencies
+    versions:
+    - Hoxton.SR10
+    - Hoxton.SR9
+  - dependency-name: org.apache.cxf:cxf-spring-boot-starter-jaxws
+    versions:
+    - 3.4.2
+  - dependency-name: org.apache.cxf:cxf-rt-wsdl
+    versions:
+    - 3.4.2
+  - dependency-name: org.apache.cxf:cxf-rt-features-logging
+    versions:
+    - 3.4.2
+  - dependency-name: org.projectlombok:lombok
+    versions:
+    - 1.18.16
