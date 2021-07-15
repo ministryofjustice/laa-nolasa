@@ -33,7 +33,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.cloud:spring-cloud-starter-aws')
-    compile('io.micrometer:micrometer-registry-cloudwatch:1.0.6')
+    compile('io.micrometer:micrometer-registry-cloudwatch:1.7.2')
     compile('org.apache.cxf:cxf-spring-boot-starter-jaxws:3.4.3')
     compile('org.apache.cxf:cxf-rt-features-logging:3.3.0')
     compile name: 'ojdbc8'
