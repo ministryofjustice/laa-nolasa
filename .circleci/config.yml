@@ -95,6 +95,7 @@ jobs:
         name: Log in to ECR
         command: |
           aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin ${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com
+
     # - aws-ecr/push-image:
     #     tag: ${CIRCLE_SHA1}
     #     region: $ECR_REGION # this will use the env var
@@ -104,8 +105,8 @@ jobs:
         command: |
           # ecr_login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} ECR_ENDPOINT=${ECR_ENDPOINT} aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_ENDPOINT)"
 
-          # docker tag ${DOCKER_IMAGE_NAME} "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
-          docker push "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
+          # docker tag ${DOCKER_IMAGE_NAME} "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/laa-aws-infrastructure/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
+          docker push "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/laa-aws-infrastructure/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
           echo '{ "tag":"${CIRCLE_SHA1}" }' >> build_tag.json
           cat build_tag.json
           pwd
