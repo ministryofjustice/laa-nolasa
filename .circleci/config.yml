@@ -31,12 +31,12 @@ commands:
       - run:
           name: Set up the image for building # Alternatively we may wish to use circleci/openjdk:11-jdk, unsure how openjdk-8 is used though
           command: |
-            apt-get update -y
-            add-apt-repository ppa:openjdk-r/ppa
-            apt-get update -y
-            apt-get install openjdk-8-jdk -y
-            update-ca-certificates -f
-            apt-get install openjdk-11-jdk -y
+            # apt-get update -y
+            # add-apt-repository ppa:openjdk-r/ppa
+            # apt-get update -y
+            # apt-get install openjdk-8-jdk -y
+            # update-ca-certificates -f
+            # apt-get install openjdk-11-jdk -y
             update-ca-certificates -f
       - run:
           name: Building the docker image
@@ -84,7 +84,7 @@ commands:
 jobs:
   build_app:
     docker:
-    - image: ministryofjustice/cloud-platform-tools
+    - image: circleci/openjdk:11-jdk # ministryofjustice/cloud-platform-tools
     environment:
       DOCKER_IMAGE_TAG: laa-not-on-libra-autosearch-${CIRCLE_SHA1}
     steps:
