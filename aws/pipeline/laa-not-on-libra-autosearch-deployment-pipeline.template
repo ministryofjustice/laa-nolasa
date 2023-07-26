@@ -321,6 +321,7 @@ Resources:
               OutputArtifacts:
                 - Name: BuildOutput
               RunOrder: 1
+
         - Name: DeployToDevelopment
           Actions:
             - Name: CreateChangeSetDevelopment
@@ -349,6 +350,15 @@ Resources:
                 - Name: DevelopmentOutput
               RunOrder: 1
               RoleArn: !Sub arn:aws:iam::${DevAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
+
+            - Name: ApproveDevBuild
+                ActionTypeId:
+                  Category: Approval
+                  Owner: AWS
+                  Provider: Manual
+                  Version: '1'
+                RunOrder: 2
+
             - Name: DeployChangeSetDevelopment
               ActionTypeId:
                 Category: Deploy
@@ -362,7 +372,7 @@ Resources:
                 RoleArn: !Sub arn:aws:iam::${DevAccount}:role/cloudformationdeployer-role
               InputArtifacts:
                 - Name: BuildOutput
-              RunOrder: 2
+              RunOrder: 3
               RoleArn: !Sub arn:aws:iam::${DevAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
 
         - !If
