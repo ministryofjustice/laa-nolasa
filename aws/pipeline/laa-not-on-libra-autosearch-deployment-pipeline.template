@@ -171,6 +171,7 @@ Resources:
         ComputeType: "BUILD_GENERAL1_MEDIUM"
         Image: "aws/codebuild/docker:17.09.0"
         Type: "LINUX_CONTAINER"
+        PrivilegedMode: True
         EnvironmentVariables:
           - Name: AWS_DEFAULT_REGION
             Value: !Ref AWS::Region
@@ -352,12 +353,12 @@ Resources:
               RoleArn: !Sub arn:aws:iam::${DevAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
 
             - Name: ApproveDevBuild
-                ActionTypeId:
-                  Category: Approval
-                  Owner: AWS
-                  Provider: Manual
-                  Version: '1'
-                RunOrder: 2
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: '1'
+              RunOrder: 2
 
             - Name: DeployChangeSetDevelopment
               ActionTypeId:
