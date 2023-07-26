@@ -94,8 +94,8 @@ jobs:
         version: 20.10.6
     - build-image
   deploy_to_dev:
-    # docker:
-    # - image: ministryofjustice/cloud-platform-tools
+    docker:
+    - image: ministryofjustice/cloud-platform-tools
     environment:
       DOCKER_IMAGE_TAG: laa-not-on-libra-autosearch-${CIRCLE_SHA1}
     steps:
