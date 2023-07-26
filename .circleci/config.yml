@@ -26,7 +26,7 @@ version: 2.1
 
 commands:
   build-image:
-    description: "Build image and push to ECR"
+    description: "Build application image"
     steps:
       - run:
           name: Set up the image for building # Alternatively we may wish to use circleci/openjdk:11-jdk, unsure how openjdk-8 is used though
@@ -46,6 +46,9 @@ commands:
             echo Building the Docker image...
             docker build -f Dockerfile_cp -t laa-not-on-libra-autosearch .
             zip -rq buildreports.zip ./build/reports/tests/test/*
+  push-image:
+    description: "Push application image to ECR"
+    steps:
       - run:
           name: Push application Docker image
           command: |
@@ -93,6 +96,14 @@ jobs:
         docker_layer_caching: true
         version: 20.10.6
     - build-image
+  push_image:
+    docker:
+    - image: ministryofjustice/cloud-platform-tools
+    environment:
+      DOCKER_IMAGE_TAG: laa-not-on-libra-autosearch-${CIRCLE_SHA1}
+    steps:
+    - checkout
+    - push-image
   deploy_to_dev:
     docker:
     - image: ministryofjustice/cloud-platform-tools
@@ -111,7 +122,9 @@ workflows:
   version: 2
   multi_env_deploy:
     jobs:
-      - build_app:
-          context: TBD # this would be the central namespace where we push images
+      - build_app
+          # context: TBD # this would be the central namespace where we push images
+      - push_image
+          # context: TBD
       # - deploy_app:
       #     context: TBD
