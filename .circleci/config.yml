@@ -49,7 +49,7 @@ commands:
             chmod +x ./gradlew && ./gradlew build
             echo Building the Docker image...
             docker build -f Dockerfile_cp -t laa-not-on-libra-autosearch .
-            zip -rq buildreports.zip ./build/reports/tests/test/*  
+            zip -rq buildreports.zip ./build/reports/tests/test/*
   deploy-app:
     description: "Deploy the application to the relevant environment"
     parameters:
@@ -140,7 +140,9 @@ workflows:
     jobs:
       - build_app
           # context: TBD # this would be the central namespace where we push images
-      - push_image
+      - push_image:
+          requires:
+            - build_app
           # context: TBD
       # - deploy_app:
       #     context: TBD
