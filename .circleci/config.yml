@@ -48,7 +48,7 @@ commands:
             echo Building the jar file image...
             chmod +x ./gradlew && ./gradlew build
             echo Building the Docker image...
-            docker build -f Dockerfile_cp -t ${DOCKER_IMAGE_NAME} .
+            docker build -f Dockerfile_cp -t "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}" .
             zip -rq buildreports.zip ./build/reports/tests/test/*
   deploy-app:
     description: "Deploy the application to the relevant environment"
@@ -104,7 +104,7 @@ jobs:
         command: |
           # ecr_login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} ECR_ENDPOINT=${ECR_ENDPOINT} aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_ENDPOINT)"
 
-          docker tag ${DOCKER_IMAGE_NAME} "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
+          # docker tag ${DOCKER_IMAGE_NAME} "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
           docker push "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
           echo '{ "tag":"${CIRCLE_SHA1}" }' >> build_tag.json
           cat build_tag.json
