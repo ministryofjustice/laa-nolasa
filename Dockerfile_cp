@@ -1,9 +1,8 @@
 FROM openjdk:11-jdk
 
-RUN addgroup -g 1000 -S appgroup && \
-    adduser -u 1000 -S appuser -G appgroup
+RUN adduser --disabled-password imageuser -u 1001
 
-USER 1000
+USER 1001
 
 VOLUME /tmp
 ADD ./build/libs/nolasa.jar app.jar
