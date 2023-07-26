@@ -37,7 +37,7 @@ commands:
             # apt-get install openjdk-8-jdk -y
             # update-ca-certificates -f
             # apt-get install openjdk-11-jdk -y
-            update-ca-certificates -f
+            # update-ca-certificates -f
       - run:
           name: Building the docker image
           command: |
