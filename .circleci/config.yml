@@ -69,8 +69,10 @@ commands:
         name: helm upgrade
         command: |
           cd helm_deploy/nolasa
+          # if [ "${CIRCLE_BRANCH}" == "main" ]; then
           helm upgrade nolasa -f << parameters.value_file >> . --namespace ${K8S_NAMESPACE} --install --set nolasa.image.tag=${DOCKER_IMAGE_TAG}
-
+          # fi
+          kubectl --namespace=${K8S_NAMESPACE} get pods
 
 jobs:
   build_and_push_image:
@@ -102,8 +104,8 @@ jobs:
         command: |
           # ecr_login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} ECR_ENDPOINT=${ECR_ENDPOINT} aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_ENDPOINT)"
 
-          docker tag laa-not-on-libra-autosearch "${ECR_ENDPOINT}:${DOCKER_IMAGE_TAG}"
-          docker push "${ECR_ENDPOINT}:${DOCKER_IMAGE_TAG}"
+          docker tag laa-not-on-libra-autosearch "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com:${DOCKER_IMAGE_TAG}"
+          docker push "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com:${DOCKER_IMAGE_TAG}"
           echo '{ "tag":"${DOCKER_IMAGE_TAG}" }' >> build_tag.json
           cat build_tag.json
           pwd
@@ -124,9 +126,9 @@ jobs:
       DOCKER_IMAGE_TAG: laa-not-on-libra-autosearch-${CIRCLE_SHA1}
     steps:
       - checkout
-      # - setup_remote_docker:
-      #     docker_layer_caching: true
-      #     version: 20.10.6
+      - setup_remote_docker:
+          docker_layer_caching: true
+          version: 20.10.6
       - deploy-app:
           value_file: values_dev.yaml
 
