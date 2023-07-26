@@ -17,7 +17,7 @@ Parameters:
 
   GitHubToken:
     Description: GitHub Token Parameter Store parameter name
-    Default: APP_NOLASA_DEVPIPELINE_GITHUBTOKEN
+    Default: COMMON_GITHUB_TOKEN
     Type: String
 
   GitHubUser:
@@ -620,7 +620,7 @@ Resources:
   rGitHubTokenNew:
     Type: Custom::SecretFinder
     Properties:
-      ServiceToken: !ImportValue "security-SecretFinderLambdaArn"
+      ServiceToken: !ImportValue "secret-SecretFinderLambdaArn"
       Name: !Ref GitHubToken
 
 Outputs:
