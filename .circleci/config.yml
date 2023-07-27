@@ -48,7 +48,7 @@ commands:
             echo Building the jar file image...
             chmod +x ./gradlew && ./gradlew build
             echo Building the Docker image...
-            docker build -f Dockerfile_cp -t "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}" .
+            docker build -f Dockerfile_cp -t "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}" --no-cache .
             zip -rq buildreports.zip ./build/reports/tests/test/*
   deploy-app:
     description: "Deploy the application to the relevant environment"
