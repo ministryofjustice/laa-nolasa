@@ -1,0 +1,20 @@
+# Default values for nolasa-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+appNameEnv: "nolasa"
+dryRunMode: True
+
+# TODO Needs matching with CF templates
+nolasa:
+  replicaCount: 1
+  revisionHistoryLimit: 2
+  minReadySeconds: 10
+  strategy:
+    type: Recreate
+
+  image:
+    repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/laa-aws-infrastructure/laa-not-on-libra-auto-search-application-dev-ecr
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"

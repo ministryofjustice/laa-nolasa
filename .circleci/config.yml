@@ -84,7 +84,7 @@ jobs:
     - checkout
     - setup_remote_docker:
         docker_layer_caching: true
-        version: 17.09
+        version: 20.10.6
     - build-image
     # Authenticate to AWS using OIDC v2 with the AWS CLI
     - aws-cli/setup:
@@ -129,7 +129,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-          version: 17.09
+          version: 20.10.6
       - deploy-app:
           value_file: values_dev.yaml
 

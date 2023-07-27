@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appNameEnv }}
+spec:
+  replicas: {{ .Values.nolasa.replicaCount }}
+  revisionHistoryLimit: {{ .Values.nolasa.revisionHistoryLimit }}
+  minReadySeconds: {{ .Values.nolasa.minReadySeconds }}
+  {{- with .Values.nolasa.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appNameEnv }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appNameEnv }}
+    spec:
+      containers:
+      - name: {{ .Values.appNameEnv }}
+        image: "{{ .Values.nolasa.image.repository }}:{{ .Values.nolasa.image.tag }}"
+        imagePullPolicy: {{ .Values.nolasa.image.pullPolicy }}
+        env:
+          - name: APP_DRY_RUN_MODE
+            value: {{ .Values.dryRunMode }}
