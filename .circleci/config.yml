@@ -123,8 +123,6 @@ jobs:
   deploy_to_dev:
     docker:
     - image: ministryofjustice/cloud-platform-tools
-    environment:
-      DOCKER_IMAGE_NAME: laa-aws-infrastructure/laa-not-on-libra-auto-search-application-dev-ecr
     steps:
       - checkout
       - setup_remote_docker:
@@ -140,5 +138,7 @@ workflows:
     jobs:
       - build_and_push_image
           # context: TBD # this would be the central namespace where we push images
-      # - deploy_app:
-      #     context: TBD
+      - deploy_to_dev:
+          context: nolasa-dev
+          requires:
+            - build_and_push_image
