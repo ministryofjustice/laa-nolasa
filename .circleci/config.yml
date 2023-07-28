@@ -73,7 +73,7 @@ commands:
         command: |
           cd helm_deploy/not-on-libra-auto-search-application
           # if [ "${CIRCLE_BRANCH}" == "main" ]; then
-          helm upgrade not-on-libra-auto-search-application -f << parameters.value_file >> . --namespace ${K8S_NAMESPACE} --install --set nolasa.image.tag=${CIRCLE_SHA1}
+          helm upgrade not-on-libra-auto-search-application -f << parameters.value_file >> . --namespace ${K8S_NAMESPACE} --install --set nolasa.image.tag=${CIRCLE_SHA1} --set nolasa.dataSource.password=${APP_NOLASA_DBPASSWORD}
           # fi
           kubectl --namespace=${K8S_NAMESPACE} get pods
 
