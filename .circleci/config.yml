@@ -115,9 +115,12 @@ jobs:
           #   docker tag app "${ECR_ENDPOINT}:latest"
           #   docker push "${ECR_ENDPOINT}:latest"
           # fi
-    # # - store_artifacts:
-    # #     path: .
-    # #     destination: image-build
+    - store_artifacts:
+        path: buildreports.zip
+        destination: image-build
+    - store_artifacts:
+        path: build_tag.json
+        destination: image-build
 
 
   deploy_to_dev:
