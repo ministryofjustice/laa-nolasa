@@ -12,7 +12,6 @@ nolasa:
   minReadySeconds: 10
   strategy:
     type: Recreate
-  datasourceUrl: dummy.com
 
   image:
     repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/laa-aws-infrastructure/laa-not-on-libra-auto-search-application-dev-ecr
@@ -23,3 +22,11 @@ nolasa:
   cloudwatch:
     exportEnabled: false
     step: 1h
+
+  dataSource:
+    url: "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB"
+    username: "MLA"
+    password: "placeholder" #APP_NOLASA_DBPASSWORD
+
+  cronSchedule: "0 1 * * * *"
+  libraEndpointUri: "http://infox.aws.dev.legalservices.gov.uk/infoX/gateway"

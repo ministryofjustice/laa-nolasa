@@ -30,4 +30,12 @@ spec:
           - name: CLOUDWATCH_STEP
             value: {{ .Values.nolasa.cloudwatch.step }}
           - name: DATASOURCE_URL
-            value: {{ .Values.nolasa.datasourceUrl }}
+            value: {{ .Values.dataSource.url }}
+          - name: DATASOURCE_USERNAME
+            value: {{ .Values.dataSource.username }}
+          - name: DATASOURCE_PASSWORD
+            value: {{ .Values.dataSource.password }}
+          - name: APP_CRON_STRING
+            value: {{ .Values.nolasa.cronSchedule }}
+          - name: LIBRA_ENDPOINTURI
+            value: {{ .Values.libraEndpointUri }}
