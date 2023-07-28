@@ -50,6 +50,9 @@ commands:
             echo Building the Docker image...
             docker build -f Dockerfile_cp -t "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}" --no-cache .
             zip -rq buildreports.zip ./build/reports/tests/test/*
+      - store_artifacts:
+          path: buildreports.zip
+          destination: image-build/buildreports.zip
   deploy-app:
     description: "Deploy the application to the relevant environment"
     parameters:
@@ -107,7 +110,7 @@ jobs:
 
           # docker tag ${DOCKER_IMAGE_NAME} "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
           docker push "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
-          echo '{ "tag":"${CIRCLE_SHA1}" }' >> build_tag.json
+          echo "{ \"tag\":\"${CIRCLE_SHA1}\" }" >> build_tag.json
           cat build_tag.json
           pwd
 
@@ -116,11 +119,8 @@ jobs:
           #   docker push "${ECR_ENDPOINT}:latest"
           # fi
     - store_artifacts:
-        path: buildreports.zip
-        destination: image-build
-    - store_artifacts:
         path: build_tag.json
-        destination: image-build
+        destination: image-build/build_tag.json
 
 
   deploy_to_dev:
