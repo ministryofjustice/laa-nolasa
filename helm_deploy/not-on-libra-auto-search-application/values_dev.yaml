@@ -28,5 +28,5 @@ nolasa:
     url: "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
-  cronSchedule: "0 20 * * * *"
+  cronSchedule: "0 1 * * * *"
   libraEndpointUri: "http://infox.aws.dev.legalservices.gov.uk/infoX/gateway"
