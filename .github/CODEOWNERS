@@ -1,3 +1,5 @@
 # GitHub users/groups automatically requested to review App code on PR
 * @ministryofjustice/laa-crime-apps-team
 aws/ @ministryofjustice/laa-aws-infrastructure
+helm_deploy/ @ministryofjustice/laa-aws-infrastructure
+.circleci/ @ministryofjustice/laa-aws-infrastructure @ministryofjustice/laa-crime-apps-team
