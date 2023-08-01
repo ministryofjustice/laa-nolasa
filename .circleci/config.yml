@@ -62,7 +62,7 @@ commands:
         name: helm upgrade
         command: |
           cd helm_deploy/not-on-libra-auto-search-application
-        # if [ "${CIRCLE_BRANCH}" == "main" ]; then
+          # if [ "${CIRCLE_BRANCH}" == "main" ]; then
           helm upgrade not-on-libra-auto-search-application -f << parameters.value_file >> . --namespace ${K8S_NAMESPACE} --install --set nolasa.image.tag=${CIRCLE_SHA1}
           # fi
           kubectl --namespace=${K8S_NAMESPACE} get pods
@@ -96,7 +96,7 @@ jobs:
     - run:
         name: Push application Docker image
         command: |
-        # if [ "${CIRCLE_BRANCH}" == "main" ]; then
+          # if [ "${CIRCLE_BRANCH}" == "main" ]; then
           docker push "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
           echo "{ \"tag\":\"${CIRCLE_SHA1}\" }" >> build_tag.json
           # fi
