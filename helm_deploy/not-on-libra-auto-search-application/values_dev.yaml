@@ -4,6 +4,7 @@
 
 appNameEnv: "not-on-libra-auto-search-application"
 dryRunMode: "True"
+environment: "dev"
 
 # TODO Needs matching with CF templates
 nolasa:

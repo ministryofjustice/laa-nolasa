@@ -36,7 +36,7 @@ spec:
           - name: DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name:  # This is the name of the kubernetes_secret
+                name: "laa-maat-db-password-{{ .Values.environment }}" # This is the name of the kubernetes_secret
                 key: LAA_MAATDB_PASSWORD # This is the key you have given for the secret value in the AWS Console
           - name: APP_CRON_STRING
             value: {{ .Values.nolasa.cronSchedule }}
