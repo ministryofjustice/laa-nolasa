@@ -26,7 +26,6 @@ nolasa:
   dataSource:
     url: "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
-    password: "placeholder" #APP_NOLASA_DBPASSWORD
 
-  cronSchedule: "0 1 * * * *"
+  cronSchedule: "0 20 * * * *"
   libraEndpointUri: "http://infox.aws.dev.legalservices.gov.uk/infoX/gateway"

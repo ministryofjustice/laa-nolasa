@@ -34,7 +34,10 @@ spec:
           - name: DATASOURCE_USERNAME
             value: {{ .Values.nolasa.dataSource.username }}
           - name: DATASOURCE_PASSWORD
-            value: {{ .Values.nolasa.dataSource.password }}
+            valueFrom:
+              secretKeyRef:
+                name:  # This is the name of the kubernetes_secret
+                key: LAA_MAATDB_PASSWORD # This is the key you have given for the secret value in the AWS Console
           - name: APP_CRON_STRING
             value: {{ .Values.nolasa.cronSchedule }}
           - name: LIBRA_ENDPOINTURI
