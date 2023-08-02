@@ -1,0 +1,30 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+appNameEnv: "not-on-libra-auto-search-application"
+dryRunMode: "True"
+environment: "dev"
+
+nolasa:
+  replicaCount: 1 # One pod without scaling
+  revisionHistoryLimit: 2 # Specifies the number of old ReplicaSets to retain to allow rollback
+  minReadySeconds: 10 # Specifies the minimum number of seconds for which a newly created Pod should be ready without any of its containers crashing, for it to be considered available
+  strategy:
+    type: Recreate # For recreate, all existing Pods are killed before new ones are created when
+
+  image:
+    repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/laa-aws-infrastructure/laa-not-on-libra-auto-search-application-dev-ecr
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "65e4ae82695329924d259bbc24e43e299aad7f7c"
+
+  cloudwatch:
+    exportEnabled: false
+    step: 1h
+
+  dataSource:
+    url: "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB"
+    username: "MLA"
+
+  cronSchedule: "0 1 * * * *" # Cron schedule for when the matching job gets ran
+  libraEndpointUri: "http://infox.aws.dev.legalservices.gov.uk/infoX/gateway"
