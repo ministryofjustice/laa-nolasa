@@ -1,32 +1,9 @@
-# version: 2
-# jobs:
-#   test:
-#     docker:
-#       - image: circleci/openjdk:11-jdk
-#     steps:
-#       - checkout
-#       - run: ./gradlew check
-#       - run:
-#           name: Save test results
-#           command: |
-#             mkdir -p ~/test-results/junit/
-#             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
-#           when: always
-#       - store_test_results:
-#           path: ~/test-results
-#       - store_artifacts:
-#           path: ~/test-results/junit
-# workflows:
-#   version: 2
-#   build_and_test:
-#     jobs:
-#       - test
-
 version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@4.0.0 # use v4 of this orb
   aws-ecr: circleci/aws-ecr@8.2.1 # this orb doesn't support OIDC v2, so we use aws-cli to authenticate
+  helm: circleci/helm@1.2.0
 
 commands:
   build-image:
@@ -58,14 +35,13 @@ commands:
           kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=cd-serviceaccount --namespace=${K8S_NAMESPACE}
           kubectl config use-context ${K8S_CLUSTER_NAME}
           kubectl --namespace=${K8S_NAMESPACE} get pods
-    - run:
-        name: helm upgrade
-        command: |
-          cd helm_deploy/not-on-libra-auto-search-application
-          # if [ "${CIRCLE_BRANCH}" == "main" ]; then
-          helm upgrade not-on-libra-auto-search-application -f << parameters.value_file >> . --namespace ${K8S_NAMESPACE} --install --set nolasa.image.tag=${CIRCLE_SHA1}
-          # fi
-          kubectl --namespace=${K8S_NAMESPACE} get pods
+    - helm/upgrade-helm-chart:
+          namespace: ${K8S_NAMESPACE}
+          update-repositories: false
+          chart: ./helm_deploy/not-on-libra-auto-search-application/
+          release-name: not-on-libra-auto-search-application
+          values: ./helm_deploy/not-on-libra-auto-search-application/<< parameters.value_file >>
+          values-to-override: nolasa.image.tag=${CIRCLE_SHA1}
 
 jobs:
   build_and_push_image:
