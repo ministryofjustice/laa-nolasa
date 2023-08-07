@@ -5,7 +5,7 @@ appNameEnv: "not-on-libra-auto-search-application"
 # namespace: "laa-not-on-libra-auto-search-application-dev"
 dryRunMode: "True"
 environment: "dev"
-jobCronSchedule: "0 50 * * * *"
+jobCronSchedule: "1 * * * *"
 
 nolasa:
   replicaCount: 1 # One pod without scaling
@@ -28,7 +28,7 @@ nolasa:
     url: "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
-  cronSchedule: "0 26 * * * *" # Cron schedule for when the matching job gets ran
+  cronSchedule: "0 2 * * * *" # Cron schedule for when the matching job gets ran
   libraEndpointUri: "http://infox.aws.dev.legalservices.gov.uk/infoX/gateway"
 
   # alarms:
