@@ -98,8 +98,8 @@ workflows:
   version: 2
   multi_env_deploy:
     jobs:
-      # - build_and_push_image
+      - build_and_push_image
       - deploy_to_dev:
           context: nolasa-dev
-          # requires:
-          #   - build_and_push_image
+          requires:
+            - build_and_push_image

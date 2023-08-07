@@ -6,7 +6,7 @@ spec:
   schedule: {{ .Values.jobCronSchedule }}
   jobTemplate:
     spec:
-      activeDeadlineSeconds: 120
+      activeDeadlineSeconds: {{ .Values.jobDeadlineSeconds }}
       template:
         spec:
           containers:
