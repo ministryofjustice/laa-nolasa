@@ -5,7 +5,7 @@ appNameEnv: "not-on-libra-auto-search-application"
 # namespace: "laa-not-on-libra-auto-search-application-dev"
 dryRunMode: "True"
 environment: "dev"
-jobCronSchedule: "2 * * * *"
+jobCronSchedule: "15 * * * *"
 
 nolasa:
   replicaCount: 1 # One pod without scaling
@@ -18,7 +18,7 @@ nolasa:
     repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/laa-aws-infrastructure/laa-not-on-libra-auto-search-application-dev-ecr
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "65e4ae82695329924d259bbc24e43e299aad7f7c"
+    tag: "0612751b994ff767b5c1a372676bd0a3b486e797"
 
   cloudwatch:
     exportEnabled: false
@@ -28,7 +28,7 @@ nolasa:
     url: "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
-  cronSchedule: "0 3 * * * *" # Cron schedule for when the matching job gets ran
+  cronSchedule: "0 16 * * * *" # Cron schedule for when the matching job gets ran
   libraEndpointUri: "http://infox.aws.dev.legalservices.gov.uk/infoX/gateway"
 
   # alarms:

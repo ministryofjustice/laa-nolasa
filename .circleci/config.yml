@@ -41,7 +41,7 @@ commands:
           chart: ./helm_deploy/not-on-libra-auto-search-application/
           release-name: not-on-libra-auto-search-application
           values: ./helm_deploy/not-on-libra-auto-search-application/<< parameters.value_file >>
-          values-to-override: nolasa.image.tag=${CIRCLE_SHA1}
+          # values-to-override: nolasa.image.tag=${CIRCLE_SHA1}
 
 jobs:
   build_and_push_image:
@@ -98,8 +98,8 @@ workflows:
   version: 2
   multi_env_deploy:
     jobs:
-      - build_and_push_image
+      # - build_and_push_image
       - deploy_to_dev:
           context: nolasa-dev
-          requires:
-            - build_and_push_image
+          # requires:
+          #   - build_and_push_image
