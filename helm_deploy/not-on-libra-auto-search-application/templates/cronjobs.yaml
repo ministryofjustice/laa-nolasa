@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: {{ .Values.appNameEnv }}
 spec:
-  schedule: "* 25 * * * *"
+  schedule: {{ .Values.jobCronSchedule }}
   jobTemplate:
     spec:
       activeDeadlineSeconds: 120
