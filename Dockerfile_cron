@@ -1,0 +1,8 @@
+FROM openjdk:11-jdk
+
+RUN adduser --disabled-password imageuser -u 1001
+
+USER 1001
+
+VOLUME /tmp
+ADD ./build/libs/nolasa.jar app.jar

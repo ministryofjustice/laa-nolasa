@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.appNameEnv }}
+spec:
+  schedule: "* 25 * * * *"
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 120
+      template:
+        spec:
+          containers:
+          - name: {{ .Values.appNameEnv }}
+            image: "{{ .Values.nolasa.image.repository }}:{{ .Values.nolasa.image.tag }}"
+            imagePullPolicy: {{ .Values.nolasa.image.pullPolicy }}
+            command: ["java","-jar","app.jar"]
+            env:
+              - name: APP_DRY_RUN_MODE
+                value: "{{ .Values.dryRunMode }}"
+              - name: CLOUDWATCH_EXPORT_ENABLED
+                value: "{{ .Values.nolasa.cloudwatch.exportEnabled }}"
+              - name: CLOUDWATCH_STEP
+                value: {{ .Values.nolasa.cloudwatch.step }}
+              - name: DATASOURCE_URL
+                value: {{ .Values.nolasa.dataSource.url }}
+              - name: DATASOURCE_USERNAME
+                value: {{ .Values.nolasa.dataSource.username }}
+              - name: DATASOURCE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: "laa-maat-db-password-{{ .Values.environment }}" # This is the name of the kubernetes_secret
+                    key: LAA_MAATDB_PASSWORD # This is the key you have given for the secret value in the AWS Console
+              - name: APP_CRON_STRING
+                value: {{ .Values.nolasa.cronSchedule }}
+              - name: LIBRA_ENDPOINTURI
+                value: {{ .Values.nolasa.libraEndpointUri }}
+          restartPolicy: OnFailure
