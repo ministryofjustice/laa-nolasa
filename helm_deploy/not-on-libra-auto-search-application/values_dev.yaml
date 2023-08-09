@@ -2,11 +2,8 @@
 # Declare variables to be passed into your templates.
 
 appNameEnv: "not-on-libra-auto-search-application"
-# namespace: "laa-not-on-libra-auto-search-application-dev"
 dryRunMode: "True"
 environment: "dev"
-jobCronSchedule: "35 * * * *"
-jobDeadlineSeconds: 120
 
 nolasa:
   replicaCount: 1 # One pod without scaling
@@ -18,7 +15,7 @@ nolasa:
   image:
     repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/laa-aws-infrastructure/laa-not-on-libra-auto-search-application-dev-ecr
     pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
+    # tag Overrides the image tag whose default is the chart appVersion
     tag: "0612751b994ff767b5c1a372676bd0a3b486e797"
 
   cloudwatch:
@@ -29,11 +26,5 @@ nolasa:
     url: "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
-  cronSchedule: "0 36 * * * *" # Cron schedule for when the matching job gets ran
+  cronSchedule: "0 2 * * * *" # Cron schedule for when the matching job gets ran
   libraEndpointUri: "http://infox.aws.dev.legalservices.gov.uk/infoX/gateway"
-
-  # alarms:
-  #   cpuThreshold: 75
-  #   cpuPeriod: 5m
-  #   memoryThreshold: 75
-  #   memoryPeriod: 5m
