@@ -2,8 +2,8 @@
 # Declare variables to be passed into your templates.
 
 appNameEnv: "not-on-libra-auto-search-application"
-dryRunMode: "False"
-environment: "dev"
+dryRunMode: "True"
+environment: "prd"
 
 nolasa:
   replicaCount: 1 # One pod without scaling
@@ -23,8 +23,8 @@ nolasa:
     step: 1h
 
   dataSource:
-    url: "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB"
+    url: "jdbc:oracle:thin:@rds.maat.aws.prd.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
   cronSchedule: "0 1 * * * *" # Cron schedule for when the matching job gets ran
-  libraEndpointUri: "http://infox.aws.dev.legalservices.gov.uk/infoX/gateway"
+  libraEndpointUri: "http://infox.aws.prd.legalservices.gov.uk/infoX/gateway"

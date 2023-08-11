@@ -99,7 +99,35 @@ workflows:
   multi_env_deploy:
     jobs:
       - build_and_push_image
+      - approval_to_dev:
+          type: approval
+          requires:
+            - build_and_push_image
       - deploy_to_dev:
           context: nolasa-dev
           requires:
-            - build_and_push_image
+            - approval_to_dev
+      - approval_to_tst:
+          type: approval
+          requires:
+            - deploy_to_dev
+      - deploy_to_tst:
+          context: nolasa-tst
+          requires:
+            - approval_to_tst
+      - approval_to_preprod:
+          type: approval
+          requires:
+            - deploy_to_preprod
+      - deploy_to_preprod:
+          context: nolasa-preprod
+          requires:
+            - approval_to_preprod
+      - approval_to_prod:
+          type: approval
+          requires:
+            - deploy_to_preprod
+      - deploy_to_prod:
+          context: nolasa-prod
+          requires:
+            - approval_to_prod
