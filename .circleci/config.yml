@@ -148,7 +148,7 @@ workflows:
       - approval_to_preprod:
           type: approval
           requires:
-            - deploy_to_preprod
+            - deploy_to_tst
       - deploy_to_preprod:
           context: nolasa-preprod
           requires:
