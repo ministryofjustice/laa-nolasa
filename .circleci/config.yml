@@ -144,7 +144,7 @@ workflows:
       - deploy_to_tst:
           context: nolasa-tst
           requires:
-            - approval_to_tst
+            - build_and_push_image
       - approval_to_preprod:
           type: approval
           requires:
