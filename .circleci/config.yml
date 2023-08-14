@@ -92,6 +92,36 @@ jobs:
           version: 20.10.6
       - deploy-app:
           value_file: values_dev.yaml
+  deploy_to_tst:
+    docker:
+    - image: ministryofjustice/cloud-platform-tools
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+          version: 20.10.6
+      - deploy-app:
+          value_file: values_tst.yaml
+  deploy_to_preprod:
+    docker:
+    - image: ministryofjustice/cloud-platform-tools
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+          version: 20.10.6
+      - deploy-app:
+          value_file: values_preprod.yaml
+  deploy_to_prd:
+    docker:
+    - image: ministryofjustice/cloud-platform-tools
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+          version: 20.10.6
+      - deploy-app:
+          value_file: values_prd.yaml
 
 
 workflows:
@@ -99,7 +129,35 @@ workflows:
   multi_env_deploy:
     jobs:
       - build_and_push_image
+      - approval_to_dev:
+          type: approval
+          requires:
+            - build_and_push_image
       - deploy_to_dev:
           context: nolasa-dev
           requires:
-            - build_and_push_image
+            - approval_to_dev
+      - approval_to_tst:
+          type: approval
+          requires:
+            - deploy_to_dev
+      - deploy_to_tst:
+          context: nolasa-tst
+          requires:
+            - approval_to_tst
+      - approval_to_preprod:
+          type: approval
+          requires:
+            - deploy_to_tst
+      - deploy_to_preprod:
+          context: nolasa-preprod
+          requires:
+            - approval_to_preprod
+      - approval_to_prd:
+          type: approval
+          requires:
+            - deploy_to_preprod
+      - deploy_to_prd:
+          context: nolasa-prd
+          requires:
+            - approval_to_prd
