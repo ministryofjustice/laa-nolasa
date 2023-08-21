@@ -23,7 +23,7 @@ nolasa:
     step: 1h
 
   dataSource:
-    url: "jdbc:oracle:thin:@rds.maat.aws.uat.legalservices.gov.uk:1521:MAATDB"
+    url: "jdbc:oracle:thin:@rds.maat.aws.preprod.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
   cronSchedule: "0 30 * * * *" # Cron schedule for when the matching job gets ran
