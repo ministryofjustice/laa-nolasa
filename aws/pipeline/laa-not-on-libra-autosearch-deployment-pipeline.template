@@ -24,11 +24,6 @@ Parameters:
     Type: String
     Default: ministryofjustice
 
-  DevAccount:
-    Description: AWS Account Number for Development
-    Type: Number
-    Default: '411213865113'
-
   TestAccount:
     Description: AWS AccountNumber for test
     Type: Number
@@ -260,7 +255,6 @@ Resources:
             Action:
               - sts:AssumeRole
             Resource:
-              - !Sub arn:aws:iam::${DevAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${TestAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${StagingAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${ProductionAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
@@ -322,59 +316,6 @@ Resources:
               OutputArtifacts:
                 - Name: BuildOutput
               RunOrder: 1
-
-        - Name: DeployToDevelopment
-          Actions:
-            - Name: CreateChangeSetDevelopment
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Version: 1
-                Provider: CloudFormation
-              Configuration:
-                ChangeSetName: !Sub LAA-${ApplicationName}-development
-                ActionMode: CHANGE_SET_REPLACE
-                StackName: !Sub LAA-${ApplicationName}-development
-                Capabilities: CAPABILITY_NAMED_IAM
-                TemplatePath: BuildOutput::app-main-packaged.template
-                RoleArn: !Sub arn:aws:iam::${DevAccount}:role/cloudformationdeployer-role
-                ParameterOverrides: !Sub |
-                  {
-                    "pDockerImageTag" : { "Fn::GetParam" : ["BuildOutput", "build_tag.json", "tag"]},
-                    "pAppName" : "${ApplicationName}"
-                  }
-                TemplateConfiguration: BuildOutput::development.json
-                OutputFileName: development-stackoutputs.json
-              InputArtifacts:
-                - Name: BuildOutput
-              OutputArtifacts:
-                - Name: DevelopmentOutput
-              RunOrder: 1
-              RoleArn: !Sub arn:aws:iam::${DevAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
-
-            - Name: ApproveDevBuild
-              ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: '1'
-              RunOrder: 2
-
-            - Name: DeployChangeSetDevelopment
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Version: 1
-                Provider: CloudFormation
-              Configuration:
-                ChangeSetName: !Sub LAA-${ApplicationName}-development
-                ActionMode: CHANGE_SET_EXECUTE
-                StackName: !Sub LAA-${ApplicationName}-development
-                RoleArn: !Sub arn:aws:iam::${DevAccount}:role/cloudformationdeployer-role
-              InputArtifacts:
-                - Name: BuildOutput
-              RunOrder: 3
-              RoleArn: !Sub arn:aws:iam::${DevAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
 
         - !If
           - cIsRouteToLive
