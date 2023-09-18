@@ -8,7 +8,7 @@
     "pSshKeyName" : "uat-general",
     "pDataSourceUrl" : "jdbc:oracle:thin:@rds.maat.aws.uat.legalservices.gov.uk:1521:MAATDB",
     "pDataSourceUname" : "MLA",
-    "pAppCronString" : "0 0 18 * * SUN-THU",
+    "pAppCronString" : "0 15 * * * *",
     "pAppDryRunMode" : "false",
     "pLibraEndPointURI" : "http://infox.aws.uat.legalservices.gov.uk/infoX/gateway",
     "pSev5SnsTopicArn" : "arn:aws:sns:eu-west-2:902837325998:Sev5SnsTopic",
