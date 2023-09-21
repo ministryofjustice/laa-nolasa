@@ -16,7 +16,6 @@ on:
     secrets:
       kube-cluster:
         required: true
-        type: string
 
 jobs:
   deploy-app:
