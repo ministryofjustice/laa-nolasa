@@ -5,8 +5,7 @@ permissions:
   contents: read
 
 on:
-  push:
-    branches: [LAWS-3474]
+  workflow_call:
     inputs:
       github-sha:
         required: true
@@ -15,17 +14,6 @@ on:
       parameter-file:
         required: true
         type: string
-        default: 'values_dev.yaml'
-
-# on:
-#   workflow_call:
-#     inputs:
-#       github-sha:
-#         required: true
-#         type: string
-#       parameter-file:
-#         required: true
-#         type: string
 
 jobs:
   deploy-app:
