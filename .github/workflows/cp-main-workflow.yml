@@ -34,6 +34,7 @@ jobs:
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
   deploy-application-dev:
+    needs: build-image
     uses: ./.github/workflows/cp-deploy.yml
     with:
       github-sha: ${{ github.sha }}
