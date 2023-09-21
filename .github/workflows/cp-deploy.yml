@@ -5,18 +5,34 @@ permissions:
   contents: read
 
 on:
-  workflow_call:
+  push:
+    branches: [LAWS-3474]
     inputs:
       github-sha:
         required: true
         type: string
+        default: 'b6113564a53f43d54735db8018cdd6560925bff7'
       parameter-file:
         required: true
         type: string
+        default: 'values_dev.yaml'
+
+# on:
+#   workflow_call:
+#     inputs:
+#       github-sha:
+#         required: true
+#         type: string
+#       parameter-file:
+#         required: true
+#         type: string
 
 jobs:
   deploy-app:
     runs-on: ubuntu-latest
+    env:
+      KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
+      KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
     steps:  
       - uses: actions/checkout@v3    
       - run: |
@@ -25,9 +41,6 @@ jobs:
           kubectl config set-credentials cd-serviceaccount --token=${{ secrets.KUBE_TOKEN }}
           kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=cd-serviceaccount --namespace=${KUBE_NAMESPACE}
           kubectl config use-context ${KUBE_CLUSTER}
-        env:
-          KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
-          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
       - run: |
           cd helm_deploy/not-on-libra-auto-search-application
           helm upgrade not-on-libra-auto-search-application -f {{ inputs.parameter-file }} . --namespace ${KUBE_NAMESPACE} --install --set nolasa.image.tag=${{ inputs.github-sha }}

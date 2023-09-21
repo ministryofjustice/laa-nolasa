@@ -4,9 +4,9 @@ permissions:
   id-token: write
   contents: read
 
-on:
-  push:
-    branches: [LAWS-3474]
+# on:
+#   push:
+#     branches: [LAWS-3474]
 
 jobs:
   build-image:
