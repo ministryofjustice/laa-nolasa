@@ -34,50 +34,62 @@ jobs:
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
   deploy-application-dev:
-    # environment: development
+    environment: development
     needs: build-image
-    uses: ./.github/workflows/cp-deploy.yml
-    with:
-      github-sha: ${{ github.sha }}
-      parameter-file: values_dev.yaml
-    secrets:
-      kube-cluster: ${{ secrets.KUBE_CLUSTER }}
-      kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
-      kube-cert: ${{ secrets.KUBE_CERT }}
-      kube-token: ${{ secrets.KUBE_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:  
+      - uses: actions/checkout@v3    
+      - run: |
+          echo "${{ secrets.KUBE_CERT }}" > ca.crt
+          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
+          kubectl config set-credentials cd-serviceaccount --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }}--user=cd-serviceaccount --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context${{ secrets.KUBE_CLUSTER }}
+      - run: |
+          cd helm_deploy/not-on-libra-auto-search-application
+          helm upgrade not-on-libra-auto-search-application -f values_dev.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github-sha }}
   deploy-application-test:
     environment: test
     needs: deploy-application-dev
-    uses: ./.github/workflows/cp-deploy.yml
-    with:
-      github-sha: ${{ github.sha }}
-      parameter-file: values_tst.yaml
-    secrets:
-      kube-cluster: ${{ secrets.KUBE_CLUSTER }}
-      kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
-      kube-cert: ${{ secrets.KUBE_CERT }}
-      kube-token: ${{ secrets.KUBE_TOKEN }}
-  # deploy-application-preprod:
-  #   environment: preproduction
-  #   needs: deploy-application-test
-  #   uses: ./.github/workflows/cp-deploy.yml
-  #   with:
-  #     github-sha: ${{ github.sha }}
-  #     parameter-file: values_preprod.yaml
-  #   secrets:
-  #     kube-cluster: ${{ secrets.KUBE_CLUSTER }}
-  #     kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
-  #     kube-cert: ${{ secrets.KUBE_CERT }}
-  #     kube-token: ${{ secrets.KUBE_TOKEN }}
-  # deploy-application-production:
-  #   environment: production
-  #   needs: deploy-application-preprod
-  #   uses: ./.github/workflows/cp-deploy.yml
-  #   with:
-  #     github-sha: ${{ github.sha }}
-  #     parameter-file: values_prd.yaml
-  #   secrets:
-  #     kube-cluster: ${{ secrets.KUBE_CLUSTER }}
-  #     kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
-  #     kube-cert: ${{ secrets.KUBE_CERT }}
-  #     kube-token: ${{ secrets.KUBE_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:  
+      - uses: actions/checkout@v3    
+      - run: |
+          echo "${{ secrets.KUBE_CERT }}" > ca.crt
+          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
+          kubectl config set-credentials cd-serviceaccount --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }}--user=cd-serviceaccount --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context${{ secrets.KUBE_CLUSTER }}
+      - run: |
+          cd helm_deploy/not-on-libra-auto-search-application
+          helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github-sha }}
+  deploy-application-preprod:
+    environment: preproduction
+    needs: deploy-application-test
+    runs-on: ubuntu-latest
+    steps:  
+      - uses: actions/checkout@v3    
+      - run: |
+          echo "${{ secrets.KUBE_CERT }}" > ca.crt
+          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
+          kubectl config set-credentials cd-serviceaccount --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }}--user=cd-serviceaccount --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context${{ secrets.KUBE_CLUSTER }}
+      - run: |
+          cd helm_deploy/not-on-libra-auto-search-application
+          helm upgrade not-on-libra-auto-search-application -f values_preprod.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github-sha }}
+  deploy-application-prod:
+    environment: production
+    needs: deploy-application-preprod
+    runs-on: ubuntu-latest
+    steps:  
+      - uses: actions/checkout@v3    
+      - run: |
+          echo "${{ secrets.KUBE_CERT }}" > ca.crt
+          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
+          kubectl config set-credentials cd-serviceaccount --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }}--user=cd-serviceaccount --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context${{ secrets.KUBE_CLUSTER }}
+      - run: |
+          cd helm_deploy/not-on-libra-auto-search-application
+          helm upgrade not-on-libra-auto-search-application -f values_prd.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github-sha }}
