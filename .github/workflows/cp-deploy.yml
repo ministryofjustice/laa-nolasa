@@ -10,7 +10,6 @@ on:
       github-sha:
         required: true
         type: string
-        default: 'b6113564a53f43d54735db8018cdd6560925bff7'
       parameter-file:
         required: true
         type: string
