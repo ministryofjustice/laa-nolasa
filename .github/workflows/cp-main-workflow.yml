@@ -41,3 +41,6 @@ jobs:
       parameter-file: values_dev.yaml
     secrets:
       kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+      kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+      kube-cert: ${{ secrets.KUBE_CERT }}
+      kube-token: ${{ secrets.KUBE_TOKEN }}
