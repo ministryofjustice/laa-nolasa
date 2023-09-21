@@ -32,4 +32,4 @@ jobs:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
       - run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f {{ inputs.parameter-file }} . --namespace ${KUBE_NAMESPACE} --install --set nolasa.image.tag=${{ input.github-sha }}
+          helm upgrade not-on-libra-auto-search-application -f {{ inputs.parameter-file }} . --namespace ${KUBE_NAMESPACE} --install --set nolasa.image.tag=${{ inputs.github-sha }}
