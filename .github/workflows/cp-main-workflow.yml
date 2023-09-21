@@ -39,3 +39,5 @@ jobs:
     with:
       github-sha: 'b6113564a53f43d54735db8018cdd6560925bff7' # ${{ github.sha }}
       parameter-file: values_dev.yaml
+    secrets:
+      kube-cluster: ${{ secrets.KUBE_CLUSTER }}
