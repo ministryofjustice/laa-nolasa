@@ -15,15 +15,15 @@ on:
         type: string
 
 jobs:
-  build-image:
+  deploy-app:
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3    
       - run: |
           echo "${{ secrets.KUBE_CERT }}" > ca.crt
           kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
-          kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
-          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${KUBE_NAMESPACE}
+          kubectl config set-credentials cd-serviceaccount --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=cd-serviceaccount --namespace=${KUBE_NAMESPACE}
           kubectl config use-context ${KUBE_CLUSTER}
         env:
           KUBE_NAMESPACE: ${{ secrets.KUBE_NAMESPACE }}
