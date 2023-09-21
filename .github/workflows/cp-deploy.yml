@@ -15,7 +15,7 @@ on:
         type: string
     secrets:
       kube-cluster:
-        required: trued
+        required: true
         type: string
 
 jobs:
