@@ -9,35 +9,35 @@ on:
     branches: [LAWS-3474]
 
 jobs:
-  # build-image:
-  #   runs-on: ubuntu-latest
-  #   # container:
-  #   #   image: amazoncorretto:11 # openjdk:11.0-jdk image is DEPRECATED
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: aws-actions/configure-aws-credentials@v2
-  #       with:
-  #         role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
-  #         aws-region: ${{ vars.ECR_REGION }}
-  #     - uses: aws-actions/amazon-ecr-login@v1
-  #       id: login-ecr
-  #     - run: |
-  #         echo Building the jar file image...
-  #         chmod +x ./gradlew && ./gradlew build
-  #         echo Building the Docker image...
-  #         docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --no-cache .
-  #         zip -rq buildreports.zip ./build/reports/tests/test/*
-  #         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-  #         echo "{ \"tag\":\"$IMAGE_TAG\" }" >> build_tag.json
-  #       env:
-  #         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-  #         REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-  #         IMAGE_TAG: ${{ github.sha }}
+  build-image:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: amazoncorretto:11 # openjdk:11.0-jdk image is DEPRECATED
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.ECR_REGION }}
+      - uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr
+      - run: |
+          echo Building the jar file image...
+          chmod +x ./gradlew && ./gradlew build
+          echo Building the Docker image...
+          docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --no-cache .
+          zip -rq buildreports.zip ./build/reports/tests/test/*
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "{ \"tag\":\"$IMAGE_TAG\" }" >> build_tag.json
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
   deploy-application-dev:
-    # needs: build-image
+    needs: build-image
     uses: ./.github/workflows/cp-deploy.yml
     with:
-      github-sha: 'b6113564a53f43d54735db8018cdd6560925bff7' # ${{ github.sha }}
+      github-sha: ${{ github.sha }}
       parameter-file: values_dev.yaml
     secrets:
       kube-cluster: ${{ secrets.KUBE_CLUSTER }}
