@@ -36,4 +36,4 @@ jobs:
           kubectl config use-context ${{ secrets.kube-cluster }}
       - run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f {{ inputs.parameter-file }} . --namespace ${{ secrets.kube-namespace }} --install --set nolasa.image.tag=${{ inputs.github-sha }}
+          helm upgrade not-on-libra-auto-search-application -f ${{ inputs.parameter-file }} . --namespace ${{ secrets.kube-namespace }} --install --set nolasa.image.tag=${{ inputs.github-sha }}
