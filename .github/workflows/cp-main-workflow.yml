@@ -9,78 +9,86 @@ on:
     branches: [LAWS-3474]
 
 jobs:
-  # build-image:
-  #   runs-on: ubuntu-latest
-  #   # container:
-  #   #   image: amazoncorretto:11 # openjdk:11.0-jdk image is DEPRECATED
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: aws-actions/configure-aws-credentials@v2
-  #       with:
-  #         role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
-  #         aws-region: ${{ vars.ECR_REGION }}
-  #     - uses: aws-actions/amazon-ecr-login@v1
-  #       id: login-ecr
-  #     - run: |
-  #         echo Building the jar file image...
-  #         chmod +x ./gradlew && ./gradlew build
-  #         echo Building the Docker image...
-  #         docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --no-cache .
-  #         zip -rq buildreports.zip ./build/reports/tests/test/*
-  #         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-  #         echo "{ \"tag\":\"$IMAGE_TAG\" }" >> build_tag.json
-  #       env:
-  #         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-  #         REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-  #         IMAGE_TAG: ${{ github.sha }}
+  build-image:
+    runs-on: ubuntu-latest
+    # container:
+    #   image: amazoncorretto:11 # openjdk:11.0-jdk image is DEPRECATED
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.ECR_REGION }}
+      - uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr
+      - name: Building the MLRA image
+        run: |
+          echo Building the jar file image...
+          chmod +x ./gradlew && ./gradlew build
+          echo Building the Docker image...
+          docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --no-cache .
+          zip -rq buildreports.zip ./build/reports/tests/test/*
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "{ \"tag\":\"$IMAGE_TAG\" }" >> build_tag.json
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
   deploy-application-dev:
     environment: development
-    # needs: build-image
+    needs: build-image
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3    
       - name: Authenticate to the Kubernetes cluster
         env:
-          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
+          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
         run: |
           echo "${{ secrets.KUBE_CERT }}" > ca.crt
           kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
           kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
           kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
           kubectl config use-context ${KUBE_CLUSTER}
-      - name: Helm deploy to development environment
+      - name: Helm deploy to Development environment
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
           helm upgrade not-on-libra-auto-search-application -f values_dev.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }}
   deploy-application-test:
     environment: test
-    # needs: deploy-application-dev
+    needs: deploy-application-dev
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3    
-      - run: |
+      - name: Authenticate to the Kubernetes cluster
+        env:
+          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
+        run: |
           echo "${{ secrets.KUBE_CERT }}" > ca.crt
-          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
-          kubectl config set-credentials cd-serviceaccount --token=${{ secrets.KUBE_TOKEN }}
-          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }}--user=cd-serviceaccount --namespace=${{ secrets.KUBE_NAMESPACE }}
-          kubectl config use-context ${{ secrets.KUBE_CLUSTER }}
-          kubectl get pods -n ${{ secrets.KUBE_NAMESPACE }}
-      # - run: |
-      #     cd helm_deploy/not-on-libra-auto-search-application
-      #     helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }}
+          kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
+          kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context ${KUBE_CLUSTER}
+      - name: Helm deploy to Test environment
+        run: |
+          cd helm_deploy/not-on-libra-auto-search-application
+          helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }}
   deploy-application-preprod:
     environment: preproduction
     needs: deploy-application-test
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3    
-      - run: |
+      - name: Authenticate to the Kubernetes cluster
+        env:
+          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
+        run: |
           echo "${{ secrets.KUBE_CERT }}" > ca.crt
-          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
-          kubectl config set-credentials cd-serviceaccount --token=${{ secrets.KUBE_TOKEN }}
-          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }}--user=cd-serviceaccount --namespace=${{ secrets.KUBE_NAMESPACE }}
-          kubectl config use-context ${{ secrets.KUBE_CLUSTER }}
-      - run: |
+          kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
+          kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context ${KUBE_CLUSTER}
+      - name: Helm deploy to Preproduction environment
+        run: |
           cd helm_deploy/not-on-libra-auto-search-application
           helm upgrade not-on-libra-auto-search-application -f values_preprod.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }}
   deploy-application-prod:
@@ -89,12 +97,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3    
-      - run: |
+      - name: Authenticate to the Kubernetes cluster
+        env:
+          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
+        run: |
           echo "${{ secrets.KUBE_CERT }}" > ca.crt
-          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
-          kubectl config set-credentials cd-serviceaccount --token=${{ secrets.KUBE_TOKEN }}
-          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }}--user=cd-serviceaccount --namespace=${{ secrets.KUBE_NAMESPACE }}
-          kubectl config use-context ${{ secrets.KUBE_CLUSTER }}
-      - run: |
+          kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
+          kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context ${KUBE_CLUSTER}
+      - name: Helm deploy to Production environment
+        run: |
           cd helm_deploy/not-on-libra-auto-search-application
           helm upgrade not-on-libra-auto-search-application -f values_prd.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }}
