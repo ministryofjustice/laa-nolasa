@@ -53,7 +53,7 @@ jobs:
       - name: Helm deploy to Development environment
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_dev.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }} nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          helm upgrade not-on-libra-auto-search-application -f values_dev.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-test:
     environment: test
     needs: deploy-application-dev
@@ -72,7 +72,7 @@ jobs:
       - name: Helm deploy to Test environment
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }}
+          helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-preprod:
     environment: preproduction
     needs: deploy-application-test
@@ -91,7 +91,7 @@ jobs:
       - name: Helm deploy to Preproduction environment
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_preprod.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }}
+          helm upgrade not-on-libra-auto-search-application -f values_preprod.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-prod:
     environment: production
     needs: deploy-application-preprod
@@ -110,4 +110,4 @@ jobs:
       - name: Helm deploy to Production environment
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_prd.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }}
+          helm upgrade not-on-libra-auto-search-application -f values_prd.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
