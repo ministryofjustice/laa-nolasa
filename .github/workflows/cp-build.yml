@@ -13,8 +13,6 @@ on:
 jobs:
   build-image:
     runs-on: ubuntu-latest
-    # container:
-    #   image: amazoncorretto:11 # openjdk:11.0-jdk image is DEPRECATED
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
