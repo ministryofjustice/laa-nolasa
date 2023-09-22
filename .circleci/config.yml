@@ -1,162 +1,162 @@
-version: 2.1
+# version: 2.1
 
-orbs:
-  aws-cli: circleci/aws-cli@4.0.0 # use v4 of this orb
-  aws-ecr: circleci/aws-ecr@8.2.1 # this orb doesn't support OIDC v2, so we use aws-cli to authenticate
-  helm: circleci/helm@1.2.0
+# orbs:
+#   aws-cli: circleci/aws-cli@4.0.0 # use v4 of this orb
+#   aws-ecr: circleci/aws-ecr@8.2.1 # this orb doesn't support OIDC v2, so we use aws-cli to authenticate
+#   helm: circleci/helm@1.2.0
 
-commands:
-  build-image:
-    description: "Build application image"
-    steps:
-      - run:
-          name: Building the docker image
-          command: |
-            echo Building the jar file image...
-            chmod +x ./gradlew && ./gradlew build
-            echo Building the Docker image...
-            docker build -f Dockerfile_cp -t "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}" --no-cache .
-            zip -rq buildreports.zip ./build/reports/tests/test/*
-      - store_artifacts:
-          path: buildreports.zip
-          destination: image-build/buildreports.zip
-  deploy-app:
-    description: "Deploy the application to the relevant environment"
-    parameters:
-      value_file:
-        type: string
-    steps:
-    - run:
-        name: Authenticate with K8s cluster
-        command: |
-          echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
-          kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
-          kubectl config set-credentials cd-serviceaccount --token=${K8S_TOKEN}
-          kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=cd-serviceaccount --namespace=${K8S_NAMESPACE}
-          kubectl config use-context ${K8S_CLUSTER_NAME}
-    - helm/upgrade-helm-chart:
-          namespace: ${K8S_NAMESPACE}
-          update-repositories: false
-          chart: ./helm_deploy/not-on-libra-auto-search-application/
-          release-name: not-on-libra-auto-search-application
-          values: ./helm_deploy/not-on-libra-auto-search-application/<< parameters.value_file >>
-          values-to-override: nolasa.image.tag=${CIRCLE_SHA1}
+# commands:
+#   build-image:
+#     description: "Build application image"
+#     steps:
+#       - run:
+#           name: Building the docker image
+#           command: |
+#             echo Building the jar file image...
+#             chmod +x ./gradlew && ./gradlew build
+#             echo Building the Docker image...
+#             docker build -f Dockerfile_cp -t "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}" --no-cache .
+#             zip -rq buildreports.zip ./build/reports/tests/test/*
+#       - store_artifacts:
+#           path: buildreports.zip
+#           destination: image-build/buildreports.zip
+#   deploy-app:
+#     description: "Deploy the application to the relevant environment"
+#     parameters:
+#       value_file:
+#         type: string
+#     steps:
+#     - run:
+#         name: Authenticate with K8s cluster
+#         command: |
+#           echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
+#           kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
+#           kubectl config set-credentials cd-serviceaccount --token=${K8S_TOKEN}
+#           kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=cd-serviceaccount --namespace=${K8S_NAMESPACE}
+#           kubectl config use-context ${K8S_CLUSTER_NAME}
+#     - helm/upgrade-helm-chart:
+#           namespace: ${K8S_NAMESPACE}
+#           update-repositories: false
+#           chart: ./helm_deploy/not-on-libra-auto-search-application/
+#           release-name: not-on-libra-auto-search-application
+#           values: ./helm_deploy/not-on-libra-auto-search-application/<< parameters.value_file >>
+#           values-to-override: nolasa.image.tag=${CIRCLE_SHA1}
 
-jobs:
-  build_and_push_image:
-    docker:
-    - image: circleci/openjdk:11-jdk # ministryofjustice/cloud-platform-tools
-    environment:
-      DOCKER_IMAGE_NAME: laa-aws-infrastructure/laa-not-on-libra-auto-search-application-dev-ecr
-    steps:
-    - checkout
-    - setup_remote_docker:
-        docker_layer_caching: true
-        version: 20.10.6
-    - build-image
-    # Authenticate to AWS using OIDC v2 with the AWS CLI
-    - aws-cli/setup:
-        role_arn: $ECR_ROLE_TO_ASSUME # this will use the env var
-        region: $ECR_REGION # this will use the env var
-    # Authenticate to the ECR repository using the standard command
-    - run:
-        name: Log in to ECR
-        command: |
-          aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin ${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com
+# jobs:
+#   build_and_push_image:
+#     docker:
+#     - image: circleci/openjdk:11-jdk # ministryofjustice/cloud-platform-tools
+#     environment:
+#       DOCKER_IMAGE_NAME: laa-aws-infrastructure/laa-not-on-libra-auto-search-application-dev-ecr
+#     steps:
+#     - checkout
+#     - setup_remote_docker:
+#         docker_layer_caching: true
+#         version: 20.10.6
+#     - build-image
+#     # Authenticate to AWS using OIDC v2 with the AWS CLI
+#     - aws-cli/setup:
+#         role_arn: $ECR_ROLE_TO_ASSUME # this will use the env var
+#         region: $ECR_REGION # this will use the env var
+#     # Authenticate to the ECR repository using the standard command
+#     - run:
+#         name: Log in to ECR
+#         command: |
+#           aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin ${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com
 
-    # - aws-ecr/push-image:
-    #     tag: ${CIRCLE_SHA1}
-    #     region: $ECR_REGION # this will use the env var
-    #     repo: $ECR_REPOSITORY # this will use the env var
-    - run:
-        name: Push application Docker image
-        command: |
-          # if [ "${CIRCLE_BRANCH}" == "main" ]; then
-          docker push "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
-          echo "{ \"tag\":\"${CIRCLE_SHA1}\" }" >> build_tag.json
-          # fi
+#     # - aws-ecr/push-image:
+#     #     tag: ${CIRCLE_SHA1}
+#     #     region: $ECR_REGION # this will use the env var
+#     #     repo: $ECR_REPOSITORY # this will use the env var
+#     - run:
+#         name: Push application Docker image
+#         command: |
+#           # if [ "${CIRCLE_BRANCH}" == "main" ]; then
+#           docker push "${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}"
+#           echo "{ \"tag\":\"${CIRCLE_SHA1}\" }" >> build_tag.json
+#           # fi
 
-    - store_artifacts:
-        path: build_tag.json
-        destination: image-build/build_tag.json
-
-
-  deploy_to_dev:
-    docker:
-    - image: ministryofjustice/cloud-platform-tools
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-          version: 20.10.6
-      - deploy-app:
-          value_file: values_dev.yaml
-  deploy_to_tst:
-    docker:
-    - image: ministryofjustice/cloud-platform-tools
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-          version: 20.10.6
-      - deploy-app:
-          value_file: values_tst.yaml
-  deploy_to_preprod:
-    docker:
-    - image: ministryofjustice/cloud-platform-tools
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-          version: 20.10.6
-      - deploy-app:
-          value_file: values_preprod.yaml
-  deploy_to_prd:
-    docker:
-    - image: ministryofjustice/cloud-platform-tools
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-          version: 20.10.6
-      - deploy-app:
-          value_file: values_prd.yaml
+#     - store_artifacts:
+#         path: build_tag.json
+#         destination: image-build/build_tag.json
 
 
-workflows:
-  version: 2
-  multi_env_deploy:
-    jobs:
-      - build_and_push_image
-      - approval_to_dev:
-          type: approval
-          requires:
-            - build_and_push_image
-      - deploy_to_dev:
-          context: nolasa-dev
-          requires:
-            - approval_to_dev
-      - approval_to_tst:
-          type: approval
-          requires:
-            - deploy_to_dev
-      - deploy_to_tst:
-          context: nolasa-tst
-          requires:
-            - approval_to_tst
-      - approval_to_preprod:
-          type: approval
-          requires:
-            - deploy_to_tst
-      - deploy_to_preprod:
-          context: nolasa-preprod
-          requires:
-            - approval_to_preprod
-      - approval_to_prd:
-          type: approval
-          requires:
-            - deploy_to_preprod
-      - deploy_to_prd:
-          context: nolasa-prd
-          requires:
-            - approval_to_prd
+#   deploy_to_dev:
+#     docker:
+#     - image: ministryofjustice/cloud-platform-tools
+#     steps:
+#       - checkout
+#       - setup_remote_docker:
+#           docker_layer_caching: true
+#           version: 20.10.6
+#       - deploy-app:
+#           value_file: values_dev.yaml
+#   deploy_to_tst:
+#     docker:
+#     - image: ministryofjustice/cloud-platform-tools
+#     steps:
+#       - checkout
+#       - setup_remote_docker:
+#           docker_layer_caching: true
+#           version: 20.10.6
+#       - deploy-app:
+#           value_file: values_tst.yaml
+#   deploy_to_preprod:
+#     docker:
+#     - image: ministryofjustice/cloud-platform-tools
+#     steps:
+#       - checkout
+#       - setup_remote_docker:
+#           docker_layer_caching: true
+#           version: 20.10.6
+#       - deploy-app:
+#           value_file: values_preprod.yaml
+#   deploy_to_prd:
+#     docker:
+#     - image: ministryofjustice/cloud-platform-tools
+#     steps:
+#       - checkout
+#       - setup_remote_docker:
+#           docker_layer_caching: true
+#           version: 20.10.6
+#       - deploy-app:
+#           value_file: values_prd.yaml
+
+
+# workflows:
+#   version: 2
+#   multi_env_deploy:
+#     jobs:
+#       - build_and_push_image
+#       - approval_to_dev:
+#           type: approval
+#           requires:
+#             - build_and_push_image
+#       - deploy_to_dev:
+#           context: nolasa-dev
+#           requires:
+#             - approval_to_dev
+#       - approval_to_tst:
+#           type: approval
+#           requires:
+#             - deploy_to_dev
+#       - deploy_to_tst:
+#           context: nolasa-tst
+#           requires:
+#             - approval_to_tst
+#       - approval_to_preprod:
+#           type: approval
+#           requires:
+#             - deploy_to_tst
+#       - deploy_to_preprod:
+#           context: nolasa-preprod
+#           requires:
+#             - approval_to_preprod
+#       - approval_to_prd:
+#           type: approval
+#           requires:
+#             - deploy_to_preprod
+#       - deploy_to_prd:
+#           context: nolasa-prd
+#           requires:
+#             - approval_to_prd
