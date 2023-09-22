@@ -4,16 +4,21 @@ permissions:
   id-token: write
   contents: read
 
+# on:
+#   workflow_run:
+#     workflows: [Build image and deploy to DEV]
+#     types:
+#       - completed
+
 on:
-  workflow_run:
-    workflows: [Build image and deploy to DEV]
-    types:
-      - completed
+  push:
+    branches:
+    - 'LAWS-3474'
 
 jobs:
   deploy-application-test:
     environment: test
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3    
@@ -26,10 +31,14 @@ jobs:
           kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
           kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
           kubectl config use-context ${KUBE_CLUSTER}
+      - uses: actions/download-artifact@v3
+        with:
+          path: build-reports/build_tag.json
       - name: Helm deploy to Test environment
         run: |
-          cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          cat build_tag.json
+          # cd helm_deploy/not-on-libra-auto-search-application
+          # helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-preprod:
     environment: preproduction
     needs: deploy-application-test
