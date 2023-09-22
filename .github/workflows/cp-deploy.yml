@@ -4,11 +4,16 @@ permissions:
   id-token: write
   contents: read
 
+# on:
+#   workflow_run:
+#     workflows: [Build image and deploy to DEV]
+#     types:
+#       - completed
+
 on:
-  workflow_run:
-    workflows: [Build image and deploy to DEV]
-    types:
-      - completed
+  push:
+    branches:
+    - 'LAWS-3474'
 
 jobs:
   deploy-application-test:
