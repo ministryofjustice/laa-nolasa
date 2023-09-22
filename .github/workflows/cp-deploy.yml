@@ -14,7 +14,6 @@ jobs:
   deploy-application-test:
     environment: test
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    needs: retrieve-github-sha
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3    
