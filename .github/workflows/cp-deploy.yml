@@ -7,26 +7,7 @@ permissions:
 on:
   push:
     branches: [master]
-
-# on:
-#   workflow_call:
-#     inputs:
-#       github-sha:
-#         required: true
-#         type: string
-#       parameter-file:
-#         required: true
-#         type: string
-#     secrets:
-#       kube-cluster:
-#         required: true
-#       kube-namespace:
-#         required: true
-#       kube-cert:
-#         required: true
-#       kube-token:
-#         required: true
-      
+    
 jobs:
   deploy-application-test:
     environment: test
