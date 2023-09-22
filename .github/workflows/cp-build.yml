@@ -6,7 +6,9 @@ permissions:
 
 on:
   push:
-    branches: [LAWS-3474]
+    branches:
+    - '**'
+    - '!master'
 
 jobs:
   build-image:
