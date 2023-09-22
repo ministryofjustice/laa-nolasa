@@ -34,6 +34,11 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
+      - name: Upload build_tag.json
+        uses: actions/upload-artifact@v3
+        with:
+          name: build_tag
+          path: build_tag.json
       
   deploy-application-dev:
     environment: development
