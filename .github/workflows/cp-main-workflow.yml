@@ -43,10 +43,10 @@ jobs:
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }}
         run: |
-          echo "${{ secrets.kube-cert }}" > ca.crt
+          echo "${{ secrets.KUBE_CERT }}" > ca.crt
           kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
-          kubectl config set-credentials deploy-user --token=${{ secrets.kube-token }}
-          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.kube-namespace }}
+          kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to development environment
         run: |
