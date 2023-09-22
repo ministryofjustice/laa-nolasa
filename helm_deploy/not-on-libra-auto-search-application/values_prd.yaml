@@ -13,7 +13,7 @@ nolasa:
     type: Recreate # For recreate, all existing Pods are killed before new ones are created when
 
   image:
-    repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/laa-aws-infrastructure/laa-not-on-libra-auto-search-application-dev-ecr
+    repository: "Defined in cp-main-workflow.yml GHA pipeline"
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "65e4ae82695329924d259bbc24e43e299aad7f7c"
