@@ -39,6 +39,7 @@ jobs:
         with:
           name: build_tag
           path: build_tag.json
+          if-no-files-found: error
       
   deploy-application-dev:
     environment: development
