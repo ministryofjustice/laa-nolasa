@@ -4,21 +4,16 @@ permissions:
   id-token: write
   contents: read
 
-# on:
-#   workflow_run:
-#     workflows: [Build image and deploy to DEV]
-#     types:
-#       - completed
-
 on:
-  push:
-    branches:
-    - 'LAWS-3474'
+  workflow_run:
+    workflows: [Build image and deploy to DEV]
+    types:
+      - completed
 
 jobs:
   deploy-application-test:
     environment: test
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3    
