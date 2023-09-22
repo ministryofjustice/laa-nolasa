@@ -26,7 +26,8 @@ jobs:
         with:
           workflow: cp-build.yml
           workflow_conclusion: success
-          name: artifacts/build_tag.json
+          name: build-reports
+          path: artifacts/build_tag.json
       - run: |
           echo build_tag.json
           echo ${{ github.event.workflow_run.head_sha }}
