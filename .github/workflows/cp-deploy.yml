@@ -16,7 +16,9 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:  
-      - uses: actions/checkout@v3    
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }} 
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
@@ -37,7 +39,9 @@ jobs:
     needs: deploy-application-test
     runs-on: ubuntu-latest
     steps:  
-      - uses: actions/checkout@v3    
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}    
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
@@ -58,7 +62,9 @@ jobs:
     needs: deploy-application-preprod
     runs-on: ubuntu-latest
     steps:  
-      - uses: actions/checkout@v3    
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}     
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
