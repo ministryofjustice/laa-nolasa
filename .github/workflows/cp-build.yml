@@ -60,4 +60,3 @@ jobs:
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
           helm upgrade not-on-libra-auto-search-application -f values_dev.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
-  
