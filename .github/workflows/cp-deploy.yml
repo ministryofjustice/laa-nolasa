@@ -28,10 +28,10 @@ jobs:
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to Test environment
         env:
-          GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+          GITHUB_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${GITHUB_SHA} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${GITHUB_HEAD_SHA} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-preprod:
     environment: preproduction
     needs: deploy-application-test
@@ -49,10 +49,10 @@ jobs:
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to Preproduction environment
         env:
-          GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+          GITHUB_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_preprod.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${GITHUB_SHA} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          helm upgrade not-on-libra-auto-search-application -f values_preprod.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${GITHUB_HEAD_SHA} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-prod:
     environment: production
     needs: deploy-application-preprod
@@ -70,7 +70,7 @@ jobs:
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to Production environment
         env:
-          GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+          GITHUB_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_prd.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${GITHUB_SHA} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          helm upgrade not-on-libra-auto-search-application -f values_prd.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${GITHUB_HEAD_SHA} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
