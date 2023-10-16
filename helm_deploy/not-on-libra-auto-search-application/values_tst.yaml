@@ -2,7 +2,7 @@
 # Declare variables to be passed into your templates.
 
 appNameEnv: "not-on-libra-auto-search-application"
-dryRunMode: "True"
+dryRunMode: "False"
 environment: "tst"
 
 nolasa:
