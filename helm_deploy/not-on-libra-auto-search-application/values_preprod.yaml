@@ -2,7 +2,7 @@
 # Declare variables to be passed into your templates.
 
 appNameEnv: "not-on-libra-auto-search-application"
-dryRunMode: "True"
+dryRunMode: "False"
 environment: "preprod"
 
 nolasa:
@@ -19,12 +19,12 @@ nolasa:
     tag: "65e4ae82695329924d259bbc24e43e299aad7f7c"
 
   cloudwatch:
-    exportEnabled: false
+    exportEnabled: true
     step: 1h
 
   dataSource:
     url: "jdbc:oracle:thin:@rds.maat.aws.stg.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
-  cronSchedule: "0 30 * * * *" # Cron schedule for when the matching job gets ran
+  cronSchedule: "0 0 18 * * SUN-THU" # Cron schedule for when the matching job gets ran
   libraEndpointUri: "http://infox.aws.stg.legalservices.gov.uk/infoX/gateway"
