@@ -19,7 +19,7 @@ nolasa:
     tag: "65e4ae82695329924d259bbc24e43e299aad7f7c"
 
   cloudwatch:
-    exportEnabled: true
+    exportEnabled: false
     step: 1h
 
   dataSource:
