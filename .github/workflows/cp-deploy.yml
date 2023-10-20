@@ -7,21 +7,25 @@ permissions:
   id-token: write
   contents: read
 
+# on:
+#   workflow_run:
+#     workflows: [Build image and deploy to DEV]
+#     types:
+#       - completed
 on:
-  workflow_run:
-    workflows: [Build image and deploy to DEV]
-    types:
-      - completed
+  push:
+    branches:
+    - 'master'
 
 jobs:
   deploy-application-test:
     environment: test
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }} # Checkout to the branch that triggered cp-build.yml workflow
+        # with:
+        #   ref: ${{ github.event.workflow_run.head_branch }} # Checkout to the branch that triggered cp-build.yml workflow
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
@@ -43,8 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}    
+        # with:
+        #   ref: ${{ github.event.workflow_run.head_branch }}    
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
@@ -66,8 +70,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}     
+        # with:
+        #   ref: ${{ github.event.workflow_run.head_branch }}     
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work

@@ -13,6 +13,8 @@ on:
 jobs:
   build-image:
     runs-on: ubuntu-latest
+    outputs:
+      DOCKER_TAG: ${{ steps.get-docker-tag.outputs.DOCKER_TAG }}
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
@@ -21,6 +23,27 @@ jobs:
           aws-region: ${{ vars.ECR_REGION }}
       - uses: aws-actions/amazon-ecr-login@v1
         id: login-ecr
+      - name: Determine Docker Tag
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+        id: get-docker-tag
+        run: |
+          if ! [ -s BUILD_TAG.txt ]; then
+              echo >&2 "WARN: No 'BUILD_TAG.txt' found in repo to provide docker image tag - Application will be redeployed"
+              DOCKER_TAG="$( echo "${{ github.sha }}" | head -c 8 )"
+              echo "Generated docker tag '${DOCKER_TAG}' ..."
+          else
+              DOCKER_TAG="$( cat BUILD_TAG.txt )"
+              echo "Using docker tag '${DOCKER_TAG}' from BUILD_TAG.txt ..."
+
+              if docker pull "$REGISTRY/$REPOSITORY:${DOCKER_TAG}"; then
+                  echo "Docker tag '${DOCKER_TAG}' already exists in the ECR - Not rebuilding Docker container"
+              else
+                  echo >&2 "Docker tag '${DOCKER_TAG}' does not exist in the ECR - Application will be redeployed"
+              fi
+          fi
+          echo "DOCKER_TAG=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
       - name: Building the MLRA image
         run: |
           echo Building the jar file image...
@@ -30,11 +53,10 @@ jobs:
           mkdir artifacts
           zip -rq artifacts/buildreports.zip ./build/reports/tests/test/*
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          echo "{ \"tag\":\"$IMAGE_TAG\" }" >> artifacts/build_tag.json
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ needs.build-image.outputs.DOCKER_TAG }}
       - name: Upload build tags and test reports
         uses: actions/upload-artifact@v3
         with:
@@ -59,4 +81,4 @@ jobs:
       - name: Helm deploy to Development environment
         run: |
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_dev.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ github.sha }} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          helm upgrade not-on-libra-auto-search-application -f values_dev.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ needs.build-image.outputs.DOCKER_TAG }} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
