@@ -1,3 +1,5 @@
+# This workflow will build the image and deploy to the development environment using the tag in the BUILD_TAG.txt file. If the tag is the same as previous deploy, then no new build will take place
+
 name: Build image and deploy to DEV
 
 permissions:
@@ -29,19 +31,13 @@ jobs:
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
         id: get-docker-tag
         run: |
-          if ! [ -s BUILD_TAG.txt ]; then
-              echo >&2 "WARN: No 'BUILD_TAG.txt' found in repo to provide docker image tag - Application will be redeployed"
-              DOCKER_TAG="$( echo "${{ github.sha }}" | head -c 8 )"
-              echo "Generated docker tag '${DOCKER_TAG}' ..."
-          else
-              DOCKER_TAG="$( cat BUILD_TAG.txt )"
-              echo "Using docker tag '${DOCKER_TAG}' from BUILD_TAG.txt ..."
+          DOCKER_TAG="$( cat BUILD_TAG.txt )"
+          echo "Using docker tag '${DOCKER_TAG}' from BUILD_TAG.txt ..."
 
-              if docker pull "$REGISTRY/$REPOSITORY:${DOCKER_TAG}"; then
-                  echo "Docker tag '${DOCKER_TAG}' already exists in the ECR - Not rebuilding Docker container"
-              else
-                  echo >&2 "Docker tag '${DOCKER_TAG}' does not exist in the ECR - Application will be redeployed"
-              fi
+          if docker pull "$REGISTRY/$REPOSITORY:${DOCKER_TAG}"; then
+              echo "Docker tag '${DOCKER_TAG}' already exists in the ECR - Not rebuilding Docker container"
+          else
+              echo >&2 "Docker tag '${DOCKER_TAG}' does not exist in the ECR - Application will be redeployed"
           fi
 
           echo "DOCKER_TAG=${DOCKER_TAG}" >> "$GITHUB_ENV"
