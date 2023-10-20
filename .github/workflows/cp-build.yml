@@ -48,7 +48,6 @@ jobs:
               echo "Docker image '$DOCKER_TAG' is up to date - not rebuilding"
           else
               echo "No Docker image for tag $DOCKER_TAG - Building the image with gradle ..."
-              echo Building the jar file image...
               chmod +x ./gradlew && ./gradlew build
               echo Building the Docker image...
               docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$DOCKER_TAG --no-cache .
