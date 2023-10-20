@@ -1,31 +1,43 @@
-# This workflow will only trigger if the workflow in cp-build.yml has been completed, and deployments should only happen if that workflow was completed successfully.
-# Note that only the default branch (master) of this workflow is ran, thus any changes here needs to be pushed to the default branch first.
-
 name: Deploy to TST, PRE, PRD
 
 permissions:
   id-token: write
   contents: read
 
-# on:
-#   workflow_run:
-#     workflows: [Build image and deploy to DEV]
-#     types:
-#       - completed
 on:
   push:
     branches:
-    - 'master'
+    - '!master'
 
 jobs:
   deploy-application-test:
     environment: test
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3
-        # with:
-        #   ref: ${{ github.event.workflow_run.head_branch }} # Checkout to the branch that triggered cp-build.yml workflow
+      - name: Retrieve Docker Tag
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+        id: retrieve-docker-tag
+        run: |
+          if ! [ -s BUILD_TAG.txt ]; then
+              echo >&2 "WARN: No 'BUILD_TAG.txt' found in repo to provide docker image tag - Application will be redeployed"
+              DOCKER_TAG="$( echo "${{ github.sha }}" | head -c 8 )"
+              echo "Generated docker tag '${DOCKER_TAG}' ..."
+          else
+              DOCKER_TAG="$( cat BUILD_TAG.txt )"
+              echo "Using docker tag '${DOCKER_TAG}' from BUILD_TAG.txt ..."
+
+              if docker pull "$REGISTRY/$REPOSITORY:${DOCKER_TAG}"; then
+                  echo "Docker tag '${DOCKER_TAG}' already exists in the ECR - Not rebuilding Docker container"
+              else
+                  echo >&2 "Docker tag '${DOCKER_TAG}' does not exist in the ECR - Application will be redeployed"
+              fi
+          fi
+
+          echo "DOCKER_TAG=${DOCKER_TAG}" >> "$GITHUB_ENV"
+          echo "DOCKER_TAG=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
@@ -46,9 +58,7 @@ jobs:
     needs: deploy-application-test
     runs-on: ubuntu-latest
     steps:  
-      - uses: actions/checkout@v3
-        # with:
-        #   ref: ${{ github.event.workflow_run.head_branch }}    
+      - uses: actions/checkout@v3  
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
@@ -69,9 +79,7 @@ jobs:
     needs: deploy-application-preprod
     runs-on: ubuntu-latest
     steps:  
-      - uses: actions/checkout@v3
-        # with:
-        #   ref: ${{ github.event.workflow_run.head_branch }}     
+      - uses: actions/checkout@v3   
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
