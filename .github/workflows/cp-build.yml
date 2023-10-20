@@ -43,20 +43,21 @@ jobs:
                   echo >&2 "Docker tag '${DOCKER_TAG}' does not exist in the ECR - Application will be redeployed"
               fi
           fi
+
+          echo "DOCKER_TAG=${DOCKER_TAG}" >> "$GITHUB_ENV"
           echo "DOCKER_TAG=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
       - name: Building the MLRA image
         run: |
           echo Building the jar file image...
           chmod +x ./gradlew && ./gradlew build
           echo Building the Docker image...
-          docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --no-cache .
+          docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$DOCKER_TAG --no-cache .
           mkdir artifacts
           zip -rq artifacts/buildreports.zip ./build/reports/tests/test/*
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:$DOCKER_TAG
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ needs.build-image.outputs.DOCKER_TAG }}
       - name: Upload build tags and test reports
         uses: actions/upload-artifact@v3
         with:
