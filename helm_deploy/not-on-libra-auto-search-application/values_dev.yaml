@@ -26,5 +26,5 @@ nolasa:
     url: "jdbc:oracle:thin:@rds.maat.aws.dev.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
-  cronSchedule: "* * * * * *" # Cron schedule for when the matching job gets ran
+  cronSchedule: "*/5 * * * *" # Cron schedule for when the matching job gets ran
   libraEndpointUri: "https://laa-infox-dev.apps.live.cloud-platform.service.justice.gov.uk/infoX/gateway"
