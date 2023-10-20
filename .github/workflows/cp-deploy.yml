@@ -1,3 +1,5 @@
+# This workflow will deploy to the test, preprod, and prod environment using the tag in the BUILD_TAG.txt file
+
 name: Deploy to TST, PRE, PRD
 
 permissions:
@@ -15,29 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:  
       - uses: actions/checkout@v3
-      - name: Retrieve Docker Tag
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-        id: retrieve-docker-tag
-        run: |
-          if ! [ -s BUILD_TAG.txt ]; then
-              echo >&2 "WARN: No 'BUILD_TAG.txt' found in repo to provide docker image tag - Application will be redeployed"
-              DOCKER_TAG="$( echo "${{ github.sha }}" | head -c 8 )"
-              echo "Generated docker tag '${DOCKER_TAG}' ..."
-          else
-              DOCKER_TAG="$( cat BUILD_TAG.txt )"
-              echo "Using docker tag '${DOCKER_TAG}' from BUILD_TAG.txt ..."
-
-              if docker pull "$REGISTRY/$REPOSITORY:${DOCKER_TAG}"; then
-                  echo "Docker tag '${DOCKER_TAG}' already exists in the ECR - Not rebuilding Docker container"
-              else
-                  echo >&2 "Docker tag '${DOCKER_TAG}' does not exist in the ECR - Application will be redeployed"
-              fi
-          fi
-
-          echo "DOCKER_TAG=${DOCKER_TAG}" >> "$GITHUB_ENV"
-          echo "DOCKER_TAG=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
       - name: Authenticate to the Kubernetes cluster
         env:
           KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
@@ -48,11 +27,10 @@ jobs:
           kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to Test environment
-        env:
-          GITHUB_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}  # Github commit sha that triggered cp-build.yml workflow
         run: |
+          DOCKER_TAG="$( cat BUILD_TAG.txt )"
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${GITHUB_HEAD_SHA} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=$DOCKER_TAG --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-preprod:
     environment: preproduction
     needs: deploy-application-test
@@ -69,11 +47,10 @@ jobs:
           kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to Preproduction environment
-        env:
-          GITHUB_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
+          DOCKER_TAG="$( cat BUILD_TAG.txt )"
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_preprod.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${GITHUB_HEAD_SHA} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          helm upgrade not-on-libra-auto-search-application -f values_preprod.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=$DOCKER_TAG --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-prod:
     environment: production
     needs: deploy-application-preprod
@@ -90,8 +67,7 @@ jobs:
           kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to Production environment
-        env:
-          GITHUB_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
+          DOCKER_TAG="$( cat BUILD_TAG.txt )"
           cd helm_deploy/not-on-libra-auto-search-application
-          helm upgrade not-on-libra-auto-search-application -f values_prd.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${GITHUB_HEAD_SHA} --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          helm upgrade not-on-libra-auto-search-application -f values_prd.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=$DOCKER_TAG --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}

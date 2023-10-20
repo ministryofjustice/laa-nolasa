@@ -48,13 +48,18 @@ jobs:
           echo "DOCKER_TAG=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
       - name: Building the MLRA image
         run: |
-          echo Building the jar file image...
-          chmod +x ./gradlew && ./gradlew build
-          echo Building the Docker image...
-          docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$DOCKER_TAG --no-cache .
-          mkdir artifacts
-          zip -rq artifacts/buildreports.zip ./build/reports/tests/test/*
-          docker push $REGISTRY/$REPOSITORY:$DOCKER_TAG
+          if docker pull "$REGISTRY/$REPOSITORY:$DOCKER_TAG"; then
+              echo "Docker image '$DOCKER_TAG' is up to date - not rebuilding"
+          else
+              echo "No Docker image for tag $DOCKER_TAG - Building the image with gradle ..."
+              echo Building the jar file image...
+              chmod +x ./gradlew && ./gradlew build
+              echo Building the Docker image...
+              docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$DOCKER_TAG --no-cache .
+              mkdir artifacts
+              zip -rq artifacts/buildreports.zip ./build/reports/tests/test/*
+              docker push $REGISTRY/$REPOSITORY:$DOCKER_TAG
+          fi
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
