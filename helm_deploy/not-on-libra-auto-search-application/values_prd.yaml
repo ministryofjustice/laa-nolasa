@@ -2,7 +2,7 @@
 # Declare variables to be passed into your templates.
 
 appNameEnv: "not-on-libra-auto-search-application"
-dryRunMode: "True"
+dryRunMode: "false"
 environment: "prd"
 
 nolasa:
@@ -23,8 +23,8 @@ nolasa:
     step: 1h
 
   dataSource:
-    url: "jdbc:oracle:thin:@broken-link-rds.maat.aws.prd.legalservices.gov.uk:1521:MAATDB" # Remove broken-link- for working links when cutting over
+    url: "jdbc:oracle:thin:@rds.maat.aws.prd.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
-  cronSchedule: "0 30 * * * *" # Cron schedule for when the matching job gets ran
-  libraEndpointUri: "http://broken-link-infox.aws.prd.legalservices.gov.uk/infoX/gateway" # Remove broken-link- for working links when cutting over
+  cronSchedule: "0 0 18 * * SUN-THU" # Cron schedule for when the matching job gets ran
+  libraEndpointUri: "http://infox.aws.prd.legalservices.gov.uk/infoX/gateway"
