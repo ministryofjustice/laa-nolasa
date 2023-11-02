@@ -42,7 +42,7 @@ jobs:
 
           echo "DOCKER_TAG=${DOCKER_TAG}" >> "$GITHUB_ENV"
           echo "DOCKER_TAG=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
-      - name: Building the MLRA image
+      - name: Building the Nolasa image
         run: |
           if docker pull "$REGISTRY/$REPOSITORY:$DOCKER_TAG"; then
               echo "Docker image '$DOCKER_TAG' is up to date - not rebuilding"

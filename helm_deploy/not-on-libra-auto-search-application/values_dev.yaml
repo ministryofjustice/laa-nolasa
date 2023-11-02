@@ -13,6 +13,7 @@ nolasa:
     type: RollingUpdate # For RollingUpdate, when your deployment is updated, or your pods need to be moved to another node, the cluster will create new instances before terminating the old ones
     rollingUpdate:
       maxSurge: 100% # A complete additional copy of your deployment will be created before any of your old pods are terminated
+      maxUnavailable: 0 # Pod must be available at all times
 
   image:
     repository: "Defined in cp-main-workflow.yml GHA pipeline"
