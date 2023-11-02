@@ -10,7 +10,9 @@ nolasa:
   revisionHistoryLimit: 2 # Specifies the number of old ReplicaSets to retain to allow rollback
   minReadySeconds: 10 # Specifies the minimum number of seconds for which a newly created Pod should be ready without any of its containers crashing, for it to be considered available
   strategy:
-    type: Recreate # For recreate, all existing Pods are killed before new ones are created when
+    type: RollingUpdate # For RollingUpdate, when your deployment is updated, or your pods need to be moved to another node, the cluster will create new instances before terminating the old ones
+    rollingUpdate:
+      maxSurge: 100% # A complete additional copy of your deployment will be created before any of your old pods are terminated
 
   image:
     repository: "Defined in cp-main-workflow.yml GHA pipeline"
