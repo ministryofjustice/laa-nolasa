@@ -30,8 +30,8 @@ public class ReconciliationService {
     @Value("${app.dry-run-mode}")
     private boolean dryRunMode;
 
-    private InfoXServiceClient infoXServiceClient;
-    private NolRepository nolRepository;
+    private final InfoXServiceClient infoXServiceClient;
+    private final NolRepository nolRepository;
     private final MetricHandler metricHandler;
 
     public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService, MetricHandler metricHandler) {
