@@ -55,7 +55,7 @@ The LIBRA_ENDPOINTURI environment variable has been assigned to http://host.dock
 
 You will need to build the artifacts for the source code, using `gradle`
 
-```
+```shell
 ./gradlew clean build
 ```
 
@@ -63,11 +63,16 @@ Information: The 'nolasa-0.1.0.jar' is located in:
 ```./build/libs```
 
 
-The apps should then startup cleanly if you run
+The apps should then start cleanly if you run
 
-```sh
+```shell
 docker-compose build
 docker-compose up app
+```
+
+Alternatively, you can run the script `cleanBuildAndRun.sh` to do all of the above.
+```sh
+sh cleanBuildAndRun_Local.sh
 ```
 
 This application does not have any user interface, so nothing would be available on the corresponding web page http://localhost:8081.
