@@ -43,14 +43,11 @@ public class PostConstructLogger {
     }
 
     private static void logSlf4jLoggingImplementation() {
-        ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
-
-        log.info("SLF4J is using the underlying logging implementation: {}", loggerFactory.getClass().getName());
-        log.info("SLF4J is using the underlying logging implementation: {}", log.getClass().getName());
+        log.info("SLF4J is using the logging implementation: {}", log.getClass().getCanonicalName());
     }
 
     private void logEnvironmentProperties() {
         ENVIRONMENT_PROPERTY_KEYS
-                .forEach(propertyKey -> log.info("{}: {}", propertyKey, environment.getProperty(propertyKey)));
+                .forEach(propertyKey -> log.info("ENVIRONMENT_PROPERTY: {} VALUE: {}", propertyKey, environment.getProperty(propertyKey)));
     }
 }

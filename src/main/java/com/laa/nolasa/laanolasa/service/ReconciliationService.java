@@ -73,7 +73,7 @@ public class ReconciliationService {
                 return ReconciliationResult.fromCount(numberOfResults);
             }
         } catch (Exception e) {
-            log.error("Error handling MAATID " + maatId + " - skipping", e);
+            log.error(String.format("Error handling MAATID %d - skipping", maatId), e);
             return ReconciliationResult.ERROR;
         }
     }
