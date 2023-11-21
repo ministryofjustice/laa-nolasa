@@ -3,22 +3,23 @@ The [Managed Libra records application (MLRA)](https://github.com/ministryofjust
 
 If an LAA caseworker searches for a case on the Libra system using MLRA and they are unable to find a corresponding case (this can happen for numerous reasons, for instance a Legal Aid application being submitted by a legal provider before the police/courts have added onto LIBRA), the case is marked by a caseworker as 'NOT ON LIBRA' and places onto a backlog queue (the 'not on libra' queue). Case workers will then research these cases at a later date to see if the corresponding case is now on Libra system.
 
-This researching can take time as there is not a great way of prioritizing cases that may be on Libra. This is where the Nolasa application comes in.
+This researching can take time as there is not a great way of prioritizing cases that may be on Libra. This is where the NOLASA application comes in.
 
 ## Not On Libra Auto-Search Application (NOLASA)
-Not On Libra Auto-Search Application (NOLASA) is a micro-service that reads cases that have been marked as 'not-on-libra' from the MLRA database once a day (8pm). It then auto-searches the HMCTS Libra system via the LAA's Infox message broker service. The message protocol used is SOAP.
+Not On Libra Auto-Search Application (NOLASA) is a microservice that reads cases that have been marked as 'not-on-libra' from the MLRA database once a day (8pm). It then auto-searches the HMCTS Libra system via the LAA's InfoX message broker service. The message protocol used is SOAP.
 
 If NOLASA finds that there are results returned for a case it updates its status in MLRA to say 'RESULTS FOUND'. This means that caseworkers can filter 'not on libra' cases to ones that they know they will have results for. They can then prioritize their case searching and linking more effectively.
 
-## NOLASA Springboot Micro-service
-The NOSALA micro-service has been developed using Springboot framework with enbedded Tomcat server. Tomcat is fully contained in the fat JAR file. Gradle packages executable JAR file which is deployed as Docker image on AWS ECS.
+## NOLASA Springboot Microservice
+The NOSALA microservice has been developed using Springboot framework with embedded Tomcat server. Tomcat is fully contained in the fat JAR file. Gradle packages executable JAR file which is deployed as Docker image on AWS ECS.
 
 ## Developer setup
 ### Pre-requisites
 1. Docker
-1. SSH
-1. Access to the MAAT development database
-1. An editor/IDE of some sort for example IntelliJ, eclipse, or atom.
+2. Java - required version specified in the file `.java-version`
+3. SSH
+4. Access to the MAAT development database
+5. Java IDE - e.g. IntelliJ, eclipse, or atom
 
 We're using [Gradle](https://gradle.org/) to build the application. This also includes plugins for generating IntelliJ configuration.
 
@@ -35,23 +36,28 @@ cd laa-nolasa
 Database and InfoX endpoints need to be up and running before the application runs. This step is not required if you are running in an AWS workspace.
 
 Database:
-You will need to have the relevant database accessible on port 1521 locally. This can be provided by an SSH tunnel to an RDS instance in AWS. Here is the command to tunnel to Dev (add your user Bastion user name):
+You will need to have the relevant database accessible on port 1521 locally. This can be provided by an SSH tunnel to an RDS instance in AWS. Once connected to the MoJ Digital VPN, execute the command below to tunnel to Dev (replace `<username>` with your Bastion username):
 
 ```sh
-ssh -L 1521:rds.maat.aws.dev.legalservices.gov.uk:1521 <username>@35.176.251.101 -i ~/.ssh/id_rsa
+ssh -L 1521:rds.maat.aws.dev.legalservices.gov.uk:1521 <username>@3.10.83.171 -i ~/.ssh/id_rsa
 ```
 
-### 3. InfoX connection
-Nolasa requires connection to InfoX to search against Libra. The simplest way is to run InfoX stub locally by following the instructions from https://github.com/ministryofjustice/laa-infoX-application.
+### 3. InfoX connection configuration
+
+NOLASA requires connection to InfoX to search against Libra. The simplest way is to run InfoX stub locally by following the instructions from https://github.com/ministryofjustice/laa-infoX-application.
 The application needs an environment variable to be provided when the container is run so the InfoX connection works correctly
 
-The LIBRA_ENDPOINTURI environment variable has been assigned to http://host.docker.internal:8080/infoX/gateway, but if you want to connect to a different endpoint you can set the environment variable as follows:
+The `LIBRA_ENDPOINTURI` environment variable has been assigned to http://host.docker.internal:8080/infoX/gateway, but if you want to connect to a different endpoint you can modify the config property `LIBRA_ENDPOINTURI` in the `docker-compose.override.yml`
 
-```sh
--e LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
+```
+LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
 ```
 
-### 4. Build and run the app
+### 4. MAAT Database connection configuration
+
+For NOLASA to be able to connect to the database you will need to update the configuration property `DATASOURCE_PASSWORD` in `docker-compose.override.yml` with the password for the datasource.
+
+### 5. Build and run the app
 
 You will need to build the artifacts for the source code, using `gradle`
 
@@ -61,7 +67,6 @@ You will need to build the artifacts for the source code, using `gradle`
 
 Information: The 'nolasa-0.1.0.jar' is located in:
 ```./build/libs```
-
 
 The apps should then start cleanly if you run
 
@@ -83,7 +88,7 @@ Environment variables are specified for DEV environment. It is also possible to 
 docker-compose run -e DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb -e DATASOURCE_USERNAME=mla -e DATASOURCE_PASSWORD=****** -e LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway app
 ```
 
-### 5. Configure your IDE
+### 6. Configure your IDE
 
 Run `./gradlew tasks` to see more details.
 
