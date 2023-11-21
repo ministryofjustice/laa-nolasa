@@ -42,7 +42,9 @@ public class OncePerDaySchedulerTest {
     @Before
     public void setUp()  {
 
-        ReconciliationService reconciliationService = new ReconciliationService(nolRepository, infoXServiceClient, metricHandler);
+        ReconciliationService reconciliationService = new ReconciliationService(infoXServiceClient,
+                nolRepository,
+                metricHandler);
         oncePerDayScheduler = new OncePerDayScheduler(reconciliationService);
     }
 
