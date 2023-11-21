@@ -16,9 +16,10 @@ public class InfoxSearchResultBuilder {
 
     public InfoXSearchResult buildInfoXSearchResult(LibraSearchResponse libraSearchResponse) {
 
-        InfoxStatus infoxStatus = InfoxStatus.fromString(libraSearchResponse.getAckResponse().getException().getERRORCODE());
+        String libraResponseErrorCode = libraSearchResponse.getAckResponse().getException().getERRORCODE();
+        InfoxStatus infoxStatus = InfoxStatus.fromString(libraResponseErrorCode);
 
-        log.info("Libra Response :{}, code: {}", infoxStatus, libraSearchResponse.getAckResponse().getException().getERRORCODE());
+        log.info("Libra Response Infox Status: {}, Error Code: {}", infoxStatus, libraResponseErrorCode);
         switch (infoxStatus) {
             case LIBRA_GREATER_THAN_15_CODE:
             case LIBRA_SUCCESS_CODE:

@@ -9,6 +9,7 @@ import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.entity.NolAutoSearchResult;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
 import com.laa.nolasa.laanolasa.util.MetricHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import static com.laa.nolasa.laanolasa.common.NolStatus.*;
 @Service
 @Slf4j
 @XRayEnabled
+@RequiredArgsConstructor
 public class ReconciliationService {
     @Value("${app.dry-run-mode}")
     private boolean dryRunMode;
@@ -33,12 +35,6 @@ public class ReconciliationService {
     private final InfoXServiceClient infoXServiceClient;
     private final NolRepository nolRepository;
     private final MetricHandler metricHandler;
-
-    public ReconciliationService(NolRepository nolRepository, InfoXServiceClient infoXService, MetricHandler metricHandler) {
-        this.nolRepository = nolRepository;
-        this.infoXServiceClient = infoXService;
-        this.metricHandler = metricHandler;
-    }
 
     @Transactional
     public void reconcile() {
@@ -73,7 +69,7 @@ public class ReconciliationService {
                 return ReconciliationResult.fromCount(numberOfResults);
             }
         } catch (Exception e) {
-            log.error(String.format("Error handling MAATID %d - skipping", maatId), e);
+            log.error("Error handling MAATID {} - skipping", maatId, e);
             return ReconciliationResult.ERROR;
         }
     }
