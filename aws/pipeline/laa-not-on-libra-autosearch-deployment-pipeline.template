@@ -24,11 +24,6 @@ Parameters:
     Type: String
     Default: ministryofjustice
 
-  TestAccount:
-    Description: AWS AccountNumber for test
-    Type: Number
-    Default: '013163512034'
-
   UATAccount:
     Description: AWS AccountNumber for UAT
     Type: Number
@@ -255,7 +250,6 @@ Resources:
             Action:
               - sts:AssumeRole
             Resource:
-              - !Sub arn:aws:iam::${TestAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${StagingAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${ProductionAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
               - !Sub arn:aws:iam::${UATAccount}:role/SharedServicesAccountCodePipelineCloudFormationRole
