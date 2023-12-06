@@ -6,23 +6,23 @@ import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.util.MetricHandler;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice._2013._11.magistrates.LIBRAServicePortType;
 import uk.gov.justice._2013._11.magistrates.LibraSearchRequest;
 import uk.gov.justice._2013._11.magistrates.LibraSearchResponse;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class InfoXServiceClientTest {
 
     @Mock
@@ -39,7 +39,7 @@ public class InfoXServiceClientTest {
 
     private InfoXServiceClient infoXServiceClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         infoXServiceClient = new InfoXServiceClient(libraSearchRequestBuilder, infoxSearchResultBuilder, infoxProxy, metricHandler);
     }

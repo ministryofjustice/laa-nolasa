@@ -4,21 +4,21 @@ import com.laa.nolasa.laanolasa.entity.Applicants;
 import com.laa.nolasa.laanolasa.entity.MagistrateCourts;
 import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.entity.RepOrders;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice._2013._11.magistrates.LibraSearchRequest;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LibraSearchRequestBuilderTest {
 
 
     private LibraSearchRequestBuilder libraSearchRequestBuilder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         libraSearchRequestBuilder = new LibraSearchRequestBuilder();
     }
