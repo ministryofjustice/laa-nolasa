@@ -1,4 +1,4 @@
-# This workflow will build the image and deploy to the development environment using the tag in the BUILD_TAG.txt file. If the tag is the same as previous deploy, then no new build will take place
+# This workflow will deploy to the test, preprod, and prod environment using the commit hash as the image tag.
 
 name: Build image and deploy to DEV
 

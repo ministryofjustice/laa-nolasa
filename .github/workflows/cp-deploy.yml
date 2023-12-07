@@ -1,4 +1,4 @@
-# This workflow will deploy to the test, preprod, and prod environment using the tag in the BUILD_TAG.txt file
+# This workflow will deploy to the test, preprod, and prod environment using the commit hash as the image tag.
 
 name: Deploy to TST, PRE, PRD
 
@@ -28,7 +28,7 @@ jobs:
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to Test environment
         run: |
-          DOCKER_TAG="$( cat BUILD_TAG.txt )"
+          DOCKER_TAG=$GITHUB_SHA
           cd helm_deploy/not-on-libra-auto-search-application
           helm upgrade not-on-libra-auto-search-application -f values_tst.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=$DOCKER_TAG --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-preprod:
@@ -48,7 +48,7 @@ jobs:
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to Preproduction environment
         run: |
-          DOCKER_TAG="$( cat BUILD_TAG.txt )"
+          DOCKER_TAG=$GITHUB_SHA
           cd helm_deploy/not-on-libra-auto-search-application
           helm upgrade not-on-libra-auto-search-application -f values_preprod.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=$DOCKER_TAG --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
   deploy-application-prod:
@@ -68,6 +68,6 @@ jobs:
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to Production environment
         run: |
-          DOCKER_TAG="$( cat BUILD_TAG.txt )"
+          DOCKER_TAG=$GITHUB_SHA
           cd helm_deploy/not-on-libra-auto-search-application
           helm upgrade not-on-libra-auto-search-application -f values_prd.yaml . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=$DOCKER_TAG --set nolasa.image.repository=754256621582.dkr.ecr.eu-west-2.amazonaws.com/${{ vars.ECR_REPOSITORY }}
