@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.5.15'
+        springBootVersion = '2.7.18'
     }
     repositories {
         mavenCentral()
@@ -14,7 +14,7 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'idea'
-    id 'org.springframework.boot' version '2.5.15'
+    id 'org.springframework.boot' version '2.7.18'
     id 'io.spring.dependency-management' version '1.0.7.RELEASE'
     id 'no.nils.wsdl2java' version '0.12'
 }
@@ -31,11 +31,14 @@ repositories {
 dependencies {
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('ch.qos.logback:logback-classic:1.2.13')
+    implementation('ch.qos.logback:logback-core:1.2.13')
+    implementation('org.yaml:snakeyaml:1.31')
     implementation('org.springframework.boot:spring-boot-starter-actuator')
     implementation('org.springframework.cloud:spring-cloud-starter-aws')
     implementation('io.micrometer:micrometer-registry-cloudwatch:1.7.2')
-    implementation('org.apache.cxf:cxf-spring-boot-starter-jaxws:3.4.3')
-    implementation('org.apache.cxf:cxf-rt-features-logging:3.4.4')
+    implementation('org.apache.cxf:cxf-spring-boot-starter-jaxws:3.6.2')
+    implementation('org.apache.cxf:cxf-rt-features-logging:3.6.2')
     implementation name: 'ojdbc8'
     compileOnly "org.projectlombok:lombok:1.18.18"
     annotationProcessor 'org.projectlombok:lombok:1.18.6'
@@ -43,10 +46,12 @@ dependencies {
     implementation 'com.amazonaws:aws-xray-recorder-sdk-spring:2.14.0'
     implementation 'org.aspectj:aspectjrt:1.9.2'
 
+
+
     wsdl2java 'com.sun.xml.bind:jaxb-xjc:2.3.2'
     wsdl2java 'javax.xml.bind:jaxb-api:2.3.1'
     wsdl2java 'javax.xml.ws:jaxws-api:2.3.1'
-    wsdl2java 'org.apache.cxf:cxf-rt-wsdl:3.2.7'
+    wsdl2java 'org.apache.cxf:cxf-rt-wsdl:3.6.2'
     wsdl2java 'javax.jws:javax.jws-api:1.1'
 
     implementation 'com.sun.xml.bind:jaxb-xjc:2.3.0.1'
