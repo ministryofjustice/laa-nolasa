@@ -31,8 +31,8 @@ jobs:
           REPOSITORY: ${{ vars.ECR_REPOSITORY }}
         id: get-docker-tag
         run: |
-          DOCKER_TAG="$( cat BUILD_TAG.txt )"
-          echo "Using docker tag '${DOCKER_TAG}' from BUILD_TAG.txt ..."
+          DOCKER_TAG=$GITHUB_SHA
+          echo "Using docker tag '${DOCKER_TAG}'"
 
           if docker pull "$REGISTRY/$REPOSITORY:${DOCKER_TAG}"; then
               echo "Docker tag '${DOCKER_TAG}' already exists in the ECR - Not rebuilding Docker container"
@@ -42,7 +42,7 @@ jobs:
 
           echo "DOCKER_TAG=${DOCKER_TAG}" >> "$GITHUB_ENV"
           echo "DOCKER_TAG=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
-      - name: Building the MLRA image
+      - name: Building the NOLASA image
         run: |
           if docker pull "$REGISTRY/$REPOSITORY:$DOCKER_TAG"; then
               echo "Docker image '$DOCKER_TAG' is up to date - not rebuilding"
