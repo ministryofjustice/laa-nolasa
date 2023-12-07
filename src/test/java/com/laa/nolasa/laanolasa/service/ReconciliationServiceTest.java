@@ -41,7 +41,7 @@ public class ReconciliationServiceTest {
 
     @BeforeEach
     public void setUp()  {
-        reconciliationService = new ReconciliationService(nolRepository, infoXServiceClient, metricHandler);
+        reconciliationService = new ReconciliationService(infoXServiceClient, nolRepository, metricHandler);
     }
 
     @Test
