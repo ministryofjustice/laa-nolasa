@@ -1,0 +1,84 @@
+# This workflow will deploy to all environments using the commit hash as the image tag.
+
+name: Deploy DEV, TEST PREPROD and PROD
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  push:
+    branches:
+    - 'master'
+
+jobs:
+  jobs:
+    build-and-push-image:
+      uses: ./.github/workflows/build-and-push-docker.yml
+      with:
+        ecr-repository: ${{ vars.ECR_REPOSITORY }}
+        docker-tag: ${{ github.sha }}
+        aws-region: ${{ vars.ECR_REGION }}
+      secrets:
+        ecr-role: ${{ secrets.ECR_ROLE_TO_ASSUME}}
+
+    deploy-application-dev:
+      needs: build-and-push-image
+      uses: ./.github/workflows/deploy-to-cloud-platform.yml
+      with:
+        env-name: development
+        helm-values-file: values_dev.yaml
+        ecr-repository: ${{ vars.ECR_REPOSITORY }}
+        docker-tag: ${{ github.sha }}
+        ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
+      secrets:
+        kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+        kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+        kube-cert: ${{ secrets.KUBE_CERT }}
+        kube-token: ${{ secrets.KUBE_TOKEN }}
+
+    deploy-application-test:
+      needs: deploy-application-dev
+      uses: ./.github/workflows/deploy-to-cloud-platform.yml
+      with:
+        env-name: test
+        helm-values-file: values_tst.yaml
+        ecr-repository: ${{ vars.ECR_REPOSITORY }}
+        docker-tag: ${{ github.sha }}
+        ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
+      secrets:
+        kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+        kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+        kube-cert: ${{ secrets.KUBE_CERT }}
+        kube-token: ${{ secrets.KUBE_TOKEN }}
+
+    deploy-application-preprod:
+      needs: deploy-application-test
+      uses: ./.github/workflows/deploy-to-cloud-platform.yml
+      with:
+        env-name: preproduction
+        helm-values-file: values_preprod.yaml
+        ecr-repository: ${{ vars.ECR_REPOSITORY }}
+        docker-tag: ${{ github.sha }}
+        ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
+      secrets:
+        kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+        kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+        kube-cert: ${{ secrets.KUBE_CERT }}
+        kube-token: ${{ secrets.KUBE_TOKEN }}
+
+    deploy-application-prod:
+      needs: deploy-application-preprod
+      uses: ./.github/workflows/deploy-to-cloud-platform.yml
+      with:
+        env-name: production
+        helm-values-file: values_prd.yaml
+        ecr-repository: ${{ vars.ECR_REPOSITORY }}
+        docker-tag: ${{ github.sha }}
+        ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
+      secrets:
+        kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+        kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+        kube-cert: ${{ secrets.KUBE_CERT }}
+        kube-token: ${{ secrets.KUBE_TOKEN }}
+
