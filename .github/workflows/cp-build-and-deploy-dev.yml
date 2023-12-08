@@ -1,0 +1,31 @@
+# This workflow will build and deploy the current branch to dev.
+
+name: Build image and deploy to DEV
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  call-build-and-push-image-workflow:
+    uses: ./.github/workflows/build-and-push-docker.yml
+    with:
+      ecr-repository: ${{ vars.ECR_REPOSITORY }}
+      docker-tag: ${{ env.$GITHUB_SHA }}
+      aws-region: ${{ vars.ECR_REGION }}
+    secrets: inherit
+
+  deploy-application-dev:
+    uses: ./.github/workflows/deploy-to-cloud-platform.yml
+    with:
+      environment: development
+      helm-values-file: values_dev.yaml
+      ecr-repository: ${{ vars.ECR_REPOSITORY }}
+      docker-tag: ${{ env.$GITHUB_SHA }}
+      ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
+    secrets: inherit
