@@ -17,7 +17,7 @@ jobs:
     environment: development
     steps:
       - name: Checkout
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
       - name: Build and push docker image
         uses: ./.github/workflows/build-and-push-docker.yml
         with:
