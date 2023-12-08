@@ -27,19 +27,24 @@ on:
         required: true
 
 jobs:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
-    - name: Authenticate to the Kubernetes cluster
-      env:
-        KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
-      run: |
-        echo "${{ secrets.KUBE_CERT }}" > ca.crt
-        kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
-        kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
-        kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
-        kubectl config use-context ${KUBE_CLUSTER}
-    - name: Helm deploy to ${{ inputs.env-name }} environment
-      run: |
-        cd helm_deploy/not-on-libra-auto-search-application
-        helm upgrade not-on-libra-auto-search-application -f ${{ inputs.helm-values-file }} . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ inputs.docker-tag }} --set nolasa.image.repository=${{ inputs.ecr-base-uri }}/${{ vars.ECR_REPOSITORY }}
+  deploy-to-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Authenticate to the Kubernetes cluster
+        env:
+          KUBE_CLUSTER: ${{ secrets.KUBE_CLUSTER }} # K8s Cluster name needed defining as env for it to work
+        run: |
+          echo "${{ secrets.KUBE_CERT }}" > ca.crt
+          kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
+          kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context ${KUBE_CLUSTER}
+      - name: Helm deploy to ${{ inputs.env-name }} environment
+        run: >
+          cd helm_deploy/not-on-libra-auto-search-application
+          
+          helm upgrade not-on-libra-auto-search-application -f ${{ inputs.helm-values-file }} . 
+          --namespace ${{ secrets.KUBE_NAMESPACE }} --install 
+          --set nolasa.image.tag=${{ inputs.docker-tag }} 
+          --set nolasa.image.repository=${{ inputs.ecr-base-uri }}/${{ vars.ECR_REPOSITORY }}
