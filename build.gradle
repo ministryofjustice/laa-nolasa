@@ -36,7 +36,7 @@ dependencies {
     implementation('org.yaml:snakeyaml:2.0')
     implementation('org.springframework.boot:spring-boot-starter-actuator')
     implementation('org.springframework.cloud:spring-cloud-starter-aws')
-    implementation('io.micrometer:micrometer-registry-cloudwatch:1.7.2')
+    implementation('io.micrometer:micrometer-registry-cloudwatch:1.12.0')
     implementation('org.apache.cxf:cxf-spring-boot-starter-jaxws:3.6.2')
     implementation('org.apache.cxf:cxf-rt-features-logging:3.6.2')
     implementation name: 'ojdbc8'
