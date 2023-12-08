@@ -33,7 +33,7 @@ jobs:
           REPOSITORY: ${{ inputs.ecr-repository }}
         id: get-docker-tag
         run: |
-          DOCKER_TAG=${{ inputs-docker-tag }}
+          DOCKER_TAG=${{ inputs.docker-tag }}
           echo "Using docker tag '${DOCKER_TAG}'"
 
           if docker pull "$REGISTRY/$REPOSITORY:${DOCKER_TAG}"; then
