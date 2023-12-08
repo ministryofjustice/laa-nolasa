@@ -34,6 +34,7 @@ on:
 jobs:
   deploy-to-cluster:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.env-name }}
     steps:
       - uses: actions/checkout@v3
       - name: Authenticate to the Kubernetes cluster
