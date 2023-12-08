@@ -12,32 +12,31 @@ on:
       - master
 
 jobs:
-  build-and-deploy-dev:
+  build-and-push-image:
     runs-on: ubuntu-latest
     environment: development
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Build and push docker image
-        uses: ./.github/workflows/build-and-push-docker.yml
-        with:
-          ecr-repository: ${{ vars.ECR_REPOSITORY }}
-          docker-tag: ${{ github.sha }}
-          aws-region: ${{ vars.ECR_REGION }}
-          ecr-role: ${{ secrets.ECR_ROLE_TO_ASSUME}}
+    uses: ./.github/workflows/build-and-push-docker.yml
+    with:
+      ecr-repository: ${{ vars.ECR_REPOSITORY }}
+      docker-tag: ${{ github.sha }}
+      aws-region: ${{ vars.ECR_REGION }}
+      ecr-role: ${{ secrets.ECR_ROLE_TO_ASSUME}}
 
-      - name: Deploy application to dev
-        uses: ./.github/workflows/deploy-to-cloud-platform.yml
-        with:
-          env-name: development
-          helm-values-file: values_dev.yaml
-          ecr-repository: ${{ vars.ECR_REPOSITORY }}
-          docker-tag: ${{ github.sha }}
-          ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
-          kube-cluster: ${{ secrets.KUBE_CLUSTER }}
-          kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
-          kube-cert: ${{ secrets.KUBE_CERT }}
-          kube-token: ${{ secrets.KUBE_TOKEN }}
+  deploy-application-to-dev:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    environment: development
+    uses: ./.github/workflows/deploy-to-cloud-platform.yml
+    with:
+      env-name: development
+      helm-values-file: values_dev.yaml
+      ecr-repository: ${{ vars.ECR_REPOSITORY }}
+      docker-tag: ${{ github.sha }}
+      ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
+      kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+      kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+      kube-cert: ${{ secrets.KUBE_CERT }}
+      kube-token: ${{ secrets.KUBE_TOKEN }}
 
 
 
