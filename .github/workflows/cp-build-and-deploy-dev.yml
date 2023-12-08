@@ -16,7 +16,7 @@ jobs:
     uses: ./.github/workflows/build-and-push-docker.yml
     with:
       ecr-repository: ${{ vars.ECR_REPOSITORY }}
-      docker-tag: ${{ GITHUB_SHA }}
+      docker-tag: ${{ github.sha }}
       aws-region: ${{ vars.ECR_REGION }}
     secrets: inherit
 
@@ -28,6 +28,6 @@ jobs:
       env-name: development
       helm-values-file: values_dev.yaml
       ecr-repository: ${{ vars.ECR_REPOSITORY }}
-      docker-tag: ${{ GITHUB_SHA }}
+      docker-tag: ${{ github.sha }}
       ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
     secrets: inherit
