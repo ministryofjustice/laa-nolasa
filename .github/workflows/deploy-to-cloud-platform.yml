@@ -18,18 +18,15 @@ on:
       ecr-base-uri:
         required: true
         type: string
+    secrets:
       kube-cluster:
         required: true
-        type: string
       kube-namespace:
         required: true
-        type: string
       kube-cert:
         required: true
-        type: string
       kube-token:
         required: true
-        type: string
 
 jobs:
   deploy-to-cluster:

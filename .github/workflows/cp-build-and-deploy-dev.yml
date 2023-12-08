@@ -18,6 +18,7 @@ jobs:
       ecr-repository: ${{ vars.ECR_REPOSITORY }}
       docker-tag: ${{ github.sha }}
       aws-region: ${{ vars.ECR_REGION }}
+    secrets:
       ecr-role: ${{ secrets.ECR_ROLE_TO_ASSUME}}
 
   deploy-application-to-dev:
@@ -29,6 +30,7 @@ jobs:
       ecr-repository: ${{ vars.ECR_REPOSITORY }}
       docker-tag: ${{ github.sha }}
       ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
+    secrets:
       kube-cluster: ${{ secrets.KUBE_CLUSTER }}
       kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
       kube-cert: ${{ secrets.KUBE_CERT }}

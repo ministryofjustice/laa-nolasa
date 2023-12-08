@@ -12,9 +12,9 @@ on:
       aws-region:
         required: true
         type: string
+    secrets:
       ecr-role:
         required: true
-        type: string
 
 jobs:
   build-image:
