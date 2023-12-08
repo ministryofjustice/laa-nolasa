@@ -32,4 +32,10 @@ jobs:
           ecr-repository: ${{ vars.ECR_REPOSITORY }}
           docker-tag: ${{ github.sha }}
           ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
-        secrets: inherit
+          kube-cluster: ${{ secrets.KUBE_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_NAMESPACE }}
+          kube-cert: ${{ secrets.KUBE_CERT }}
+          kube-token: ${{ secrets.KUBE_TOKEN }}
+
+
+
