@@ -9,7 +9,7 @@ on:
       docker-tag:
         required: true
         type: string
-      environment:
+      env-name:
         required: true
         type: string
       helm-values-file:
@@ -27,8 +27,6 @@ on:
         required: true
 
 jobs:
-  environment: ${{ inputs.environment }}
-  needs: build-image
   runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v3
@@ -41,7 +39,7 @@ jobs:
         kubectl config set-credentials deploy-user --token=${{ secrets.KUBE_TOKEN }}
         kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.KUBE_NAMESPACE }}
         kubectl config use-context ${KUBE_CLUSTER}
-    - name: Helm deploy to ${{ inputs.environment }} environment
+    - name: Helm deploy to ${{ inputs.env-name }} environment
       run: |
         cd helm_deploy/not-on-libra-auto-search-application
         helm upgrade not-on-libra-auto-search-application -f ${{ inputs.helm-values-file }} . --namespace ${{ secrets.KUBE_NAMESPACE }} --install --set nolasa.image.tag=${{ inputs.docker-tag }} --set nolasa.image.repository=${{ inputs.ecr-base-uri }}/${{ vars.ECR_REPOSITORY }}

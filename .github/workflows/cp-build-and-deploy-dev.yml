@@ -21,9 +21,11 @@ jobs:
     secrets: inherit
 
   deploy-application-dev:
+    environment: development
+    needs: call-build-and-push-image-workflow
     uses: ./.github/workflows/deploy-to-cloud-platform.yml
     with:
-      environment: development
+      env-name: development
       helm-values-file: values_dev.yaml
       ecr-repository: ${{ vars.ECR_REPOSITORY }}
       docker-tag: ${{ env.$GITHUB_SHA }}
