@@ -12,22 +12,24 @@ on:
       - master
 
 jobs:
-  call-build-and-push-image-workflow:
-    uses: ./.github/workflows/build-and-push-docker.yml
-    with:
-      ecr-repository: ${{ vars.ECR_REPOSITORY }}
-      docker-tag: ${{ github.sha }}
-      aws-region: ${{ vars.ECR_REGION }}
-    secrets: inherit
-
-  deploy-application-dev:
+  build-and-deploy-dev:
+    runs-on: ubuntu-latest
     environment: development
-    needs: call-build-and-push-image-workflow
-    uses: ./.github/workflows/deploy-to-cloud-platform.yml
-    with:
-      env-name: development
-      helm-values-file: values_dev.yaml
-      ecr-repository: ${{ vars.ECR_REPOSITORY }}
-      docker-tag: ${{ github.sha }}
-      ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
-    secrets: inherit
+    steps:
+      - name: Build and push docker image
+        uses: ./.github/workflows/build-and-push-docker.yml
+        with:
+          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          docker-tag: ${{ github.sha }}
+          aws-region: ${{ vars.ECR_REGION }}
+        secrets: inherit
+
+      - name: Deploy application to dev
+        uses: ./.github/workflows/deploy-to-cloud-platform.yml
+        with:
+          env-name: development
+          helm-values-file: values_dev.yaml
+          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          docker-tag: ${{ github.sha }}
+          ecr-base-uri: 754256621582.dkr.ecr.eu-west-2.amazonaws.com
+        secrets: inherit
