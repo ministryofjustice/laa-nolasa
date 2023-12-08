@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ inputs.ecr-role }}
+          role-to-assume: ${{ secrets.ecr-role }}
           aws-region: ${{ inputs.aws-region }}
       - uses: aws-actions/amazon-ecr-login@v1
         id: login-ecr

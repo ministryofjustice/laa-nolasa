@@ -36,18 +36,18 @@ jobs:
       - uses: actions/checkout@v3
       - name: Authenticate to the Kubernetes cluster
         env:
-          KUBE_CLUSTER: ${{ inputs.kube-cluster }} # K8s Cluster name needed defining as env for it to work
+          KUBE_CLUSTER: ${{ secrets.kube-cluster }} # K8s Cluster name needed defining as env for it to work
         run: |
-          echo "${{ inputs.kube-cert }}" > ca.crt
+          echo "${{ secrets.kube-cert }}" > ca.crt
           kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
-          kubectl config set-credentials deploy-user --token=${{ inputs.kube-token }}
-          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ inputs.kube-namespace }}
+          kubectl config set-credentials deploy-user --token=${{ secrets.kube-token }}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.kube-namespace }}
           kubectl config use-context ${KUBE_CLUSTER}
       - name: Helm deploy to ${{ inputs.env-name }} environment
         run: >
           cd helm_deploy/not-on-libra-auto-search-application
           
           helm upgrade not-on-libra-auto-search-application -f ${{ inputs.helm-values-file }} . 
-          --namespace ${{ inputs.kube-namespace }} --install 
+          --namespace ${{ secrets.kube-namespace }} --install 
           --set nolasa.image.tag=${{ inputs.docker-tag }} 
           --set nolasa.image.repository=${{ inputs.ecr-base-uri }}/${{ inputs.ecr-repository }}
