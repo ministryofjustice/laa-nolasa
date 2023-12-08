@@ -1,0 +1,68 @@
+name: Build and push docker image workflow
+
+on:
+  workflow_call:
+    inputs:
+      ecr-repository:
+        required: true
+        type: string
+      docker-tag:
+        required: true
+        type: string
+      aws-region:
+        required: true
+        type: string
+    secrets:
+      ecr-role:
+        required: true
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.ecr-role }}
+          aws-region: ${{ inputs.aws-region }}
+      - uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr
+      - name: Determine Docker Tag
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ inputs.ecr-repository }}
+        id: get-docker-tag
+        run: |
+          DOCKER_TAG=${{ inputs.docker-tag }}
+          echo "Using docker tag '${DOCKER_TAG}'"
+
+          if docker pull "$REGISTRY/$REPOSITORY:${DOCKER_TAG}"; then
+              echo "Docker tag '${DOCKER_TAG}' already exists in the ECR - Not rebuilding Docker container"
+          else
+              echo >&2 "Docker tag '${DOCKER_TAG}' does not exist in the ECR - Application will be redeployed"
+          fi
+
+          echo "DOCKER_TAG=${DOCKER_TAG}" >> "$GITHUB_ENV"
+          echo "DOCKER_TAG=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
+      - name: Building the NOLASA image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ inputs.ecr-repository }}
+        run: |
+          if docker pull "$REGISTRY/$REPOSITORY:$DOCKER_TAG"; then
+              echo "Docker image '$DOCKER_TAG' is up to date - not rebuilding"
+          else
+              echo "No Docker image for tag $DOCKER_TAG - Building the image with gradle ..."
+              chmod +x ./gradlew && ./gradlew build
+              echo Building the Docker image...
+              docker build -f Dockerfile_cp -t $REGISTRY/$REPOSITORY:$DOCKER_TAG --no-cache .
+              mkdir artifacts
+              zip -rq artifacts/buildreports.zip ./build/reports/tests/test/*
+              docker push $REGISTRY/$REPOSITORY:$DOCKER_TAG
+          fi
+      - name: Upload build tags and test reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-reports
+          path: artifacts/
+

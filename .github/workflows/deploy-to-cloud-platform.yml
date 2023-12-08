@@ -1,0 +1,53 @@
+name: Helm deployment to cloud platform workflow
+
+on:
+  workflow_call:
+    inputs:
+      ecr-repository:
+        required: true
+        type: string
+      docker-tag:
+        required: true
+        type: string
+      env-name:
+        required: true
+        type: string
+      helm-values-file:
+        required: true
+        type: string
+      ecr-base-uri:
+        required: true
+        type: string
+    secrets:
+      kube-cluster:
+        required: true
+      kube-namespace:
+        required: true
+      kube-cert:
+        required: true
+      kube-token:
+        required: true
+
+jobs:
+  deploy-to-cluster:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env-name }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Authenticate to the Kubernetes cluster
+        env:
+          KUBE_CLUSTER: ${{ secrets.kube-cluster }} # K8s Cluster name needed defining as env for it to work
+        run: |
+          echo "${{ secrets.kube-cert }}" > ca.crt
+          kubectl config set-cluster ${KUBE_CLUSTER} --certificate-authority=./ca.crt --server=https://${KUBE_CLUSTER}
+          kubectl config set-credentials deploy-user --token=${{ secrets.kube-token }}
+          kubectl config set-context ${KUBE_CLUSTER} --cluster=${KUBE_CLUSTER} --user=deploy-user --namespace=${{ secrets.kube-namespace }}
+          kubectl config use-context ${KUBE_CLUSTER}
+      - name: Helm deploy to ${{ inputs.env-name }} environment
+        run: >
+          cd helm_deploy/not-on-libra-auto-search-application
+          
+          helm upgrade not-on-libra-auto-search-application -f ${{ inputs.helm-values-file }} . 
+          --namespace ${{ secrets.kube-namespace }} --install 
+          --set nolasa.image.tag=${{ inputs.docker-tag }} 
+          --set nolasa.image.repository=${{ inputs.ecr-base-uri }}/${{ inputs.ecr-repository }}

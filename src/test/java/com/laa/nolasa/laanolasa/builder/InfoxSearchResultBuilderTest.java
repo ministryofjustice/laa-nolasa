@@ -1,21 +1,20 @@
 package com.laa.nolasa.laanolasa.builder;
 
 import com.laa.nolasa.laanolasa.common.InfoxStatus;
-import com.laa.nolasa.laanolasa.common.ReconciliationResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice._2013._11.magistrates.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InfoxSearchResultBuilderTest {
 
 
     private InfoxSearchResultBuilder infoxSearchResultBuilder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         infoxSearchResultBuilder = new InfoxSearchResultBuilder();
     }

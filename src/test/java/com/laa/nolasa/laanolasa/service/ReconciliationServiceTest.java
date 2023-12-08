@@ -8,11 +8,11 @@ import com.laa.nolasa.laanolasa.entity.NolAutoSearchResult;
 import com.laa.nolasa.laanolasa.entity.RepOrders;
 import com.laa.nolasa.laanolasa.repository.NolRepository;
 import com.laa.nolasa.laanolasa.util.MetricHandler;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -20,17 +20,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static com.laa.nolasa.laanolasa.common.NolStatus.LETTER_SENT;
-import static com.laa.nolasa.laanolasa.common.NolStatus.NOT_ON_LIBRA;
-import static com.laa.nolasa.laanolasa.common.NolStatus.RESULTS_FOUND;
-import static com.laa.nolasa.laanolasa.common.NolStatus.RESULTS_REJECTED;
-import static org.junit.Assert.assertEquals;
+import static com.laa.nolasa.laanolasa.common.NolStatus.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ReconciliationServiceTest {
 
     @Mock
@@ -44,11 +39,9 @@ public class ReconciliationServiceTest {
 
     private ReconciliationService reconciliationService;
 
-    @Before
-    public void setUp() {
-        reconciliationService = new ReconciliationService(infoXServiceClient,
-                nolRepository,
-                metricHandler);
+    @BeforeEach
+    public void setUp()  {
+        reconciliationService = new ReconciliationService(infoXServiceClient, nolRepository, metricHandler);
     }
 
     @Test
