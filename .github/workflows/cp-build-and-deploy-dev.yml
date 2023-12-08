@@ -22,7 +22,7 @@ jobs:
           ecr-repository: ${{ vars.ECR_REPOSITORY }}
           docker-tag: ${{ github.sha }}
           aws-region: ${{ vars.ECR_REGION }}
-        secrets: inherit
+          ecr-role: ${{ secrets.ECR_ROLE_TO_ASSUME}}
 
       - name: Deploy application to dev
         uses: ./.github/workflows/deploy-to-cloud-platform.yml
