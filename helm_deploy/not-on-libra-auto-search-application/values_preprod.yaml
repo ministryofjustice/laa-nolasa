@@ -23,8 +23,8 @@ nolasa:
     step: 1h
 
   dataSource:
-    url: "jdbc:oracle:thin:@rds.maat.aws.stg.legalservices.gov.uk:1521:MAATDB"
+    url: "jdbc:oracle:thin:@rds.maat.aws.uat.legalservices.gov.uk:1521:MAATDB"
     username: "MLA"
 
   cronSchedule: "0 0 18 * * SUN-THU" # Cron schedule for when the matching job gets ran
-  libraEndpointUri: "http://infox.aws.stg.legalservices.gov.uk/infoX/gateway"
+  libraEndpointUri: "http://infox.aws.uat.legalservices.gov.uk/infoX/gateway"
