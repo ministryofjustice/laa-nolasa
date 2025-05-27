@@ -29,6 +29,9 @@ public class ClientCredentialsSoapHandler implements SOAPHandler<SOAPMessageCont
     @Value("${client.infox-client-secret}")
     private String clientSecret;
 
+    @Autowired
+    private TokenRepository tokenRepository;
+
     private static final String ISSUER = "nolasa-dev";
     private static final String AUTH_HEADER_NAME = "ClientCredentials";
     private static final long TOKEN_LIFETIME_MILLIS = Duration.ofMinutes(5).toMillis();
@@ -79,9 +82,12 @@ public class ClientCredentialsSoapHandler implements SOAPHandler<SOAPMessageCont
     }
 
     private String getToken() {
+        return tokenRepository.get(() -> {
             Instant now = Instant.now();
             Instant expiry = now.plusMillis(TOKEN_LIFETIME_MILLIS - 5000); //5s buffer
-           return generateJwt(clientSecret, now, expiry);
+            String jwt = generateJwt(clientSecret, now, expiry);
+            return new CachedToken(jwt, expiry);
+        });
     }
 
     private String generateJwt(String clientSecret, Instant now, Instant expiry) {
@@ -92,5 +98,4 @@ public class ClientCredentialsSoapHandler implements SOAPHandler<SOAPMessageCont
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(clientSecret)), HS256)
                 .compact();
     }
-
 }
