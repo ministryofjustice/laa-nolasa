@@ -19,6 +19,8 @@ debug: false
 
 client:
   default-uri: ${LIBRA_ENDPOINTURI}
+  infox-client-secret: ${INFOX_CLIENT_SECRET}
+
 
 logging:
   level:

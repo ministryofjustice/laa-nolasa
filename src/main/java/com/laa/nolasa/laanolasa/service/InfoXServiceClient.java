@@ -6,6 +6,7 @@ import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.util.MetricHandler;
+import javax.xml.ws.BindingProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice._2013._11.magistrates.LIBRAServicePortType;
@@ -18,9 +19,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 public class InfoXServiceClient {
 
     private final MetricHandler metricHandler;
-    private LibraSearchRequestBuilder libraSearchRequestBuilder;
-    private InfoxSearchResultBuilder infoxSearchResultBuilder;
-    private LIBRAServicePortType infoxProxy;
+    private final LIBRAServicePortType infoxProxy;
+    private final InfoxSearchResultBuilder infoxSearchResultBuilder;
+    private final LibraSearchRequestBuilder libraSearchRequestBuilder;
 
 
     public InfoXServiceClient(LibraSearchRequestBuilder libraSearchRequestBuilder, InfoxSearchResultBuilder infoxSearchResultBuilder, LIBRAServicePortType infoxProxy, MetricHandler metricHandler) {
@@ -33,7 +34,7 @@ public class InfoXServiceClient {
     public InfoXSearchResult search(Nol nol) {
         LibraSearchResponse libraSearchResponse;
         try {
-            libraSearchResponse = (LibraSearchResponse) infoxProxy.libraSearch(libraSearchRequestBuilder.buildLibraSearchRequest(nol));
+            libraSearchResponse = infoxProxy.libraSearch(libraSearchRequestBuilder.buildLibraSearchRequest(nol));
         } catch (DatatypeConfigurationException e) {
             log.error("Exception thrown while populating Libra Search Request", e);
             return new InfoXSearchResult(InfoXSearchStatus.FAILURE);
