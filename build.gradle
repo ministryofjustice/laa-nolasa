@@ -46,8 +46,6 @@ dependencies {
     implementation 'com.amazonaws:aws-xray-recorder-sdk-spring:2.14.0'
     implementation 'org.aspectj:aspectjrt:1.9.2'
 
-
-
     wsdl2java 'com.sun.xml.bind:jaxb-xjc:2.3.2'
     wsdl2java 'javax.xml.bind:jaxb-api:2.3.1'
     wsdl2java 'javax.xml.ws:jaxws-api:2.3.1'
@@ -60,7 +58,14 @@ dependencies {
     implementation 'org.apache.cxf:cxf-rt-wsdl:3.2.7'
     implementation 'javax.jws:javax.jws-api:1.1'
     implementation 'javax.activation:activation:1.1.1'
+
+    implementation "io.jsonwebtoken:jjwt-api:0.12.5"
+    implementation "io.jsonwebtoken:jjwt-impl:0.12.5"
+    implementation "io.jsonwebtoken:jjwt-jackson:0.12.5"
+
+    testImplementation 'org.springframework:spring-test'
 }
+
 wsdl2java{
     wsdlsToGenerate = [
             ["$projectDir/src/main/resources/wsdl/LIBRAService.wsdl"]
@@ -71,6 +76,10 @@ wsdl2java{
 
 bootJar {
     baseName = 'nolasa'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 dependencyManagement {
