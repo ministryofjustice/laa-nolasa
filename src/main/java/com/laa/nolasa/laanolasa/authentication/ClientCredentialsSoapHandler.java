@@ -32,7 +32,7 @@ public class ClientCredentialsSoapHandler implements SOAPHandler<SOAPMessageCont
     @Autowired
     private TokenRepository tokenRepository;
 
-    private static final String ISSUER = "nolasa-dev";
+    private static final String ISSUER = "nolasa";
     private static final String AUTH_HEADER_NAME = "ClientCredentials";
     private static final long TOKEN_LIFETIME_MILLIS = Duration.ofMinutes(5).toMillis();
     private static final String AUTH_HEADER_NAMESPACE_URI = "http://justice.gov.uk/laa/infox";
