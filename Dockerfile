@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM openjdk:21-jdk
 
 VOLUME /tmp
 ADD ./build/libs/nolasa.jar app.jar
