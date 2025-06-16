@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk
+FROM amazoncorretto:21-alpine
 
 VOLUME /tmp
 ADD ./build/libs/nolasa.jar app.jar

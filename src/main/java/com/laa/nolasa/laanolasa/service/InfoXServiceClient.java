@@ -6,7 +6,6 @@ import com.laa.nolasa.laanolasa.dto.InfoXSearchResult;
 import com.laa.nolasa.laanolasa.dto.InfoXSearchStatus;
 import com.laa.nolasa.laanolasa.entity.Nol;
 import com.laa.nolasa.laanolasa.util.MetricHandler;
-import javax.xml.ws.BindingProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice._2013._11.magistrates.LIBRAServicePortType;

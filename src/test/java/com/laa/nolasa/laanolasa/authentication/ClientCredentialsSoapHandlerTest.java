@@ -6,12 +6,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.laa.nolasa.laanolasa.exception.AuthException;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.soap.SOAPMessageContext;
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPHeader;
+import jakarta.xml.soap.SOAPMessage;
+import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.handler.soap.SOAPMessageContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
