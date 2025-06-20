@@ -9,7 +9,7 @@ buildscript {
         jaxbApi            = '2.3.1'
         jakartaWsRsApi     = '4.0.0'
         jakartaJwsApi      = '3.0.0'
-        JakartaXmlSoapApi  = '3.0.2'
+        jakartaXmlSoapApi  = '3.0.2'
         sunSaajImpl        = '3.0.4'
         aspectjrt          = '1.9.2'
     }
@@ -62,7 +62,7 @@ dependencies {
 
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:${jakartaWsRsApi}")
     implementation("jakarta.jws:jakarta.jws-api:${jakartaJwsApi}")
-    implementation("jakarta.xml.soap:jakarta.xml.soap-api:${JakartaXmlSoapApi}")
+    implementation("jakarta.xml.soap:jakarta.xml.soap-api:${jakartaXmlSoapApi}")
     implementation("com.sun.xml.messaging.saaj:saaj-impl:${sunSaajImpl}")
     implementation("javax.xml.bind:jaxb-api:${jaxbApi}")
 
