@@ -6,7 +6,6 @@ spring:
     driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:
-    database-platform: org.hibernate.dialect.Oracle10gDialect
     show-sql: true
     properties:
       hibernate.jdbc.lob.non_contextual_creation: true

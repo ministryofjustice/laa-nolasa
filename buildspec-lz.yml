@@ -5,9 +5,7 @@ phases:
       - apt-get update -y
       - add-apt-repository ppa:openjdk-r/ppa
       - apt-get update -y
-      - apt-get install openjdk-8-jdk -y
-      - update-ca-certificates -f
-      - apt-get install openjdk-11-jdk -y
+      - apt-get install openjdk-21-jdk -y
       - update-ca-certificates -f
   pre_build:
     commands:
