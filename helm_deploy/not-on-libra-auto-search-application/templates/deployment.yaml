@@ -30,9 +30,15 @@ spec:
           - name: CLOUDWATCH_STEP
             value: {{ .Values.nolasa.cloudwatch.step }}
           - name: DATASOURCE_URL
-            value: {{ .Values.nolasa.dataSource.url }}
+            valueFrom:
+              secretKeyRef:
+                name: "nolasa-env-variables-{{ .Values.environment }}"
+                key: DATASOURCE_URL
           - name: DATASOURCE_USERNAME
-            value: {{ .Values.nolasa.dataSource.username }}
+            valueFrom:
+              secretKeyRef:
+                name: "nolasa-env-variables-{{ .Values.environment }}"
+                key: DATASOURCE_USERNAME
           - name: DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
