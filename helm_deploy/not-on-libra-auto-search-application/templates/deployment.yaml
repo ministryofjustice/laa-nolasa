@@ -42,8 +42,8 @@ spec:
           - name: DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: "laa-maat-db-password-{{ .Values.environment }}"
-                key: LAA_MAATDB_PASSWORD
+                name: "nolasa-env-variables-{{ .Values.environment }}"
+                key: DATASOURCE_PASSWORD
           - name: INFOX_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
