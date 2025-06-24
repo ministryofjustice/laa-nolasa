@@ -27,4 +27,4 @@ nolasa:
     username: "MLA"
 
   cronSchedule: "0 0 18 * * SUN-THU" # Cron schedule for when the matching job gets ran
-  libraEndpointUri: "http://infox.aws.prd.legalservices.gov.uk/infoX/gateway"
+  libraEndpointUri: "https://infox.service.justice.gov.uk/infoX/gateway"
