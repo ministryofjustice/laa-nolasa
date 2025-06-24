@@ -30,14 +30,20 @@ spec:
           - name: CLOUDWATCH_STEP
             value: {{ .Values.nolasa.cloudwatch.step }}
           - name: DATASOURCE_URL
-            value: {{ .Values.nolasa.dataSource.url }}
+            valueFrom:
+              secretKeyRef:
+                name: "datasource-credentials"
+                key: DATASOURCE_URL
           - name: DATASOURCE_USERNAME
-            value: {{ .Values.nolasa.dataSource.username }}
+            valueFrom:
+              secretKeyRef:
+                name: "datasource-credentials"
+                key: DATASOURCE_USERNAME
           - name: DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: "laa-maat-db-password-{{ .Values.environment }}"
-                key: LAA_MAATDB_PASSWORD
+                name: "datasource-credentials"
+                key: DATASOURCE_PASSWORD
           - name: INFOX_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
