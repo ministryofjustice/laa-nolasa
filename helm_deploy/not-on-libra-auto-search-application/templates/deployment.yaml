@@ -32,17 +32,17 @@ spec:
           - name: DATASOURCE_URL
             valueFrom:
               secretKeyRef:
-                name: "nolasa-env-variables-{{ .Values.environment }}"
+                name: "nolasa-env-variables"
                 key: DATASOURCE_URL
           - name: DATASOURCE_USERNAME
             valueFrom:
               secretKeyRef:
-                name: "nolasa-env-variables-{{ .Values.environment }}"
+                name: "nolasa-env-variables"
                 key: DATASOURCE_USERNAME
           - name: DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: "nolasa-env-variables-{{ .Values.environment }}"
+                name: "nolasa-env-variables"
                 key: DATASOURCE_PASSWORD
           - name: INFOX_CLIENT_SECRET
             valueFrom:
