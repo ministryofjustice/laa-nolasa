@@ -24,3 +24,5 @@ nolasa:
 
   cronSchedule: "0 0 18 * * SUN-THU" # Cron schedule for when the matching job gets ran
   libraEndpointUri: "https://infox.service.justice.gov.uk/infoX/gateway"
+  reconciliationSchedulerTask:
+    enabled: false
