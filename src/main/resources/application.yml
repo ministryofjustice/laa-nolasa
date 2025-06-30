@@ -48,3 +48,7 @@ cloud:
 
     stack:
       auto: false
+
+feature:
+  reconciliation-scheduler-task:
+    enabled: ${RECONCILIATION_SCHEDULER_TASK_ENABLED}
