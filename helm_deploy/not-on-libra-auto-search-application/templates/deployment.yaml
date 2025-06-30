@@ -54,4 +54,4 @@ spec:
           - name: LIBRA_ENDPOINTURI
             value: {{ .Values.nolasa.libraEndpointUri }}
           - name: RECONCILIATION_SCHEDULER_TASK_ENABLED
-            value: {{ .Values.nolasa.reconciliationSchedulerTask.enabled }}
+            value: {{ .Values.nolasa.reconciliationSchedulerTask.enabled | quote }}
