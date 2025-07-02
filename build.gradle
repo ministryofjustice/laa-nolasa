@@ -12,6 +12,7 @@ buildscript {
         jakartaXmlSoapApi  = '3.0.2'
         sunSaajImpl        = '3.0.4'
         aspectjrt          = '1.9.2'
+        sentryVersion      = '8.11.1'
     }
 }
 
@@ -65,6 +66,8 @@ dependencies {
     implementation("jakarta.xml.soap:jakarta.xml.soap-api:${jakartaXmlSoapApi}")
     implementation("com.sun.xml.messaging.saaj:saaj-impl:${sunSaajImpl}")
     implementation("javax.xml.bind:jaxb-api:${jaxbApi}")
+
+    implementation platform("io.sentry:sentry-bom:$sentryVersion")
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

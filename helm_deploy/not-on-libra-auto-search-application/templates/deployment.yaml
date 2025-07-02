@@ -55,3 +55,12 @@ spec:
             value: {{ .Values.nolasa.libraEndpointUri }}
           - name: RECONCILIATION_SCHEDULER_TASK_ENABLED
             value: {{ .Values.nolasa.reconciliationSchedulerTask.enabled | quote }}
+          - name: SENTRY_DSN
+            valueFrom:
+              secretKeyRef:
+                name: "sentry-dsn"
+                key: SENTRY_DSN
+          - name: SENTRY_ENV
+            value: {{ .Values.environment }}
+          - name: SENTRY_SAMPLE_RATE
+            value: {{ .Values.nolasa.sentry.sampleRate | quote }}
