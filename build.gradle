@@ -68,9 +68,12 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api:${jaxbApi}")
 
     implementation platform("io.sentry:sentry-bom:$sentryVersion")
+    implementation "io.sentry:sentry-spring-boot-starter-jakarta"
+    implementation "io.sentry:sentry-logback"
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 }
 
 wsdl2java {
