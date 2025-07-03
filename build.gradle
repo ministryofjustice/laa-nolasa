@@ -12,7 +12,7 @@ buildscript {
         jakartaXmlSoapApi  = '3.0.2'
         sunSaajImpl        = '3.0.4'
         aspectjrt          = '1.9.2'
-        sentryVersion      = '8.11.1'
+        sentryVersion      = '8.16.0'
     }
 }
 
