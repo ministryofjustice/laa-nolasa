@@ -52,3 +52,12 @@ cloud:
 feature:
   reconciliation-scheduler-task:
     enabled: ${RECONCILIATION_SCHEDULER_TASK_ENABLED}
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  environment: ${SENTRY_ENV}
+  release: 0.0.1
+  servername: aws-eks-container
+  send-default-pii: true
+  attach-stacktrace: true
+  sample-rate: ${SENTRY_SAMPLE_RATE}

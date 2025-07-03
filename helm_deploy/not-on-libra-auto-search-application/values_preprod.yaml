@@ -26,3 +26,6 @@ nolasa:
   libraEndpointUri: "https://laa-infox-preproduction.apps.live.cloud-platform.service.justice.gov.uk/infoX/gateway"
   reconciliationSchedulerTask:
     enabled: true
+
+  sentry:
+    sampleRate: 0.05

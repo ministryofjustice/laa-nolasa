@@ -26,3 +26,6 @@ nolasa:
   libraEndpointUri: "https://infox.service.justice.gov.uk/infoX/gateway"
   reconciliationSchedulerTask:
     enabled: false
+
+  sentry:
+    sampleRate: 1.0
