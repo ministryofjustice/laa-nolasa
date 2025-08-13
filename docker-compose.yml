@@ -5,11 +5,11 @@ services:
     build:
       context: .
     environment:
-    - DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb
-    - DATASOURCE_USERNAME=mla
+    - DATASOURCE_URL=${NOLASA_DB_URL}
+    - DATASOURCE_USERNAME=${NOLASA_DB_USERNAME}
     - APP_CRON_STRING=0 * * ? * *
     - APP_DRY_RUN_MODE=false
-    - LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway
+    - LIBRA_ENDPOINTURI=${LIBRA_ENDPOINT_URI}
     - CLOUDWATCH_EXPORT_ENABLED=false
     - CLOUDWATCH_STEP=10m
     ports:
