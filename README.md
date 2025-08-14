@@ -31,33 +31,7 @@ git clone {this repo}
 cd laa-nolasa
 ```
 
-### 2. Set up an SSH tunnel to access the database
-
-Database and InfoX endpoints need to be up and running before the application runs. This step is not required if you are running in an AWS workspace.
-
-Database:
-You will need to have the relevant database accessible on port 1521 locally. This can be provided by an SSH tunnel to an RDS instance in AWS. Once connected to the MoJ Digital VPN, execute the command below to tunnel to Dev (replace `<username>` with your Bastion username):
-
-```sh
-ssh -L 1521:rds.maat.aws.dev.legalservices.gov.uk:1521 <username>@3.10.83.171 -i ~/.ssh/id_rsa
-```
-
-### 3. InfoX connection configuration
-
-NOLASA requires connection to InfoX to search against Libra. The simplest way is to run InfoX stub locally by following the instructions from https://github.com/ministryofjustice/laa-infoX-application.
-The application needs an environment variable to be provided when the container is run so the InfoX connection works correctly
-
-The `LIBRA_ENDPOINTURI` environment variable has been assigned to http://host.docker.internal:8080/infoX/gateway, but if you want to connect to a different endpoint you can modify the config property `LIBRA_ENDPOINTURI` in the `docker-compose.override.yml`
-
-```
-LIBRA_ENDPOINTURI=http://172.16.3.131:8550/infoX/gateway
-```
-
-### 4. MAAT Database connection configuration
-
-For NOLASA to be able to connect to the database you will need to update the configuration property `DATASOURCE_PASSWORD` in `docker-compose.override.yml` with the password for the datasource.
-
-### 5. Build and run the app
+### 2. Build and run the app
 
 You will need to build the artifacts for the source code, using `gradle`
 
@@ -68,24 +42,50 @@ You will need to build the artifacts for the source code, using `gradle`
 Information: The 'nolasa-0.1.0.jar' is located in:
 ```./build/libs```
 
-The apps should then start cleanly if you run
+### Verifying 1Password CLI install and permissions
 
-```shell
-docker-compose build
-docker-compose up app
-```
+To run the app locally, you will need to download the appropriate environment variables from the team
+vault in 1Password. These environment variables are stored as a .env file, which docker-compose uses
+when starting up the service. If you don't see the team vault, speak to your tech lead to get access.
 
-Alternatively, you can run the script `cleanBuildAndRun.sh` to do all of the above.
-```sh
-sh cleanBuildAndRun_Local.sh
-```
-
-This application does not have any user interface, so nothing would be available on the corresponding web page http://localhost:8081.
-
-Environment variables are specified for DEV environment. It is also possible to override them before running docker-compose. If you want to connect to a different environment you can override them with the following runtime arguments:
+To begin with, make sure that you have the 1Password CLI installed:
 
 ```sh
-docker-compose run -e DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb -e DATASOURCE_USERNAME=mla -e DATASOURCE_PASSWORD=****** -e LIBRA_ENDPOINTURI=http://host.docker.internal:8080/infoX/gateway app
+op --version
+```
+
+If the `op` command is not found, [follow the steps on the 1Password developer docs to get the CLI set-up](https://developer.1password.com/docs/cli/get-started/).
+
+To check you have the correct permissions to see the team vault, run the following command to get
+the documents stored in the team vault and verify that you see `EnvironmentVariables-nolasa-App` in
+the output (optionally follow the command with `| grep EnvironmentVariables-nolasa-App` to filter down
+to just the InfoX env vars file).
+
+```sh
+op document list
+```
+
+### Connecting to the MAAT database
+
+To run the application, you will need to have the relevant database accessible on port 1521 locally.
+To do this, [follow the steps to set-up the AWS CLI with the relevant environment's account on the modernisation platform](https://user-guide.modernisation-platform.service.justice.gov.uk/user-guide/accessing-ec2s.html)
+and then use the `aws-ssm` command to open a connection to the database:
+
+```sh
+aws ssm start-session \
+  --target <ec2-bastion-instance-id> \
+  --document-name AWS-StartPortForwardingSessionToRemoteHost \
+  --parameters '{"host":["<maat-db-endpoint>"],"portNumber":["1521"],"localPortNumber":["1521"]}' \
+--profile <target-profile-defined-in-your-aws-config-file>
+```
+
+### Running the app
+
+To run the app (against services in the dev environment) and pull down environment variables from
+1Password automatically, run:
+
+```sh
+./start-local.sh
 ```
 
 ### 6. Configure your IDE
