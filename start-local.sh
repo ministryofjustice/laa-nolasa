@@ -10,7 +10,7 @@ APP_ENV_FILE="./.env"
 
 function remove_env_file()
 {
-    echo "Removing .env file"
+    echo "Removing .env file from locally"
     rm -f "$APP_ENV_FILE"
 }
 
