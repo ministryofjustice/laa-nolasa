@@ -69,6 +69,8 @@ Resources:
             Service: [ec2.amazonaws.com]
           Action: ['sts:AssumeRole']
       Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
       Policies:
       - PolicyName: app-ecs-service
         PolicyDocument:
@@ -155,6 +157,9 @@ Resources:
 
   AppECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: True
     Properties:
       DesiredCapacity: 2
       LaunchConfigurationName: !Ref AppEc2LaunchConfig
